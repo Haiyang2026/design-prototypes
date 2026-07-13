@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>弹性面板布局 - Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#4F6FFF', 50: '#EEF0FF', 100: '#D5DAFF', 200: '#AEB6FF', 400: '#4F6FFF', 600: '#3A54E0', 800: '#2A3FB5' },
+          },
+          fontFamily: { sans: ['Noto Sans SC', 'sans-serif'] },
+        }
+      }
+    }
+  </script>
+  <style>
+    * { font-family: 'Noto Sans SC', sans-serif; }
+    .collapse-content { display: none; }
+    .collapse-content.open { display: block; }
+    .collapse-trigger.open .lucide-chevron-down { transform: rotate(180deg); }
+    .collapse-trigger .lucide-chevron-down { transition: transform 0.2s; }
+    @media (max-width: 768px) {
+      .panel-grid { flex-direction: column; }
+      .panel-left { width: 100%; }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <div class="max-w-6xl mx-auto p-4 md:p-6">
+    <!-- breadcrumb -->
+    <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
+      <span>首页</span>
+      <i data-lucide="chevron-right" class="w-3 h-3"></i>
+      <span>功能说明</span>
+      <i data-lucide="chevron-right" class="w-3 h-3"></i>
+      <span class="text-gray-600">弹性面板布局</span>
+    </div>
+
+    <div class="panel-grid flex gap-6">
+      <!-- 左侧：视觉面板 -->
+      <div class="panel-left w-full md:w-72 lg:w-80 flex-shrink-0">
+        <div class="bg-white rounded-xl border overflow-hidden sticky top-6">
+          <div class="aspect-[4/3] bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center p-6">
+            <div class="text-center">
+              <i data-lucide="layout-dashboard" class="w-16 h-16 text-primary mx-auto mb-3"></i>
+              <p class="text-sm font-medium text-gray-600">弹性面板布局</p>
+            </div>
+          </div>
+          <div class="p-4">
+            <p class="text-xs text-gray-500 mb-3">左图右文 + 可折叠内容区的交互原型布局模式</p>
+            <button class="w-full py-2 px-4 rounded-lg text-sm font-medium bg-primary text-white hover:bg-primary-600 transition-colors">了解更多</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右侧：内容区 -->
+      <div class="flex-1 min-w-0 space-y-6">
+        <div>
+          <h1 class="text-xl font-bold text-gray-800">弹性面板布局</h1>
+          <p class="text-sm text-gray-500 mt-1">左侧视觉卡片固定展示，右侧内容区默认折叠紧凑显示，点击展开查看完整信息</p>
+        </div>
+
+        <!-- 可折叠区块 -->
+        <div class="space-y-3">
+          <!-- 区块1：步骤流 -->
+          <div class="collapse-section border rounded-xl bg-white overflow-hidden">
+            <button class="collapse-trigger open w-full flex items-center justify-between px-4 py-3 text-sm font-medium bg-gray-50 hover:bg-gray-100 transition-colors" onclick="toggleCollapse(this)">
+              <span>流程步骤</span>
+              <i data-lucide="chevron-down" class="w-4 h-4 transition-transform"></i>
+            </button>
+            <div class="collapse-content open px-4 py-4">
+              <div class="flex items-center gap-2 flex-wrap">
+                <div class="flex items-center">
+                  <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-medium">1</div>
+                  <span class="ml-2 text-xs font-medium text-gray-700">需求提交</span>
+                  <i data-lucide="arrow-right" class="w-4 h-4 mx-2 text-gray-300"></i>
+                </div>
+                <div class="flex items-center">
+                  <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-medium">2</div>
+                  <span class="ml-2 text-xs font-medium text-gray-700">审核评估</span>
+                  <i data-lucide="arrow-right" class="w-4 h-4 mx-2 text-gray-300"></i>
+                </div>
+                <div class="flex items-center">
+                  <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-medium">3</div>
+                  <span class="ml-2 text-xs font-medium text-gray-700">开发排期</span>
+                  <i data-lucide="arrow-right" class="w-4 h-4 mx-2 text-gray-300"></i>
+                </div>
+                <div class="flex items-center">
+                  <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-xs font-medium">4</div>
+                  <span class="ml-2 text-xs text-gray-400">上线发布</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 区块2：操作区 -->
+          <div class="collapse-section border rounded-xl bg-white overflow-hidden">
+            <button class="collapse-trigger w-full flex items-center justify-between px-4 py-3 text-sm font-medium bg-gray-50 hover:bg-gray-100 transition-colors" onclick="toggleCollapse(this)">
+              <span>操作与状态模拟</span>
+              <i data-lucide="chevron-down" class="w-4 h-4 transition-transform"></i>
+            </button>
+            <div class="collapse-content px-4 py-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h4 class="text-xs font-medium text-gray-500 mb-2">流程操作</h4>
+                  <div class="flex gap-2">
+                    <button class="px-3 py-1.5 rounded-lg text-xs font-medium bg-primary text-white hover:bg-primary-600">提交审核</button>
+                    <button class="px-3 py-1.5 rounded-lg text-xs font-medium border text-gray-600 hover:bg-gray-50">保存草稿</button>
+                    <button class="px-3 py-1.5 rounded-lg text-xs font-medium border text-red-500 hover:bg-red-50">取消</button>
+                  </div>
+                </div>
+                <div>
+                  <h4 class="text-xs font-medium text-gray-500 mb-2">二次进入模拟</h4>
+                  <div class="flex flex-wrap gap-2">
+                    <button class="sim-btn px-3 py-1.5 rounded-lg text-xs border border-primary text-primary bg-primary-50" onclick="simulateState(this,'midway')">中途退出再进</button>
+                    <button class="sim-btn px-3 py-1.5 rounded-lg text-xs border text-gray-500 hover:border-gray-400" onclick="simulateState(this,'pending')">未提交再进</button>
+                    <button class="sim-btn px-3 py-1.5 rounded-lg text-xs border text-gray-500 hover:border-gray-400" onclick="simulateState(this,'done')">已完成再进</button>
+                  </div>
+                </div>
+              </div>
+              <div id="simResult" class="mt-3 p-3 rounded-lg bg-gray-50 text-xs text-gray-500 hidden">
+                模拟结果区域
+              </div>
+            </div>
+          </div>
+
+          <!-- 区块3：状态分流表 -->
+          <div class="collapse-section border rounded-xl bg-white overflow-hidden">
+            <button class="collapse-trigger w-full flex items-center justify-between px-4 py-3 text-sm font-medium bg-gray-50 hover:bg-gray-100 transition-colors" onclick="toggleCollapse(this)">
+              <span>状态分流规则</span>
+              <i data-lucide="chevron-down" class="w-4 h-4 transition-transform"></i>
+            </button>
+            <div class="collapse-content px-4 py-4">
+              <table class="w-full text-xs">
+                <thead>
+                  <tr class="border-b text-gray-500">
+                    <th class="py-2 pr-4 text-left font-medium">用户状态</th>
+                    <th class="py-2 pr-4 text-left font-medium">入场策略</th>
+                    <th class="py-2 text-left font-medium">主要目的</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b border-gray-50">
+                    <td class="py-2 pr-4">新用户首次进入</td>
+                    <td class="py-2 pr-4 text-primary font-medium">引导式</td>
+                    <td class="py-2">完成首次配置</td>
+                  </tr>
+                  <tr class="border-b border-gray-50">
+                    <td class="py-2 pr-4">中途退出再进</td>
+                    <td class="py-2 pr-4 text-amber-600 font-medium">断点续传</td>
+                    <td class="py-2">从上一步继续</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 pr-4">已完成用户</td>
+                    <td class="py-2 pr-4 text-green-600 font-medium">快捷模式</td>
+                    <td class="py-2">查看结果/重新提交</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentOpen = null;
+
+    document.querySelectorAll('.collapse-section').forEach(section => {
+      const content = section.querySelector('.collapse-content');
+      const trigger = section.querySelector('.collapse-trigger');
+      if (trigger.classList.contains('open')) {
+        content.classList.add('open');
+        currentOpen = section;
+      }
+    });
+
+    function toggleCollapse(btn) {
+      const section = btn.closest('.collapse-section');
+      const content = section.querySelector('.collapse-content');
+      const isOpen = content.classList.contains('open');
+
+      if (currentOpen && currentOpen !== section) {
+        const prevContent = currentOpen.querySelector('.collapse-content');
+        const prevTrigger = currentOpen.querySelector('.collapse-trigger');
+        prevContent.classList.remove('open');
+        prevTrigger.classList.remove('open');
+      }
+
+      if (isOpen) {
+        content.classList.remove('open');
+        btn.classList.remove('open');
+        currentOpen = null;
+      } else {
+        content.classList.add('open');
+        btn.classList.add('open');
+        currentOpen = section;
+      }
+    }
+
+    function simulateState(btn, state) {
+      document.querySelectorAll('.sim-btn').forEach(b => {
+        b.className = 'sim-btn px-3 py-1.5 rounded-lg text-xs border text-gray-500 hover:border-gray-400';
+      });
+      btn.className = 'sim-btn px-3 py-1.5 rounded-lg text-xs border border-primary text-primary bg-primary-50';
+
+      const result = document.getElementById('simResult');
+      result.classList.remove('hidden');
+      const msgs = {
+        midway: { icon: 'refresh-cw', text: '断点续传模式 → 用户回到上次离开的步骤，保留已填数据', color: 'text-amber-600' },
+        pending: { icon: 'clock', text: '引导式 → 用户从第一步重新开始，显示引导提示', color: 'text-primary' },
+        done: { icon: 'check-circle', text: '快捷模式 → 用户直接进入结果页，显示历史记录', color: 'text-green-600' }
+      };
+      const m = msgs[state];
+      result.innerHTML = '<span class="' + m.color + '">' + m.text + '</span>';
+    }
+
+    lucide.createIcons();
+  </script>
+</body>
+</html>
