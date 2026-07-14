@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>邮件润色助手 · 功能升级方案（内部评审版）</title>
+<style>
+:root{--blue:#1a5fd6;--ink:#1f2733;--sub:#5b6675;--line:#e4e8ef;--bg:#f6f8fb;--card:#fff;--ok:#1f9d6b;--warn:#d9822b;--hot:#e04556}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;padding:20px}
+.wrap{max-width:960px;margin:0 auto}
+header{background:var(--card);border:2px solid var(--blue);border-radius:16px;padding:28px 32px;margin-bottom:20px}
+header h1{font-size:22px;font-weight:700}
+header p{font-size:13px;color:var(--sub);margin-top:6px}
+.meta{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap}
+.meta span{font-size:12px;padding:4px 12px;border-radius:8px;background:var(--bg);color:var(--sub)}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 26px;margin-bottom:14px}
+.card h2{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.card h2 .emo{font-size:20px}
+.card .sub{font-size:12.5px;color:var(--sub);margin-bottom:12px}
+
+.example-box{background:var(--bg);border-radius:10px;padding:14px 18px;margin:10px 0}
+.example-box .label{font-size:11px;color:var(--blue);font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px}
+.example-box .before{font-size:12.5px;color:var(--sub);margin-bottom:6px}
+.example-box .before::before{content:'写之前：';color:var(--warn);font-weight:600}
+.example-box .after{font-size:12.5px}
+.example-box .after::before{content:'AI优化后：';color:var(--ok);font-weight:600}
+
+.how{font-size:12.5px;color:var(--sub);margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.how b{color:var(--ink)}
+
+/* 插槽特殊样式 */
+.slot-demo{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0}
+.slot-card{flex:1;min-width:160px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:12px}
+.slot-card .key{font-weight:700;color:var(--blue);font-size:11px;margin-bottom:3px}
+.slot-card .val{color:var(--sub)}
+
+.step{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--sub);margin:8px 0}
+.step .n{width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+.tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-left:4px}
+.t-easy{background:#e6f7ec;color:var(--ok)}.t-mid{background:#fef3e4;color:var(--warn)}
+
+.foot{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 24px;margin-top:16px;font-size:13px;color:var(--sub);line-height:1.8}
+.foot b{color:var(--ink)}
+.note{font-size:11px;color:#8a94a3;text-align:center;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>📧 邮件润色助手 · 功能升级方案</h1>
+  <p>面向公司内部团队——9个功能，全部零企业系统依赖，纯AI模型+前端即可实现</p>
+  <div class="meta">
+    <span>零员工身份数据</span><span>零历史邮件接入</span><span>零OA/CRM依赖</span><span>2-3周可出MVP</span>
+  </div>
+</header>
+
+<!-- 1. 语气检测+切换 -->
+<div class="card">
+  <h2><span class="emo">🎭</span> 一、语气检测 + 一键切换</h2>
+  <div class="sub">写完邮件自动显示当前语气，不满意就一键切成另一种。Grammarly年入几亿美元的核心功能。</div>
+  
+  <div class="example-box">
+    <div class="label">SCENE 1 · 催经销商交报表</div>
+    <div class="before">王总，6月销售报表还没收到，什么时候能发过来？</div>
+    <div class="after">王总您好，关于6月区域销售报表，目前系统尚未收到，烦请确认一下提交时间大概是什么时候？如需协助随时联系。祝工作顺利！</div>
+    <div style="font-size:11px;color:var(--sub);margin-top:4px">检测到原文语气：<b style="color:var(--hot)">直接/偏生硬</b> → 已切换为：<b style="color:var(--ok)">友好催办</b></div>
+  </div>
+
+  <div class="example-box">
+    <div class="label">SCENE 2 · 拒绝同事的非分要求</div>
+    <div class="before">这个活我接不了，你找别人吧。</div>
+    <div class="after">感谢信任！目前我手上已在推进Q3规划，暂时排不开。建议联系张明看看他那边是否能协助？需要的话我可以帮忙转达。抱歉哈！</div>
+    <div style="font-size:11px;color:var(--sub);margin-top:4px">检测到原文语气：<b style="color:var(--hot)">冷淡/可能得罪人</b> → 已切换为：<b style="color:var(--ok)">委婉拒绝</b></div>
+  </div>
+
+  <div class="how"><b>实现：</b>纯LLM分类+改写，0外部依赖 <span class="tag t-easy">简单</span></div>
+</div>
+
+<!-- 2. 发送前诊断 -->
+<div class="card">
+  <h2><span class="emo">🩺</span> 二、发送前诊断（Email Coaching）</h2>
+  <div class="sub">点一下按钮，AI 从三个维度给邮件打分，告诉你哪里可能出问题。Outlook Copilot 的招牌功能。</div>
+  
+  <div class="example-box">
+    <div class="label">SCENE · 给跨部门同事发协调邮件</div>
+    <div style="padding:8px 0;font-size:12.5px">
+      诊断结果：<br>
+      📊 <b>清晰度 72分</b> — 第3段过长，建议拆分或加小标题<br>
+      🎯 <b>可执行性 60分</b> — 缺少明确的截止时间和负责人<br>
+      🤝 <b>友好度 85分</b> — 语气不错，但开头可以加一句问候暖场
+    </div>
+  </div>
+
+  <div class="how"><b>实现：</b>LLM三维评分+规则，每次诊断约0.5秒 <span class="tag t-easy">简单</span></div>
+</div>
+
+<!-- 3. 啰嗦检测+精简 -->
+<div class="card">
+  <h2><span class="emo">✂️</span> 三、啰嗦检测 + 一键精简</h2>
+  <div class="sub">标出冗余表达，点一下变简洁。Grammarly Premium 最让用户觉得"值"的功能。</div>
+  
+  <div class="example-box">
+    <div class="label">SCENE · 内部工作汇报邮件</div>
+    <div class="before">关于我们部门目前正在推进的这个项目的最新进展情况，我想向您做一个简单的汇报，目前的整体进度基本上可以算是比较顺利的。</div>
+    <div class="after">Q3项目进展顺利，简要汇报如下：</div>
+    <div style="font-size:11px;color:var(--sub);margin-top:4px">原文38字 → 精简后13字，节省66%</div>
+  </div>
+
+  <div class="how"><b>实现：</b>LLM标注冗余段落+生成精简版，用户一键替换 <span class="tag t-easy">简单</span></div>
+</div>
+
+<!-- 4. 主题行评分 -->
+<div class="card">
+  <h2><span class="emo">📊</span> 四、主题行评分 + 优化建议</h2>
+  <div class="sub">给你的邮件标题打分并生成优化版——"你好"、"邮件"这种废标题自动被识别。</div>
+  
+  <div class="example-box">
+    <div class="label">SCENE · 给领导发汇报</div>
+    <div class="before">主题行：工作汇报</div>
+    <div class="after">AI评分：<b style="color:var(--hot)">28分</b> — 太模糊，领导不知道是什么<br>
+    优化建议：<br>
+    ① 「Q3重点项目进度汇报 — 已完成80%，需确认下阶段资源」（推荐，92分）<br>
+    ② 「关于智能报表系统上线的汇报」（85分）<br>
+    ③ 「周报：邮件润色功能升级方案 + 竞品调研」（78分）</div>
+  </div>
+
+  <div class="how"><b>实现：</b>LLM评分+多候选生成 <span class="tag t-easy">简单</span></div>
+</div>
+
+<!-- 5. 个性化与记忆（插槽） -->
+<div class="card">
+  <h2><span class="emo">🧩</span> 五、个性化与记忆（插槽机制）</h2>
+  <div class="sub">用户设一次"插槽"，以后所有邮件自动填充——不用每次都是"一个新人"从头训练。</div>
+  
+  <div class="slot-demo">
+    <div class="slot-card"><div class="key">插槽1：我的称呼</div><div class="val">徐海洋</div></div>
+    <div class="slot-card"><div class="key">插槽2：部门+职位</div><div class="val">XX部门 · 产品负责人</div></div>
+    <div class="slot-card"><div class="key">插槽3：常用落款</div><div class="val">以上，请审阅。海洋</div></div>
+    <div class="slot-card"><div class="key">插槽4：表达偏好</div><div class="val">简洁直接 · 少用敬语</div></div>
+  </div>
+  <div style="font-size:12px;color:var(--sub);margin:8px 0">还可设：常抄送人、常用产品名（如"智能马桶S600"）、习惯用语（说"辛苦"不说"麻烦"）</div>
+
+  <div class="step"><span class="n">1</span> 用户首次使用时填一次插槽（类似个人资料页）</div>
+  <div class="step"><span class="n">2</span> AI润色/生成邮件时，自动从插槽取值填充</div>
+  <div class="step"><span class="n">3</span> 用户可随时修改插槽，所有邮件即时生效</div>
+
+  <div class="example-box">
+    <div class="label">效果对比</div>
+    <div class="before">没有插槽：每封邮件结尾都要自己写"徐海洋"，每周重复30次</div>
+    <div class="after">有插槽：AI自动补全落款+称呼+产品名，用户只需关心正文</div>
+  </div>
+
+  <div class="how"><b>实现：</b>纯前端存储（localStorage），用户填一次存在本地，LLM生成时把插槽值作为system prompt注入 <span class="tag t-easy">简单</span></div>
+</div>
+
+<!-- 6. 多版本对比 -->
+<div class="card">
+  <h2><span class="emo">🔄</span> 六、多版本对比</h2>
+  <div class="sub">一次生成正式版/精简版/温和版三个版本，左右排列对比，选最合适的。网易邮箱AI高频使用功能。</div>
+  
+  <div class="example-box">
+    <div class="label">SCENE · 给供应商发质量问题反馈</div>
+    <div class="before">原文：你们上次发的这批货有问题，漏水率超标了。</div>
+    <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap">
+      <div style="flex:1;min-width:180px;padding:10px;border:2px solid var(--blue);border-radius:8px;font-size:12px"><b>正式版</b><br>贵司上批供货在我司质检中发现漏水率超出合同约定标准（合同≤1.5%，实测2.1%），请于3个工作日内提供整改方案。详见附件质检报告。</div>
+      <div style="flex:1;min-width:180px;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:12px;color:var(--sub)"><b>温和版</b><br>关于上批供货，质检反馈漏水率略高于标准，想和您沟通一下可能的原因和整改思路。方便的话明天下午通个电话？</div>
+      <div style="flex:1;min-width:180px;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:12px;color:var(--sub)"><b>精简版</b><br>上批货漏水率超标（合同1.5%/实测2.1%），请3日内提交整改方案，附质检报告。</div>
+    </div>
+  </div>
+
+  <div class="how"><b>实现：</b>LLM一次生成3版本+前端三栏对比UI <span class="tag t-easy">简单</span></div>
+</div>
+
+<!-- 7. 场景模板库 -->
+<div class="card">
+  <h2><span class="emo">📋</span> 七、场景模板库</h2>
+  <div class="sub">内置20+高频场景模板，用户选模板→填空→AI自动补全润色。网易邮箱AI同款功能。</div>
+  
+  <table style="width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0">
+    <tr style="background:var(--bg)"><th style="padding:8px 10px;text-align:left;font-weight:600">场景</th><th style="padding:8px 10px;text-align:left;font-weight:600">模板骨架</th><th style="padding:8px 10px;text-align:left;font-weight:600">用户填什么</th></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid var(--line)">产品介绍</td><td style="padding:7px 10px;border-bottom:1px solid var(--line);color:var(--sub)">尊敬的{客户名}：感谢关注我司{产品名}。以下是核心参数和报价……</td><td style="padding:7px 10px;border-bottom:1px solid var(--line);color:var(--sub)">填客户名、产品名、参数</td></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid var(--line)">会议邀请</td><td style="padding:7px 10px;border-bottom:1px solid var(--line);color:var(--sub)">定于{时间}在{地点}召开{议题}会议，请{与会人}参加。议程如下……</td><td style="padding:7px 10px;border-bottom:1px solid var(--line);color:var(--sub)">填时间、地点、议题、与会人</td></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid var(--line)">工作汇报</td><td style="padding:7px 10px;border-bottom:1px solid var(--line);color:var(--sub)">{某某}总：关于{事项}的工作进展汇报如下……</td><td style="padding:7px 10px;border-bottom:1px solid var(--line);color:var(--sub)">填汇报对象、事项、进展</td></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid var(--line)">请假申请</td><td style="padding:7px 10px;border-bottom:1px solid var(--line);color:var(--sub)">因{原因}，申请{日期}请假{天数}天。期间工作已安排{交接人}代为处理。</td><td style="padding:7px 10px;border-bottom:1px solid var(--line);color:var(--sub)">填原因、日期、交接人</td></tr>
+    <tr><td style="padding:7px 10px">催办跟进</td><td style="padding:7px 10px;color:var(--sub)">关于{事项}，截止日期为{日期}，目前尚未收到反馈。烦请确认进度，如有困难请提前沟通。</td><td style="padding:7px 10px;color:var(--sub)">填事项、截止日期</td></tr>
+  </table>
+  <div style="font-size:11px;color:var(--sub)">更多场景：发货通知、售后回访、合同确认、投诉回复、新人欢迎、离职通知、培训通知、节假日问候……</div>
+
+  <div class="how"><b>实现：</b>前端模板系统+LLM补全润色 <span class="tag t-easy">简单</span></div>
+</div>
+
+<!-- 8. 语音口述 -->
+<div class="card">
+  <h2><span class="emo">🎙️</span> 八、语音口述发邮件</h2>
+  <div class="sub">对着手机/电脑说话，AI自动转文字→整理成正式邮件→发送。开车、通勤、食堂排队时口述。</div>
+  
+  <div class="example-box">
+    <div class="label">SCENE · 开车时口述指令</div>
+    <div class="before">👄 口述："帮张总写个邮件，给财务部的李明，就说这个月的报销单附件不齐，让他补一下高铁票的发票，这周五之前要，语气客气点"</div>
+    <div class="after">AI 自动完成：<br>① 语音转文字 → ② 识别意图（催办邮件）→ ③ 生成正文："李明您好，关于本月报销，经核对后发现高铁票的发票尚未附上，烦请于本周五前补充提交。如有疑问请随时沟通，谢谢！" → ④ 填入收件人"李明@财务部" → ⑤ 用户看一眼确认，发送</div>
+  </div>
+
+  <div class="how"><b>实现：</b>浏览器SpeechRecognition API转文字 + LLM生成邮件，纯前端 <span class="tag t-mid">中等</span></div>
+</div>
+
+<!-- 9. 截图识别 -->
+<div class="card">
+  <h2><span class="emo">📸</span> 九、截图识别发邮件</h2>
+  <div class="sub">拍一张白板会议纪要或Excel截图，AI自动识别内容→生成正式邮件通知。</div>
+  
+  <div class="example-box">
+    <div class="label">SCENE · 会议白板拍照发纪要</div>
+    <div class="before">📷 拍了一张白板照片，上面写着：<br>"Q3重点：1.智能报表上线 2.经销商系统优化 3.备件库存预警。负责人分别张明/李华/王芳。7月底前。"</div>
+    <div class="after">AI 自动识别白板内容，生成邮件：<br><br>
+    主题：Q3重点工作部署会议纪要 · 7月<br>
+    各位好，今日Q3重点工作部署会议纪要如下：<br>
+    一、智能报表系统上线 —— 负责人：张明，截止7月底<br>
+    二、经销商管理系统优化 —— 负责人：李华，截止7月底<br>
+    三、备件库存预警系统 —— 负责人：王芳，截止7月底<br>
+    以上，请各负责人按计划推进。</div>
+  </div>
+
+  <div class="example-box">
+    <div class="label">SCENE · Excel截图转邮件汇报</div>
+    <div class="before">📷 截了一张销售数据表</div>
+    <div class="after">AI 识别表格数据，生成：「张总，6月区域销售数据汇总：华东区1,280万（环比+12%），华南区960万（环比-3%），华北区745万（环比+8%）。华南区略有下滑，已同步给区域负责人跟进。」</div>
+  </div>
+
+  <div class="how"><b>实现：</b>浏览器端OCR（或调用视觉LLM API）识别图片内容 + 生成邮件 <span class="tag t-mid">中等</span></div>
+</div>
+
+<!-- 总结 -->
+<div class="foot">
+  <h3 style="font-size:14px;margin-bottom:8px">📌 功能总览 · 内部评审用</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:12.5px">
+    <tr style="background:var(--bg)"><th style="padding:8px 10px;text-align:left">功能</th><th style="padding:8px 10px;text-align:left">用途</th><th style="padding:8px 10px;text-align:left">参考竞品</th><th style="padding:8px 10px;text-align:left">难度</th></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid var(--line)">语气检测+切换</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)">让AI告诉你语气对不对，不对就一键改</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)">Grammarly</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)"><span class="tag t-easy">简单</span></td></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid var(--line)">发送前诊断</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)">发出前三格打分，避免翻车邮件</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)">Outlook Copilot</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)"><span class="tag t-easy">简单</span></td></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid var(--line)">啰嗦检测+精简</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)">大段文字一键缩到精华</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)">Grammarly</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)"><span class="tag t-easy">简单</span></td></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid var(--line)">主题行评分</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)">标题打分开优化，告别「你好」「邮件」</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)">自创</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)"><span class="tag t-easy">简单</span></td></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid var(--line)">个性化记忆（插槽）</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)">填一次个人资料，后续自动使用</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)">自创</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)"><span class="tag t-easy">简单</span></td></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid var(--line)">多版本对比</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)">一次性出正式/温和/精简三版供选择</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)">网易邮箱AI</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)"><span class="tag t-easy">简单</span></td></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid var(--line)">场景模板库</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)">20+场景模板，选模板填空即可</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)">网易邮箱AI</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)"><span class="tag t-easy">简单</span></td></tr>
+    <tr><td style="padding:7px 10px;border-bottom:1px solid var(--line)">语音口述</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)">说话变邮件，开车通勤适用</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)">自创</td><td style="padding:7px 10px;border-bottom:1px solid var(--line)"><span class="tag t-mid">中等</span></td></tr>
+    <tr><td style="padding:7px 10px">截图识别</td><td style="padding:7px 10px">拍白板/截表格自动生成邮件</td><td style="padding:7px 10px">自创</td><td style="padding:7px 10px"><span class="tag t-mid">中等</span></td></tr>
+  </table>
+  <p style="margin-top:12px;font-size:12px">
+    <b>一句话总结：</b>现有润色助手已有基础，9个轻量升级中7个是纯LLM prompt工程，2周可出；语音和截图需轻度前端开发。所有功能不需要接入任何企业系统（LDAP/OA/CRM/历史邮件），上线即可用。
+  </p>
+</div>
+
+<div class="note">参考竞品：Grammarly（全球4000万用户）/ Outlook Copilot / 网易邮箱AI / Superhuman</div>
+
+</div>
+</body>
+</html>
