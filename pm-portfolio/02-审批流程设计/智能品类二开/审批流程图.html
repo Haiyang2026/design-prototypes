@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智能品类二开工厂流程 - 审批流程图</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: #f5f5f5; padding: 30px; font-size: 13px;
+  }
+  .container { max-width: 1300px; margin: 0 auto; }
+
+  /* 图例 */
+  .legend-box {
+    background: #fff; border-radius: 8px; padding: 16px 24px;
+    margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .legend-title { font-weight: 600; margin-bottom: 12px; color: #333; font-size: 14px; }
+  .legend-items { display: flex; flex-wrap: wrap; gap: 16px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #666; }
+  .legend-circle { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #666; }
+  .legend-rect { width: 20px; height: 16px; border-radius: 3px; border: 1px solid #d9d9d9; }
+  .legend-diamond { width: 14px; height: 14px; transform: rotate(45deg); border: 1px solid #666; }
+
+  .flow-card {
+    background: #fff; border-radius: 12px; padding: 28px 24px;
+    margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    position: relative;
+  }
+  .flow-title {
+    font-size: 16px; font-weight: 600; color: #1a1a1a;
+    margin-bottom: 24px; padding-left: 12px;
+    border-left: 4px solid #2b7cf5;
+  }
+
+  /* ========== 主流程 ========== */
+  .main-flow {
+    display: flex; align-items: center;
+    justify-content: center; gap: 4px;
+    padding: 24px 0; overflow-x: auto;
+  }
+
+  /* 开始/结束 - 圆 */
+  .circle-node {
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 3px solid; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .circle-start { border-color: #52c41a; background: #fff; }
+  .circle-start::after {
+    content: ""; width: 18px; height: 18px;
+    border-radius: 50%; background: #52c41a;
+  }
+  .circle-end { border-color: #ff4d4f; background: #fff; }
+  .circle-end::after {
+    content: ""; width: 18px; height: 18px;
+    border-radius: 50%; border: 3px solid #ff4d4f;
+  }
+
+  /* 箭头 */
+  .arr { width: 24px; flex-shrink: 0; text-align: center; color: #bbb; font-size: 18px; position: relative; }
+  .arr::after { content: "→"; }
+
+  /* 节点 */
+  .elm {
+    min-width: 120px; padding: 12px 14px;
+    border-radius: 8px; border: 1px solid #d9d9d9;
+    text-align: center; position: relative;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    flex-shrink: 0;
+  }
+  .elm .icon { font-size: 18px; margin-bottom: 2px; }
+  .elm .name { font-size: 13px; font-weight: 500; color: #262626; line-height: 1.3; }
+  .elm .role { font-size: 11px; color: #8c8c8c; margin-top: 3px; }
+  .elm .tag {
+    display: inline-block; padding: 1px 6px; border-radius: 3px;
+    font-size: 10px; margin-top: 4px;
+  }
+
+  /* 颜色 */
+  .elm-default { background: #fffbe6; border-color: #ffe58f; }
+  .elm-green { background: #f6ffed; border-color: #b7eb8f; }
+  .elm-red { background: #fff2f0; border-color: #ffccc7; }
+  .elm-exec { background: #f0f5ff; border-color: #adc6ff; }
+
+  .tag-pass { background: #f6ffed; color: #389e0d; border: 1px solid #b7eb8f; }
+  .tag-sign { background: #fff2f0; color: #cf1322; border: 1px solid #ffccc7; }
+  .tag-auto { background: #f0f5ff; color: #096dd9; border: 1px solid #adc6ff; }
+  .tag-ok { background: #f6ffed; color: #389e0d; border: 1px solid #b7eb8f; }
+
+  /* 网关 - 菱形 */
+  .gateway {
+    width: 32px; height: 32px;
+    transform: rotate(45deg);
+    border: 1px solid #8c8c8c; background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .gateway::after {
+    content: "◇"; transform: rotate(-45deg);
+    font-size: 14px; color: #8c8c8c;
+  }
+
+  /* ========== 子流程并行分支 ========== */
+  .subflow-body {
+    position: relative; padding: 0 0;
+  }
+  .subflow-top {
+    display: flex; align-items: center;
+    justify-content: center; gap: 4px;
+    padding-bottom: 0;
+  }
+  .subflow-branches {
+    display: flex; align-items: stretch;
+    justify-content: center; gap: 4px;
+    position: relative;
+  }
+  .branch-col {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 6px;
+  }
+  .branch-col .arr { transform: rotate(90deg); height: 20px; }
+
+  .branch-left {
+    flex: 0 0 auto;
+    display: flex; align-items: center; gap: 4px;
+    padding-left: 4px;
+  }
+  .branch-right {
+    flex: 0 0 auto;
+    display: flex; align-items: center; gap: 4px;
+    padding-right: 4px;
+  }
+
+  .branch-area {
+    display: flex; align-items: center;
+    gap: 4px; position: relative;
+    padding: 12px 0;
+  }
+  .branch-label {
+    position: absolute; left: 0; top: -4px;
+    font-size: 11px; color: #999;
+    background: #f0f0f0; padding: 1px 8px;
+    border-radius: 10px;
+  }
+
+  /* 分支垂直布局 */
+  .branch-pair {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 4px;
+    margin: 0 4px;
+  }
+
+  .subflow-split {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 8px;
+    padding: 0 4px;
+  }
+
+  /* 垂直箭头 */
+  .arr-down { display: block; width: 0; height: 16px; border-left: 1px solid #bbb; margin: 0 auto; }
+  .arr-down::after {
+    content: ""; display: block;
+    border: 4px solid transparent; border-top: 6px solid #bbb;
+    margin-left: -4px; margin-top: 10px;
+  }
+
+  .subflow-bottom {
+    display: flex; align-items: center;
+    justify-content: center; gap: 4px;
+    padding-top: 0;
+  }
+
+  /* 表格 */
+  .info-section { margin-top: 20px; }
+  .info-section h4 { color: #333; margin-bottom: 8px; font-size: 14px; }
+  .info-table {
+    width: 100%; border-collapse: collapse; font-size: 12px;
+  }
+  .info-table th {
+    background: #fafafa; padding: 8px 12px;
+    text-align: left; border: 1px solid #f0f0f0;
+    font-weight: 600; color: #262626;
+  }
+  .info-table td {
+    padding: 8px 12px; border: 1px solid #f0f0f0; color: #595959;
+  }
+  .info-table tr:hover { background: #fafafa; }
+
+  .footer-note {
+    text-align: center; color: #999; font-size: 12px;
+    margin-top: 20px; padding-top: 16px;
+    border-top: 1px solid #f0f0f0;
+  }
+  .version { text-align: center; color: #bbb; font-size: 12px; margin-top: 24px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- 图例 -->
+  <div class="legend-box">
+    <div class="legend-title">流程图例</div>
+    <div class="legend-items">
+      <div class="legend-item"><div class="legend-circle" style="border-color:#52c41a"></div>开始</div>
+      <div class="legend-item"><div class="legend-circle" style="border-color:#ff4d4f"></div>结束</div>
+      <div class="legend-item"><div class="legend-rect" style="background:#fffbe6;border-color:#ffe58f"></div>普通节点</div>
+      <div class="legend-item"><div class="legend-rect" style="background:#f6ffed;border-color:#b7eb8f"></div>已审批/通过</div>
+      <div class="legend-item"><div class="legend-rect" style="background:#fff2f0;border-color:#ffccc7"></div>会签/待审批</div>
+      <div class="legend-item"><div class="legend-diamond"></div>并行网关</div>
+      <div class="legend-item">👤 单人审批</div>
+      <div class="legend-item">👥 多人会签</div>
+    </div>
+  </div>
+
+  <!-- ======================== 主流程 ======================== -->
+  <div class="flow-card">
+    <div class="flow-title">主流程：智能品类二开工厂确认流程（WF_YN001）</div>
+    <div class="main-flow">
+
+      <div class="circle-node circle-start"></div>
+      <div class="arr"></div>
+
+      <div class="elm elm-green">
+        <div class="icon">👤</div>
+        <div class="name">发起人</div>
+        <div class="role">表单用户·单审</div>
+      </div>
+      <div class="arr"></div>
+
+      <div class="elm elm-green">
+        <div class="icon">👤</div>
+        <div class="name">直接主管</div>
+        <div class="role">Z1汇报关系·单审</div>
+      </div>
+      <div class="arr"></div>
+
+      <div class="elm elm-exec">
+        <div class="icon">⚙️</div>
+        <div class="name">等待评审回复</div>
+        <div class="role">系统自动·触发子流程</div>
+        <span class="tag tag-auto">自动</span>
+      </div>
+      <div class="arr"></div>
+
+      <div class="elm elm-red">
+        <div class="icon">👥</div>
+        <div class="name">评审确认</div>
+        <div class="role">TOT10004·并审</div>
+        <span class="tag tag-sign">会签</span>
+      </div>
+      <div class="arr"></div>
+
+      <div class="elm elm-green">
+        <div class="icon">👤</div>
+        <div class="name">销产供总经理审核</div>
+        <div class="role">组织汇报关系·单审</div>
+      </div>
+      <div class="arr"></div>
+
+      <div class="elm elm-default">
+        <div class="icon">📧</div>
+        <div class="name">系统数据自动处理</div>
+        <div class="role">传阅+邮件通知</div>
+      </div>
+      <div class="arr"></div>
+
+      <div class="circle-node circle-end"></div>
+
+    </div>
+    <div class="footer-note">
+      【退回】所有环节支持退回起草节点 ·
+      【回填】子流程结束后全部字段（除渠道外）覆盖主流程 ·
+      【日期】全部日期字段不得早于当天，默认当天
+    </div>
+  </div>
+
+  <!-- ======================== 子流程 ======================== -->
+  <div class="flow-card">
+    <div class="flow-title">子流程：智能品类二开(资料收集)（WF_YN002）</div>
+    <div class="subflow-body">
+
+      <!-- 第一行：开始 → 发起人 → 企划资料收集 → 并行网关 -->
+      <div class="main-flow" style="padding-bottom:4px;">
+        <div class="circle-node circle-start"></div>
+        <div class="arr"></div>
+
+        <div class="elm elm-exec">
+          <div class="icon">🤖</div>
+          <div class="name">发起人</div>
+          <div class="role">机器自动</div>
+        </div>
+        <div class="arr"></div>
+
+        <div class="elm elm-green">
+          <div class="icon">👤</div>
+          <div class="name">企划资料收集</div>
+          <div class="role">PRD10006·单审</div>
+          <span class="tag tag-ok">✅ 审批助手</span>
+        </div>
+        <div class="arr"></div>
+
+        <div class="gateway"></div>
+      </div>
+
+      <!-- 并行分支区域：两条垂直分支 -->
+      <div style="display:flex;align-items:stretch;justify-content:center;gap:40px;padding:4px 0;position:relative;">
+        
+        <!-- 左侧 连接线 -->
+        <div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:#ddd;z-index:0;display:none;"></div>
+
+        <!-- 分支1：南安陶瓷 -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;min-width:140px;">
+          <div style="width:1px;height:12px;background:#bbb;"></div>
+          <div style="color:#666;font-size:11px;margin-bottom:4px;background:#f0f0f0;padding:2px 10px;border-radius:10px;">南安陶瓷评审线</div>
+          <div class="elm elm-red">
+            <div class="icon">👥</div>
+            <div class="name">南安陶瓷工厂对接人</div>
+            <div class="role">PPD10004·并审</div>
+            <span class="tag tag-sign">会签</span>
+          </div>
+          <div class="arr-down"></div>
+          <div class="elm elm-red">
+            <div class="icon">👥</div>
+            <div class="name">南安陶瓷工厂领导</div>
+            <div class="role">PPD10003·并审·只读</div>
+            <span class="tag tag-sign">会签</span>
+          </div>
+          <div style="width:1px;height:12px;background:#bbb;"></div>
+        </div>
+
+        <!-- 分支2：永春良瓷 -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;min-width:140px;">
+          <div style="width:1px;height:12px;background:#bbb;"></div>
+          <div style="color:#666;font-size:11px;margin-bottom:4px;background:#f0f0f0;padding:2px 10px;border-radius:10px;">永春良瓷评审线</div>
+          <div class="elm elm-red">
+            <div class="icon">👥</div>
+            <div class="name">永春良瓷工厂对接人</div>
+            <div class="role">PPM10001·并审</div>
+            <span class="tag tag-sign">会签</span>
+          </div>
+          <div class="arr-down"></div>
+          <div class="elm elm-red">
+            <div class="icon">👥</div>
+            <div class="name">永春良瓷工厂领导</div>
+            <div class="role">PPM10003·并审·只读</div>
+            <span class="tag tag-sign">会签</span>
+          </div>
+          <div style="width:1px;height:12px;background:#bbb;"></div>
+        </div>
+      </div>
+
+      <!-- 第三行：合并网关 → 数据回填 → 结束 -->
+      <div class="main-flow" style="padding-top:4px;">
+        <div class="gateway"></div>
+        <div class="arr"></div>
+
+        <div class="elm elm-default">
+          <div class="icon">↩️</div>
+          <div class="name">数据回填主流程</div>
+          <div class="role">覆盖全部字段（除渠道外）</div>
+        </div>
+        <div class="arr"></div>
+
+        <div class="circle-node circle-end"></div>
+      </div>
+
+    </div>
+    <div class="footer-note">
+      【并行】南安陶瓷与永春良瓷独立评审 ·
+      【审批助手】企划资料收集✅保留 · 工厂环节❌去掉 ·
+      【日期】全部日期字段不得早于当天，默认当天
+    </div>
+  </div>
+
+  <!-- ======================== 节点详情表 ======================== -->
+  <div class="flow-card">
+    <div class="flow-title">节点详情</div>
+
+    <div class="info-section">
+      <h4>主流程节点</h4>
+      <table class="info-table">
+        <tr><th>ID</th><th>名称</th><th>属性</th><th>审批人</th><th>方式</th><th>可编辑</th></tr>
+        <tr><td>1</td><td>发起人</td><td>执行</td><td>表单用户</td><td>单审</td><td>型号~是否有特殊认证（渠道代码/渠道只读）</td></tr>
+        <tr><td>2</td><td>直接主管</td><td>审批</td><td>Z1汇报关系</td><td>单审</td><td>只读</td></tr>
+        <tr><td>3</td><td>等待评审回复</td><td>执行</td><td>系统自动</td><td>-</td><td>触发子流程</td></tr>
+        <tr><td>4</td><td>评审确认</td><td>执行</td><td>TOT10004</td><td>并审</td><td>结论可编辑</td></tr>
+        <tr><td>5</td><td>销产供总经理审核</td><td>审批</td><td>组织汇报关系</td><td>单审</td><td>只读</td></tr>
+        <tr><td>6</td><td>流程结束</td><td>-</td><td>-</td><td>-</td><td>传阅+邮件</td></tr>
+      </table>
+    </div>
+
+    <div class="info-section" style="margin-top:20px;">
+      <h4>子流程节点</h4>
+      <table class="info-table">
+        <tr><th>ID</th><th>名称</th><th>属性</th><th>审批人</th><th>方式</th><th>可编辑</th><th>审批助手</th></tr>
+        <tr><td>1</td><td>发起人</td><td>执行</td><td>系统自动</td><td>机器自动</td><td>-</td><td>-</td></tr>
+        <tr style="background:#f6ffed"><td>2</td><td>企划资料收集</td><td>执行</td><td>PRD10006</td><td>单审</td><td>瓷体~是否有特殊认证</td><td>✅</td></tr>
+        <tr style="background:#fff2f0"><td>3</td><td>南安陶瓷工厂对接人</td><td>执行</td><td>PPD10004</td><td>并审</td><td>南安陶瓷：二开完成时间、瓷体量产时间</td><td>❌</td></tr>
+        <tr style="background:#fff2f0"><td>4</td><td>南安陶瓷工厂领导</td><td>审批</td><td>PPD10003</td><td>并审</td><td>只读</td><td>❌</td></tr>
+        <tr style="background:#fff2f0"><td>5</td><td>永春良瓷工厂对接人</td><td>执行</td><td>PPM10001</td><td>并审</td><td>永春良瓷：二开完成时间、瓷体量产时间</td><td>❌</td></tr>
+        <tr style="background:#fff2f0"><td>6</td><td>永春良瓷工厂领导</td><td>审批</td><td>PPM10003</td><td>并审</td><td>只读</td><td>❌</td></tr>
+        <tr><td>7</td><td>流程结束</td><td>-</td><td>-</td><td>-</td><td>回填主流程</td><td>-</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="version">智能品类二开工厂流程 V3.1 | 2026-06-04</div>
+
+</div>
+</body>
+</html>
