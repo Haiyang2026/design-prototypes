@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAE分析申请流程 — 字段可视化</title>
+<style>
+/* ============================================================
+ * JMBOS Design Tokens (内联)
+ * ============================================================ */
+:root {
+  --color-primary: #3685F2;
+  --color-primary-hover: #5E9DF5;
+  --color-primary-active: #2364CC;
+  --color-primary-disabled: #AFCEFA;
+  --color-menu-selected-bg: #DEEDFF;
+  --color-light-bg: #F3F8FE;
+  --color-brand: #0C328C;
+  --color-success: #04D999;
+  --color-success-light: #E6FBF5;
+  --color-warning: #FF813B;
+  --color-warning-light: #FFF7E8;
+  --color-error: #FF4D5D;
+  --color-error-light: #FFEDEF;
+  --color-text-primary: #141b24;
+  --color-text-secondary: #7C8493;
+  --color-text-tertiary: #B9BFCB;
+  --color-text-disabled: #D2D7E1;
+  --color-text-white: #FFFFFF;
+  --color-bg-page: #EBF1F6;
+  --color-bg-card: #FFFFFF;
+  --color-bg-header: #F4F7F9;
+  --color-bg-hover: #EDF3FA;
+  --color-bg-border: #D2D7E1;
+  --color-bg-divider: #E4E7F0;
+  --font-family-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-base: 13px;
+  --font-size-lg: 14px;
+  --font-size-xl: 16px;
+  --font-size-xxl: 20px;
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+  --line-height-base: 1.5;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-base: 16px;
+  --spacing-lg: 20px;
+  --spacing-xl: 24px;
+  --spacing-xxl: 32px;
+  --radius-r2: 4px;
+  --radius-r3: 8px;
+  --radius-r4: 12px;
+  --shadow-s1: 0 1px 5px rgba(20, 27, 36, 0.10);
+  --shadow-s2: 0 6px 18px rgba(20, 27, 36, 0.14);
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 250ms ease-in-out;
+}
+
+/* ============================================================
+ * 全局重置与基础
+ * ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  background: var(--color-bg-page);
+  line-height: var(--line-height-base);
+  min-height: 100vh;
+}
+
+/* ============================================================
+ * 顶部 Header
+ * ============================================================ */
+.app-header {
+  background: var(--color-brand);
+  color: var(--color-text-white);
+  padding: var(--spacing-base) var(--spacing-xxl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-s2);
+}
+.app-header .title-group h1 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+}
+.app-header .title-group .subtitle {
+  font-size: var(--font-size-sm);
+  opacity: 0.75;
+  margin-top: var(--spacing-xs);
+}
+.app-header .meta-tags {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+.app-header .meta-tag {
+  background: rgba(255,255,255,0.15);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-r2);
+  font-size: var(--font-size-xs);
+}
+
+/* ============================================================
+ * 主布局
+ * ============================================================ */
+.main-container {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: var(--spacing-base);
+  padding: var(--spacing-base);
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+ * 左侧内容区
+ * ============================================================ */
+.content-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-base);
+  min-width: 0;
+}
+
+/* ============================================================
+ * 卡片通用
+ * ============================================================ */
+.card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-r3);
+  box-shadow: var(--shadow-s1);
+  overflow: hidden;
+}
+.card-header {
+  padding: var(--spacing-md) var(--spacing-base);
+  border-bottom: 1px solid var(--color-bg-divider);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  background: var(--color-bg-header);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+.card-header .badge {
+  font-size: var(--font-size-xs);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill, 999px);
+  background: var(--color-primary);
+  color: white;
+  font-weight: var(--font-weight-regular);
+}
+.card-body {
+  padding: var(--spacing-base);
+}
+
+/* ============================================================
+ * 流程步骤时间线
+ * ============================================================ */
+.flow-timeline {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  padding: var(--spacing-sm) 0;
+  overflow-x: auto;
+}
+.flow-step {
+  flex: 1;
+  min-width: 90px;
+  text-align: center;
+  position: relative;
+}
+.flow-step .step-node {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  margin: 0 auto var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  position: relative;
+  z-index: 1;
+}
+.flow-step .step-node.approval {
+  background: var(--color-success-light);
+  color: var(--color-success);
+  border: 2px solid var(--color-success);
+}
+.flow-step .step-node.execute {
+  background: var(--color-light-bg);
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+}
+.flow-step .step-node.execute.parallel {
+  background: #f0f0ff;
+  color: #7c3aed;
+  border: 2px solid #7c3aed;
+}
+.flow-step .step-connector {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--color-bg-divider);
+  z-index: 0;
+}
+.flow-step:last-child .step-connector { display: none; }
+.flow-step .step-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  line-height: 1.3;
+}
+.flow-step .step-label strong {
+  display: block;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}
+
+/* ============================================================
+ * 字段可见性矩阵
+ * ============================================================ */
+.matrix-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+  min-width: 900px;
+}
+.matrix-table th, .matrix-table td {
+  padding: 6px 10px;
+  border: 1px solid var(--color-bg-divider);
+  text-align: center;
+  white-space: nowrap;
+}
+.matrix-table thead th {
+  background: var(--color-bg-header);
+  font-weight: var(--font-weight-semibold);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+.matrix-table thead th.step-col {
+  min-width: 80px;
+}
+.matrix-table thead th.step-col.current {
+  background: var(--color-menu-selected-bg);
+  color: var(--color-primary);
+}
+.matrix-table thead th.field-col {
+  text-align: left;
+  min-width: 140px;
+}
+.matrix-table tbody td.field-col {
+  text-align: left;
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  color: var(--color-primary);
+  transition: background var(--transition-fast);
+}
+.matrix-table tbody td.field-col:hover {
+  background: var(--color-bg-hover);
+}
+.matrix-table tbody td.field-col .group-tag {
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+  margin-left: var(--spacing-xs);
+}
+
+/* 状态单元格 */
+.cell-edit {
+  color: var(--color-success);
+  font-weight: var(--font-weight-semibold);
+}
+.cell-readonly {
+  color: var(--color-text-secondary);
+}
+.cell-hidden {
+  color: var(--color-text-disabled);
+}
+.cell-upload {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* 差异高亮 */
+.cell-diff {
+  position: relative;
+}
+.cell-diff::after {
+  content: '';
+  position: absolute;
+  top: 2px; right: 2px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--color-warning);
+}
+
+/* 分组行 */
+.matrix-table tbody tr.group-row td {
+  background: var(--color-bg-header);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  text-align: left;
+  padding: 8px 10px;
+  letter-spacing: 0.5px;
+}
+
+/* 步骤高亮列 */
+.col-highlight {
+  background: #FAFBFC !important;
+}
+
+/* ============================================================
+ * 跳过规则表
+ * ============================================================ */
+.rules-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+.rules-table th, .rules-table td {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-bg-divider);
+  text-align: center;
+}
+.rules-table th {
+  background: var(--color-bg-header);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+.rules-table .skip-no {
+  color: var(--color-error);
+  font-weight: var(--font-weight-semibold);
+}
+.rules-table .skip-yes {
+  color: var(--color-success);
+}
+
+/* ============================================================
+ * 右侧面板
+ * ============================================================ */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-base);
+  position: sticky;
+  top: 72px;
+  max-height: calc(100vh - 88px);
+  overflow-y: auto;
+}
+.sidebar .card {
+  flex-shrink: 0;
+}
+
+/* 字段索引列表 */
+.field-index-list {
+  list-style: none;
+}
+.field-index-list li {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  border-radius: var(--radius-r2);
+  transition: background var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+.field-index-list li:hover {
+  background: var(--color-bg-hover);
+}
+.field-index-list li .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.field-index-list li .dot.required { background: var(--color-error); }
+.field-index-list li .dot.optional { background: var(--color-text-tertiary); }
+
+/* 字段详情卡片 */
+.field-detail-card {
+  padding: var(--spacing-base);
+  border-bottom: 1px solid var(--color-bg-divider);
+}
+.field-detail-card:last-child { border-bottom: none; }
+.field-detail-card .fd-name {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-primary);
+  cursor: default;
+}
+.field-detail-card .fd-meta {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+.field-detail-card .fd-meta span {
+  background: var(--color-bg-header);
+  padding: 2px 8px;
+  border-radius: var(--radius-r2);
+}
+.field-detail-card .fd-note {
+  font-size: var(--font-size-xs);
+  color: var(--color-warning);
+  background: var(--color-warning-light);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-r2);
+  margin-top: var(--spacing-xs);
+}
+.field-detail-card .fd-note.error {
+  background: var(--color-error-light);
+  color: var(--color-error);
+}
+.field-detail-card .fd-note.success {
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
+/* ============================================================
+ * 底部备注
+ * ============================================================ */
+.notes-section {
+  padding: var(--spacing-base);
+  max-width: 1440px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-base);
+}
+.note-item {
+  background: var(--color-bg-card);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-r3);
+  border-left: 3px solid var(--color-primary);
+  box-shadow: var(--shadow-s1);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+}
+.note-item.warn {
+  border-left-color: var(--color-warning);
+  background: var(--color-warning-light);
+}
+.note-item.err {
+  border-left-color: var(--color-error);
+  background: var(--color-error-light);
+}
+
+/* ============================================================
+ * 步骤标签
+ * ============================================================ */
+.step-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-size-xs);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: var(--font-weight-semibold);
+}
+.step-tag.approval { background: var(--color-success-light); color: #00a870; }
+.step-tag.execute { background: var(--color-light-bg); color: var(--color-primary); }
+.step-tag.skip { background: var(--color-error-light); color: var(--color-error); }
+.step-tag.info { background: var(--color-bg-header); color: var(--color-text-secondary); }
+
+/* ============================================================
+ * 响应式
+ * ============================================================ */
+@media (max-width: 960px) {
+  .main-container {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: static;
+    max-height: none;
+  }
+  .notes-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+ * 脚注提示
+ * ============================================================ */
+.tooltip-icon {
+  display: inline-block;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--color-warning);
+  color: white;
+  text-align: center;
+  line-height: 16px;
+  font-size: 10px;
+  cursor: help;
+  margin-left: 4px;
+  font-weight: bold;
+}
+
+/* ============================================================
+ * 校验提示区
+ * ============================================================ */
+.validation-rules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+.validation-rule {
+  flex: 1;
+  min-width: 200px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-error-light);
+  border-radius: var(--radius-r2);
+  font-size: var(--font-size-xs);
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header class="app-header">
+  <div class="title-group">
+    <h1>CAE分析申请流程 — 字段可视化</h1>
+    <div class="subtitle">流程ID：RD02004 | 业务对象：WO_RD02004 | 分类：研发管理 > 研发设计 | V1.6</div>
+  </div>
+  <div class="meta-tags">
+    <span class="meta-tag">产品：徐海洋</span>
+    <span class="meta-tag">适用范围：全员</span>
+    <span class="meta-tag">外围系统：无</span>
+  </div>
+</header>
+
+<!-- ============================================================
+     MAIN LAYOUT
+     ============================================================ -->
+<div class="main-container">
+
+  <!-- ========== 左侧主内容 ========== -->
+  <div class="content-panel">
+
+    <!-- 流程步骤概览 -->
+    <div class="card">
+      <div class="card-header">📋 审批流程概览（5步）</div>
+      <div class="card-body">
+        <div class="flow-timeline">
+          <!-- 步骤0: 起草 -->
+          <div class="flow-step">
+            <div class="step-node execute" style="border-style:dashed;">✏️</div>
+            <div class="step-label"><strong>起草</strong>提交人填写</div>
+          </div>
+          <!-- 步骤1 -->
+          <div class="flow-step">
+            <div class="step-connector"></div>
+            <div class="step-node approval">1</div>
+            <div class="step-label"><strong>三级组织负责人</strong><span class="step-tag approval">审批·单审</span></div>
+          </div>
+          <!-- 步骤2 -->
+          <div class="flow-step">
+            <div class="step-connector"></div>
+            <div class="step-node execute">2</div>
+            <div class="step-label"><strong>分配工单</strong><span class="step-tag execute">执行·单审</span></div>
+          </div>
+          <!-- 步骤3 -->
+          <div class="flow-step">
+            <div class="step-connector"></div>
+            <div class="step-node execute parallel">3</div>
+            <div class="step-label"><strong>分析工程师提交报告</strong><span class="step-tag execute">执行·并审</span></div>
+          </div>
+          <!-- 步骤4 -->
+          <div class="flow-step">
+            <div class="step-connector"></div>
+            <div class="step-node approval">4</div>
+            <div class="step-label"><strong>分析工程师<br>三级组织负责人</strong><span class="step-tag approval">审批·单审</span></div>
+          </div>
+          <!-- 步骤5 -->
+          <div class="flow-step">
+            <div class="step-connector"></div>
+            <div class="step-node execute">5</div>
+            <div class="step-label"><strong>申请人确认</strong><span class="step-tag execute">执行·单审</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 字段可见性矩阵 -->
+    <div class="card" id="matrix-card">
+      <div class="card-header">
+        字段可见性矩阵
+        <span class="badge">全部字段</span>
+        <span style="margin-left:auto;font-size:var(--font-size-xs);color:var(--color-text-secondary);font-weight:normal;">
+          颜色说明：<span style="color:var(--color-success);">编辑</span>/<span style="color:var(--color-text-secondary);">只读</span>/<span style="color:var(--color-text-disabled);">隐藏</span>
+          <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--color-warning);margin:0 4px;"></span>= 步骤间状态变化
+        </span>
+      </div>
+      <div class="card-body">
+        <div class="matrix-wrap">
+          <table class="matrix-table" id="matrix">
+            <thead>
+              <tr>
+                <th class="field-col">字段 / 步骤</th>
+                <th class="step-col">📝起草</th>
+                <th class="step-col">①审批</th>
+                <th class="step-col current">②分配工单</th>
+                <th class="step-col">③提交报告</th>
+                <th class="step-col">④审核</th>
+                <th class="step-col">⑤确认</th>
+              </tr>
+            </thead>
+            <tbody id="matrix-body">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 审批跳过规则 -->
+    <div class="card">
+      <div class="card-header">⚠️ 审批跳过规则</div>
+      <div class="card-body">
+        <table class="rules-table">
+          <thead>
+            <tr>
+              <th>步骤</th><th>有字段需填写?</th><th>为空跳过</th><th>相同审批人自动跳过</th><th>说明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>① 三级组织负责人</td>
+              <td>否（纯审批）</td>
+              <td class="skip-yes">是</td>
+              <td class="skip-yes">是</td>
+              <td style="text-align:left;">无填写内容，可正常跳过</td>
+            </tr>
+            <tr>
+              <td>② 分配工单</td>
+              <td>是</td>
+              <td class="skip-no">否</td>
+              <td class="skip-no">否</td>
+              <td style="text-align:left;">必须有人填写CAE分析工程师、预估完成日期</td>
+            </tr>
+            <tr>
+              <td>③ 分析工程师提交报告</td>
+              <td>是</td>
+              <td class="skip-no">否</td>
+              <td class="skip-no">否</td>
+              <td style="text-align:left;">必须有人填写字段+上传报告；多人并审</td>
+            </tr>
+            <tr>
+              <td>④ 分析工程师三级组织负责人审核</td>
+              <td>否（纯审批）</td>
+              <td class="skip-yes">是</td>
+              <td class="skip-yes">是</td>
+              <td style="text-align:left;">无填写内容，可正常跳过</td>
+            </tr>
+            <tr>
+              <td>⑤ 申请人确认</td>
+              <td>是</td>
+              <td class="skip-no">否</td>
+              <td class="skip-no">否</td>
+              <td style="text-align:left;">必须有人填写用户评价、实施状态</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="validation-rules" style="margin-top:var(--spacing-md);">
+          <div class="validation-rule">
+            <strong>附件校验 ①</strong><br>
+            附件列表必填，未上传提示「请上传附件！」阻止提交
+          </div>
+          <div class="validation-rule">
+            <strong>附件校验 ②</strong><br>
+            CAE分析报告必填，未上传提示「请上传CAE分析报告附件！」阻止提交
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========== 右侧面板 ========== -->
+  <div class="sidebar">
+    <!-- 字段快速索引 -->
+    <div class="card">
+      <div class="card-header">📑 字段索引 <span style="font-weight:normal;font-size:var(--font-size-xs);color:var(--color-text-secondary);">（点击跳转详情）</span></div>
+      <div class="card-body" style="padding:var(--spacing-sm);">
+        <ul class="field-index-list" id="field-index"></ul>
+      </div>
+    </div>
+
+    <!-- 字段详情 -->
+    <div class="card" id="field-details-card">
+      <div class="card-header">📝 字段详情与备注</div>
+      <div class="card-body" style="padding:0;" id="field-details"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================================
+     BOTTOM NOTES
+     ============================================================ -->
+<div class="notes-section">
+  <div class="note-item">
+    <strong>🔧 CAE分析工程师</strong><br>
+    人员选择器多选组件，在【分配工单】环节必填。初始化默认人员：胡瑞清/00060470。所选人员即步骤③的审批人（多人并审）。
+  </div>
+  <div class="note-item">
+    <strong>📐 流程图规则</strong><br>
+    风格遵循 V1.1 模板：浅色背景 #f8f9fa、绿=审批/蓝=执行、节点内三行文字（名称/类型/审批人）。SVG 内联嵌入 MD 文档。
+  </div>
+  <div class="note-item warn">
+    <strong>⚠ 结构材料子表</strong><br>
+    尽量提供材料物性表。所有5个字段（零件名称、材料牌号、屈服强度、密度、杨氏模量）均为非必填，单行文本录入。
+  </div>
+  <div class="note-item warn">
+    <strong>⚠ 流体属性子表</strong><br>
+    与结构材料子表字段一致（零件名称、材料牌号、屈服强度、密度），均为必填，不含杨氏模量。单行文本录入。
+  </div>
+  <div class="note-item">
+    <strong>📄 标题生成规则</strong><br>
+    填写时标题：CAE分析申请流程<br>
+    提交后标题：<code>[申请人][流程名称]-[年月]-[流水号]</code>，示例：张三CAE分析申请-202606-0001
+  </div>
+  <div class="note-item">
+    <strong>👤 环节通知配置</strong><br>
+    本流程各环节均无邮件/传阅/短信通知配置。审批助手设置：无。
+  </div>
+  <div class="note-item warn">
+    <strong>🔍 通用规则</strong><br>
+    有填写内容的环节 → 环节内字段默认全部必填，除非明确标注非必填。<br>
+    X级组织负责人 → 审批人获取方式 = 汇报关系-SX（如三级=汇报关系-S3）。
+  </div>
+  <div class="note-item">
+    <strong>👤 默认审批人</strong><br>
+    CAE分析工程师初始化默认：胡瑞清/00060470<br>
+    工艺工程师角色编码：PRD10014（入参默认=组织）
+  </div>
+</div>
+
+<!-- ============================================================
+     SCRIPT
+     ============================================================ -->
+<script>
+// ============================================================
+// 字段数据定义
+// ============================================================
+const groups = [
+  {
+    name: '申请人信息（系统自动获取）',
+    fields: [
+      { id:'f1',  name:'申请人',       type:'文本',      req:true,  steps:['只读','只读','只读','只读','只读','只读'], note:'当前登录用户，系统自动获取' },
+      { id:'f2',  name:'手机',         type:'文本',      req:true,  steps:['只读','只读','只读','只读','只读','只读'], note:'系统自动获取' },
+      { id:'f3',  name:'电话',         type:'文本',      req:true,  steps:['只读','只读','只读','只读','只读','只读'], note:'系统自动获取' },
+      { id:'f4',  name:'邮箱',         type:'文本',      req:true,  steps:['只读','只读','只读','只读','只读','只读'], note:'系统自动获取' },
+      { id:'f5',  name:'工号',         type:'文本',      req:true,  steps:['只读','只读','只读','只读','只读','只读'], note:'系统自动获取' },
+      { id:'f6',  name:'岗位',         type:'文本',      req:true,  steps:['只读','只读','只读','只读','只读','只读'], note:'系统自动获取' },
+      { id:'f7',  name:'部门',         type:'文本',      req:true,  steps:['只读','只读','只读','只读','只读','只读'], note:'系统自动获取' },
+    ]
+  },
+  {
+    name: '申请信息',
+    fields: [
+      { id:'f8',  name:'分析项目名称',   type:'单行文本',      req:true,  steps:['编辑','只读','只读','只读','只读','只读'], note:'用户手动录入' },
+      { id:'f9',  name:'所属单位',       type:'下拉选择',      req:true,  steps:['编辑','只读','只读','只读','只读','只读'], note:'单位基础数据（待定）' },
+      { id:'f10', name:'需要完成日期',   type:'时间日期选择框', req:true,  steps:['编辑','只读','只读','只读','只读','只读'], note:'选择分析需要完成的日期' },
+      { id:'f11', name:'分析问题类型',   type:'下拉选择',      req:true,  steps:['编辑','只读','只读','只读','只读','只读'], note:'选项：力学分析/流体分析/热分析/其他' },
+      { id:'f12', name:'分析目的说明',   type:'多行文本',      req:true,  steps:['编辑','只读','只读','只读','只读','只读'], note:'描述CAE分析的目的和背景' },
+      { id:'f13', name:'备选方案说明',   type:'多行文本',      req:false, steps:['编辑','只读','只读','只读','只读','只读'], note:'非必填' },
+    ]
+  },
+  {
+    name: '结构材料（尽量提供材料物性表）— 子表',
+    fields: [
+      { id:'f14', name:'零件名称',       type:'单行文本', req:false, steps:['编辑','只读','只读','只读','只读','只读'], note:'非必填，单行文本录入' },
+      { id:'f15', name:'材料牌号',       type:'单行文本', req:false, steps:['编辑','只读','只读','只读','只读','只读'], note:'非必填，材料的规格牌号' },
+      { id:'f16', name:'屈服强度（MPa）', type:'单行文本', req:false, steps:['编辑','只读','只读','只读','只读','只读'], note:'非必填，单位MPa' },
+      { id:'f17', name:'密度（kg/m³）',  type:'单行文本', req:false, steps:['编辑','只读','只读','只读','只读','只读'], note:'非必填，单位kg/m³' },
+      { id:'f18', name:'杨氏模量（GPa）',type:'单行文本', req:false, steps:['编辑','只读','只读','只读','只读','只读'], note:'非必填，单位GPa' },
+    ]
+  },
+  {
+    name: '流体属性 — 子表（均为必填，单行文本）',
+    fields: [
+      { id:'f19', name:'零件名称',       type:'单行文本', req:true,  steps:['编辑','只读','只读','只读','只读','只读'], note:'必填，流体属性对应零件' },
+      { id:'f20', name:'材料牌号',       type:'单行文本', req:true,  steps:['编辑','只读','只读','只读','只读','只读'], note:'必填，材料规格牌号' },
+      { id:'f21', name:'屈服强度（MPa）', type:'单行文本', req:true,  steps:['编辑','只读','只读','只读','只读','只读'], note:'必填，单位MPa' },
+      { id:'f22', name:'密度（kg/m³）',  type:'单行文本', req:true,  steps:['编辑','只读','只读','只读','只读','只读'], note:'必填，单位kg/m³' },
+    ]
+  },
+  {
+    name: '仿真要求（外载荷情况，连接状态等）',
+    fields: [
+      { id:'f23', name:'需模拟条件说明',     type:'多行文本',      req:false, steps:['编辑','只读','只读','只读','只读','只读'], note:'非必填，起草环节填写' },
+      { id:'f24', name:'示意图',             type:'附件(图片)',   req:false, steps:['编辑','只读','只读','只读','只读','只读'], note:'非必填，起草环节上传' },
+      { id:'f25', name:'CAE分析工程师',      type:'人员选择器(多选)', req:true, steps:['隐藏','隐藏','编辑','只读','只读','只读'], note:'步骤②必填；默认胡瑞清/00060470；所选人即步骤③审批人' },
+      { id:'f26', name:'预估完成日期',       type:'时间日期选择框', req:true, steps:['隐藏','隐藏','编辑','只读','只读','只读'], note:'步骤②必填' },
+      { id:'f27', name:'实际分析问题类型',   type:'下拉多选',      req:true, steps:['隐藏','隐藏','只读','编辑','只读','只读'], note:'步骤③必填，选项同分析问题类型（力学/流体/热/其他）' },
+      { id:'f28', name:'模拟依据',           type:'多选',          req:true, steps:['隐藏','隐藏','只读','编辑','只读','只读'], note:'步骤③必填；选项：申请人要求/实际工作状态/等效简化' },
+      { id:'f29', name:'模拟条件及状态说明', type:'单行文本',      req:true, steps:['隐藏','隐藏','只读','编辑','只读','只读'], note:'步骤③必填' },
+      { id:'f30', name:'分析结论',           type:'单行文本',      req:true, steps:['隐藏','隐藏','只读','编辑','只读','只读'], note:'步骤③必填' },
+      { id:'f31', name:'用户评价',           type:'单选',          req:true, steps:['隐藏','隐藏','隐藏','隐藏','只读','编辑'], note:'步骤⑤必填；选项：非常满意(优秀)/满意(良)/一般/不满意(差)' },
+      { id:'f32', name:'实施状态',           type:'单行文本',      req:true, steps:['隐藏','隐藏','只读','只读','只读','编辑'], note:'步骤⑤必填' },
+    ]
+  },
+  {
+    name: '附件信息（均为必填）',
+    fields: [
+      { id:'f33', name:'附件列表',       type:'附件上传(多文件)', req:true, steps:['上传','只读','只读','只读','只读','只读'], note:'必填；未上传提示「请上传附件！」阻止提交' },
+      { id:'f34', name:'CAE分析报告',     type:'附件上传(单文件)', req:true, steps:['隐藏','隐藏','隐藏','上传','只读','只读'], note:'必填；步骤③可上传；未上传提示「请上传CAE分析报告附件！」' },
+    ]
+  }
+];
+
+const stepNames = ['起草','①三级组织负责人','②分配工单','③提交报告','④三级负责人审核','⑤申请人确认'];
+const stepStyles = ['','col-highlight','col-highlight','col-highlight','col-highlight','col-highlight'];
+
+// ============================================================
+// 渲染矩阵
+// ============================================================
+function renderCell(state, field, stepIdx) {
+  let cls = '', text = state, diff = false;
+
+  // 检测差异：与上一步状态不同
+  if (stepIdx > 0 && field.steps[stepIdx] !== field.steps[stepIdx - 1]) {
+    diff = true;
+  }
+
+  if (state === '编辑') { cls = 'cell-edit'; }
+  else if (state === '只读') { cls = 'cell-readonly'; }
+  else if (state === '隐藏') { cls = 'cell-hidden'; }
+  else if (state === '上传') { cls = 'cell-upload'; }
+
+  if (diff) cls += ' cell-diff';
+  return `<td class="${cls}">${text}</td>`;
+}
+
+function buildMatrix() {
+  const tbody = document.getElementById('matrix-body');
+  let html = '';
+  let fieldCounter = 0;
+
+  groups.forEach(g => {
+    html += `<tr class="group-row"><td colspan="7">${g.name}</td></tr>`;
+    g.fields.forEach(f => {
+      fieldCounter++;
+      html += `<tr data-field-id="${f.id}">`;
+      html += `<td class="field-col" onclick="scrollToField('${f.id}')">${f.name}<span class="group-tag">${f.type}</span></td>`;
+      f.steps.forEach((s, i) => {
+        html += renderCell(s, f, i);
+      });
+      html += `</tr>`;
+    });
+  });
+
+  tbody.innerHTML = html;
+}
+
+// ============================================================
+// 渲染右侧索引
+// ============================================================
+function buildIndex() {
+  const list = document.getElementById('field-index');
+  let html = '';
+
+  groups.forEach(g => {
+    html += `<li style="font-size:var(--font-size-xs);color:var(--color-text-tertiary);font-weight:var(--font-weight-semibold);padding-top:var(--spacing-sm);">${g.name.split('—')[0].trim().substring(0,18)}</li>`;
+    g.fields.forEach(f => {
+      const dotClass = f.req ? 'required' : 'optional';
+      html += `<li onclick="scrollToField('${f.id}')">
+        <span class="dot ${dotClass}"></span>
+        ${f.name}
+        ${f.req ? '<span style="color:var(--color-error);font-size:10px;">*必填</span>' : ''}
+      </li>`;
+    });
+  });
+
+  list.innerHTML = html;
+}
+
+// ============================================================
+// 渲染字段详情
+// ============================================================
+function buildFieldDetails() {
+  const container = document.getElementById('field-details');
+  let html = '';
+
+  groups.forEach(g => {
+    g.fields.forEach(f => {
+      html += `<div class="field-detail-card" id="detail-${f.id}">`;
+      html += `<div class="fd-name">${f.name}</div>`;
+      html += `<div class="fd-meta">`;
+      html += `<span>📋 ${f.type}</span>`;
+      html += `<span>${f.req ? '🔴 必填' : '⚪ 非必填'}</span>`;
+      html += `</div>`;
+      html += `<div style="font-size:var(--font-size-xs);color:var(--color-text-secondary);">${f.note}</div>`;
+
+      // 特殊备注
+      if (f.id === 'f25') {
+        html += `<div class="fd-note">🔧 初始化默认人员：胡瑞清/00060470。所选人员即步骤③的审批人（多人并审）。</div>`;
+      }
+      if (f.id === 'f27') {
+        html += `<div class="fd-note">下拉多选组件，选项与申请信息中的「分析问题类型」一致：力学分析/流体分析/热分析/其他。</div>`;
+      }
+      if (f.id === 'f28') {
+        html += `<div class="fd-note">多选组件，可选值：申请人要求 / 实际工作状态 / 等效简化。选择后无需额外录入。</div>`;
+      }
+      if (f.id === 'f31') {
+        html += `<div class="fd-note">单选组件，选项：非常满意（优秀）/ 满意（良）/ 一般 / 不满意（差）。</div>`;
+      }
+      if (f.id === 'f33') {
+        html += `<div class="fd-note error">⚠ 提交校验：未上传时提示「请上传附件！」并阻止提交。</div>`;
+      }
+      if (f.id === 'f34') {
+        html += `<div class="fd-note error">⚠ 步骤③提交校验：未上传时提示「请上传CAE分析报告附件！」并阻止提交。</div>`;
+      }
+      if (f.id === 'f13') {
+        html += `<div class="fd-note success">✅ 唯一非必填字段，多行文本录入，无需特殊校验。</div>`;
+      }
+
+      html += `</div>`;
+    });
+  });
+
+  container.innerHTML = html;
+}
+
+// ============================================================
+// 交互
+// ============================================================
+function scrollToField(id) {
+  const el = document.getElementById('detail-' + id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.style.background = 'var(--color-menu-selected-bg)';
+    setTimeout(() => { el.style.background = ''; }, 2000);
+  }
+
+  // 同时高亮矩阵中的行
+  const row = document.querySelector(`tr[data-field-id="${id}"]`);
+  if (row) {
+    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    row.style.background = 'var(--color-menu-selected-bg)';
+    setTimeout(() => { row.style.background = ''; }, 2000);
+  }
+}
+
+// ============================================================
+// 初始化
+// ============================================================
+buildMatrix();
+buildIndex();
+buildFieldDetails();
+</script>
+</body>
+</html>
