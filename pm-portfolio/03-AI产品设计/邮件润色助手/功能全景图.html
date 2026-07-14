@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>邮件润色助手 功能全景图</title>
+<style>
+:root{
+  --blue:#1a5fd6;--ink:#1f2733;--sub:#5b6675;--line:#e4e8ef;--bg:#f6f8fb;--card:#fff;
+  --ok:#1f9d6b;--warn:#d9822b;--hot:#e04556;--purple:#7c3aed
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;padding:20px}
+.wrap{max-width:1200px;margin:0 auto}
+
+header{text-align:center;padding:20px 0 10px}
+header h1{font-size:22px;font-weight:700}
+header p{font-size:13px;color:var(--sub);margin-top:4px}
+
+.legend{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;font-size:12px;color:var(--sub);margin:10px 0 16px}
+.legend span{display:flex;align-items:center;gap:4px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.d-red{background:var(--hot)}.d-blue{background:var(--blue)}.d-green{background:var(--ok)}
+
+.tags-row{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.tag-btn{padding:5px 14px;border-radius:14px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--sub);transition:.15s;user-select:none}
+.tag-btn:hover{color:var(--blue);border-color:var(--blue)}
+.tag-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.tag-btn.all{font-weight:700}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;
+  transition:.15s;display:flex;flex-direction:column;gap:8px;min-height:0
+}
+.card:hover{border-color:#c2cee4;box-shadow:0 3px 12px rgba(16,24,40,.06)}
+.card.hidden{display:none}
+
+.card-top{display:flex;align-items:center;gap:10px}
+.icon-num{
+  flex-shrink:0;width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;color:#fff
+}
+.bg-blue{background:var(--blue)}.bg-teal{background:var(--ok)}.bg-warn{background:var(--warn)}.bg-hot{background:var(--hot)}.bg-purple{background:var(--purple)}
+.card h3{font-size:14px;font-weight:650;line-height:1.25}
+.card .sub{font-size:11px;color:var(--sub)}
+
+.card-body{font-size:12px;color:var(--sub);line-height:1.6}
+.card-body b{color:var(--ink)}
+
+.card-foot{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:6px;border-top:1px solid var(--line)}
+.cost{font-size:11px;color:var(--sub)}
+.cost-1{color:var(--ok)}.cost-2{color:var(--warn)}.cost-3{color:var(--hot)}
+.pri-tag{padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700}
+.p0{background:#fde8ec;color:var(--hot)}.p1{background:var(--blue);color:#fff}.p2{background:#f0f2f5;color:var(--sub)}
+
+.summary{background:var(--card);border:2px solid var(--blue);border-radius:14px;padding:18px 22px;margin-top:18px}
+.summary h3{font-size:14px;margin-bottom:8px;font-weight:700}
+.summary .row{display:flex;gap:16px;flex-wrap:wrap}
+.summary .col{flex:1;min-width:220px;font-size:12px;color:var(--sub);line-height:1.8}
+.summary b{color:var(--ink)}
+
+.note{font-size:11px;color:#8a94a3;text-align:center;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>邮件润色助手 · 功能全景图</h1>
+  <p>15个方向 · 按成本和优先级排好 · 挑便宜的冲</p>
+</header>
+
+<div class="legend">
+  <span><span class="dot d-red"></span> P0 必须做</span>
+  <span><span class="dot d-blue"></span> P1 尽快做</span>
+  <span><span class="dot d-green"></span> P2 规划中</span>
+</div>
+
+<div class="tags-row">
+  <div class="tag-btn all active" onclick="filter('all')">全部</div>
+  <div class="tag-btn" onclick="filter('core')">核心能力</div>
+  <div class="tag-btn" onclick="filter('safe')">安全合规</div>
+  <div class="tag-btn" onclick="filter('smart')">智能化</div>
+  <div class="tag-btn" onclick="filter('sys')">系统联动</div>
+  <div class="tag-btn" onclick="filter('data')">数据洞察</div>
+</div>
+
+<div class="grid" id="grid">
+
+<!-- 1. 语气场景 -->
+<div class="card" data-tags="core">
+  <div class="card-top"><div class="icon-num bg-blue">1</div><div><h3>语气场景切换 + 强度滑杆</h3><div class="sub">核心体验升级</div></div></div>
+  <div class="card-body">10种场景模板一键切换（催办/道歉/谈判…）+ 滑杆连续调节<b>温和↔坚决</b>，5个维度联动调节。</div>
+  <div class="card-foot"><span class="cost cost-1">成本 ¥</span><span class="pri-tag p0">P0</span></div>
+</div>
+
+<!-- 2. 一句话生成 + 要点扩写 -->
+<div class="card" data-tags="core">
+  <div class="card-top"><div class="icon-num bg-blue">2</div><div><h3>一句话生成 + 要点扩写</h3><div class="sub">从改到写的能力跃迁</div></div></div>
+  <div class="card-body">自然语言指令生成完整邮件，或丢 bullet 自动扩写。生成→润色互补，覆盖<b>从0到100完整链路</b>。</div>
+  <div class="card-foot"><span class="cost cost-1">成本 ¥</span><span class="pri-tag p0">P0</span></div>
+</div>
+
+<!-- 3. 收件人角色自适应 -->
+<div class="card" data-tags="core">
+  <div class="card-top"><div class="icon-num bg-blue">3</div><div><h3>收件人角色自适应</h3><div class="sub">让AI读懂关系</div></div></div>
+  <div class="card-body">8类角色自动识别（上级/下属/供应商/客户…），5维自适应：称呼、开头、措辞、篇幅、结尾。结果可手动修正。</div>
+  <div class="card-foot"><span class="cost cost-1">成本 ¥</span><span class="pri-tag p0">P0</span></div>
+</div>
+
+<!-- 4. 安全合规 -->
+<div class="card" data-tags="safe">
+  <div class="card-top"><div class="icon-num bg-hot">4</div><div><h3>企业安全与合规</h3><div class="sub">底线能力</div></div></div>
+  <div class="card-body">敏感信息实时检测、对外发送拦截、法律风险话术提示、合规词库。九牧体量，<b>有和没有是质变</b>。</div>
+  <div class="card-foot"><span class="cost cost-2">成本 ¥¥</span><span class="pri-tag p0">P0</span></div>
+</div>
+
+<!-- 5. 个性化记忆 -->
+<div class="card" data-tags="smart">
+  <div class="card-top"><div class="icon-num bg-teal">5</div><div><h3>个性化与记忆</h3><div class="sub">越用越懂你</div></div></div>
+  <div class="card-body">个人术语库（九牧产品名/缩写）、签名管理、常用收件人组、表达偏好学习，<b>降低重复输入</b>。</div>
+  <div class="card-foot"><span class="cost cost-1">成本 ¥</span><span class="pri-tag p1">P1</span></div>
+</div>
+
+<!-- 6. 嵌入工作流 -->
+<div class="card" data-tags="sys">
+  <div class="card-top"><div class="icon-num bg-purple">6</div><div><h3>嵌入工作流</h3><div class="sub">多端触点+系统打通</div></div></div>
+  <div class="card-body">企微/Outlook/浏览器插件 → <b>在哪写就在哪润色</b>。OA审批联动、日历联动、CRM话术推荐。</div>
+  <div class="card-foot"><span class="cost cost-2">成本 ¥¥</span><span class="pri-tag p1">P1</span></div>
+</div>
+
+<!-- 7. 企业知识增强 -->
+<div class="card" data-tags="smart">
+  <div class="card-top"><div class="icon-num bg-teal">7</div><div><h3>企业知识增强</h3><div class="sub">AI引用准确信息</div></div></div>
+  <div class="card-body">产品知识库、售后政策、FAQ自动匹配——<b>避免邮件里写出错误型号或过期政策</b>。</div>
+  <div class="card-foot"><span class="cost cost-2">成本 ¥¥</span><span class="pri-tag p1">P1</span></div>
+</div>
+
+<!-- 8. 邮件健康度评分 -->
+<div class="card" data-tags="data">
+  <div class="card-top"><div class="icon-num bg-teal">8</div><div><h3>邮件健康度评分</h3><div class="sub">发出前的体检报告</div></div></div>
+  <div class="card-body">易读性/情绪风险/行动力/合规 四维打分，配具体建议。<b>低成本高感知，用户会觉得AI在替我把关</b>。</div>
+  <div class="card-foot"><span class="cost cost-1">成本 ¥</span><span class="pri-tag p1">P1</span></div>
+</div>
+
+<!-- 9. 团队协作 -->
+<div class="card" data-tags="sys">
+  <div class="card-top"><div class="icon-num bg-purple">9</div><div><h3>团队协作与知识沉淀</h3><div class="sub">从个人工具到团队资产</div></div></div>
+  <div class="card-body">共享模板市场、优秀邮件沉淀话术库、新人话术推荐、部门级tone管理。</div>
+  <div class="card-foot"><span class="cost cost-1">成本 ¥</span><span class="pri-tag p2">P2</span></div>
+</div>
+
+<!-- 10. 数据洞察 -->
+<div class="card" data-tags="data">
+  <div class="card-top"><div class="icon-num bg-teal">10</div><div><h3>数据洞察</h3><div class="sub">产品增长的仪表盘</div></div></div>
+  <div class="card-body">使用统计看板、最常用场景排名、误读表达预警。<b>给老板看的价值证明</b>。</div>
+  <div class="card-foot"><span class="cost cost-1">成本 ¥</span><span class="pri-tag p1">P1</span></div>
+</div>
+
+<!-- 11. 智能跟进 -->
+<div class="card" data-tags="smart">
+  <div class="card-top"><div class="icon-num bg-teal">11</div><div><h3>智能跟进</h3><div class="sub">发出去之后的后链路</div></div></div>
+  <div class="card-body">未回复自动提醒+草拟跟进、邮件一键转任务、重要邮件摘要推送。</div>
+  <div class="card-foot"><span class="cost cost-2">成本 ¥¥</span><span class="pri-tag p1">P1</span></div>
+</div>
+
+<!-- 12. 多模态 -->
+<div class="card" data-tags="smart">
+  <div class="card-top"><div class="icon-num bg-warn">12</div><div><h3>多模态与体验升级</h3><div class="sub">换个姿势写邮件</div></div></div>
+  <div class="card-body">语音口述→润色、截图识别→邮件、A/B双版对比、批量润色。</div>
+  <div class="card-foot"><span class="cost cost-2">成本 ¥¥</span><span class="pri-tag p2">P2</span></div>
+</div>
+
+<!-- 13. 工作流自动化 -->
+<div class="card" data-tags="sys">
+  <div class="card-top"><div class="icon-num bg-purple">13</div><div><h3>邮件工作流自动化</h3><div class="sub">业务自动化触发点</div></div></div>
+  <div class="card-body">定时发送、模板变量填充、审批串联、自动归档分类、周期性报告。</div>
+  <div class="card-foot"><span class="cost cost-2">成本 ¥¥</span><span class="pri-tag p2">P2</span></div>
+</div>
+
+<!-- 14. 跨文化 -->
+<div class="card" data-tags="smart">
+  <div class="card-top"><div class="icon-num bg-purple">14</div><div><h3>跨文化沟通适配</h3><div class="sub">海外业务必备</div></div></div>
+  <div class="card-body">文化敏感度提示、时区+节假日感知、多语言语气对齐。<b>发给日本客户和美国的道歉信完全不同</b>。</div>
+  <div class="card-foot"><span class="cost cost-2">成本 ¥¥</span><span class="pri-tag p2">P2</span></div>
+</div>
+
+<!-- 15. AB测试 -->
+<div class="card" data-tags="data">
+  <div class="card-top"><div class="icon-num bg-warn">15</div><div><h3>A/B测试 + 效果归因</h3><div class="sub">量化AI真实价值</div></div></div>
+  <div class="card-body">双版本对比回复率、话术效果归因、ROI计算——<b>证明这玩意儿没白花钱</b>。</div>
+  <div class="card-foot"><span class="cost cost-2">成本 ¥¥</span><span class="pri-tag p2">P2</span></div>
+</div>
+
+<!-- 16. IM打通 -->
+<div class="card" data-tags="sys">
+  <div class="card-top"><div class="icon-num bg-purple">16</div><div><h3>邮件 + IM 打通</h3><div class="sub">沟通能力All in One</div></div></div>
+  <div class="card-body">企微消息也能润色、邮件↔IM互相转写、群聊摘要→邮件、统一沟通风格。</div>
+  <div class="card-foot"><span class="cost cost-2">成本 ¥¥</span><span class="pri-tag p2">P2</span></div>
+</div>
+
+</div>
+
+<div class="summary">
+  <h3>落地建议：按投入产出比排序</h3>
+  <div class="row">
+    <div class="col">
+      <b>第1批（本季度 · 成本低）</b><br>
+      1. 场景模板+强度滑杆 · ¥<br>
+      2. 收件人角色自适应 · ¥<br>
+      3. 一句话生成+要点扩写 · ¥<br>
+      4. 邮件健康度评分 · ¥<br>
+      <span style="color:var(--sub)">→ 四个功能共享同一套底层引擎，一起做不增加成本</span>
+    </div>
+    <div class="col">
+      <b>第2批（同步推进 · 安全底线）</b><br>
+      5. 敏感信息检测+合规拦截 · ¥¥<br>
+      6. 多端触点（企微/Outlook插件）· ¥¥<br>
+      7. 使用统计看板 · ¥<br>
+      <span style="color:var(--sub)">→ P0的安全能力不能等，用的人越多越危险</span>
+    </div>
+    <div class="col">
+      <b>第3批（下季度 · 增值能力）</b><br>
+      8. 企业知识增强 · ¥¥<br>
+      9. 个性化记忆 · ¥<br>
+      10. 智能跟进 · ¥¥<br>
+      11. 剩余方向按业务节奏逐步落地
+    </div>
+  </div>
+</div>
+
+<div class="note">成本：¥ 纯模型/前端开发即可 · ¥¥ 需数据或轻度系统对接 · ¥¥¥ 深度系统集成</div>
+
+</div>
+
+<script>
+function filter(tag){
+  document.querySelectorAll('.tag-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('.card').forEach(c=>{
+    if(tag==='all' || c.dataset.tags.split(' ').includes(tag)){
+      c.classList.remove('hidden');
+    }else{
+      c.classList.add('hidden');
+    }
+  });
+}
+</script>
+</body>
+</html>
