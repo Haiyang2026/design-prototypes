@@ -1,0 +1,539 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CAE分析申请流程</title><style>
+:root{--primary:#3685F2;--phover:#5E9DF5;--pactive:#2364CC;--pbg:#DEEDFF;--lbg:#F3F8FE;--brand:#0C328C;--green:#04D999;--glight:#E6FBF5;--warn:#FF813B;--red:#FF4D5D;--rlight:#FFEDEF;--t1:#141b24;--t2:#7C8493;--t3:#B9BFCB;--td:#D2D7E1;--tw:#fff;--bg:#EBF1F6;--card:#fff;--hd:#F4F7F9;--hv:#EDF3FA;--bd:#D2D7E1;--dv:#E4E7F0;--f:applestem,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;--fxs:11px;--fsm:12px;--fb:13px;--flg:14px;--sb:600;--lh:1.5;--sxs:4px;--ssm:8px;--smd:12px;--sb2:16px;--slg:20px;--sxl:24px;--r2:4px;--r3:8px;--sh:0 1px 5px rgba(20,27,36,.10);--tf:150ms ease-in-out}
+body{margin:0;font:var(--fsm)/var(--lh) var(--f);color:var(--t1);background:var(--bg)}
+/* TOP NAV */
+.top{position:fixed;top:0;left:0;right:0;height:42px;background:var(--brand);display:flex;align-items:center;justify-content:space-between;padding:0 20px 0 0;z-index:100;box-shadow:var(--sh)}
+.tl{display:flex;align-items:center}.tl svg.logo{width:180px;height:auto;filter:brightness(0) invert(1)}
+.tm{display:flex;align-items:center;height:42px;gap:0}
+.tm a{display:flex;align-items:center;padding:0 16px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;height:42px;transition:all var(--tf);text-decoration:none}
+.tm a:hover{background:rgba(255,255,255,.1)}.tm a.on{background:#fff;color:var(--brand)}
+.tr{display:flex;gap:var(--smd);color:#fff;font-size:var(--fsm)}
+/* SIDEBAR */
+.side{position:fixed;top:42px;left:0;bottom:0;width:180px;background:var(--card);border-right:1px solid var(--dv);overflow-y:auto;z-index:99;padding:8px 0}
+.sg{font-size:var(--fxs);color:var(--t2);padding:8px 12px 4px;font-weight:var(--sb);text-transform:uppercase;letter-spacing:.5px}
+.si{display:flex;align-items:center;padding:0 12px;height:32px;font-size:var(--fb);color:var(--t1);cursor:pointer;transition:all var(--tf)}
+.si:hover{background:var(--hv)}.si.on{background:var(--pbg);color:var(--primary);font-weight:var(--sb)}
+.sgn{font-weight:400;color:var(--t3);font-size:var(--fxs);margin-left:auto}
+.si .dot{width:6px;height:6px;border-radius:50%;margin-right:8px;flex-shrink:0}
+.si .dot.g{background:var(--green)}.si .dot.b{background:var(--primary)}
+/* MAIN */
+.main{margin:42px 0 0 180px;min-height:calc(100vh-42px)}
+.ctn{padding:var(--sb2)}
+.card{background:var(--card);border-radius:var(--r2);box-shadow:var(--sh);margin-bottom:var(--sb2);overflow:hidden}
+.cbar{display:flex;align-items:center;justify-content:space-between;padding:var(--smd) var(--sb2);border-bottom:1px solid var(--dv)}
+.ct{font-size:14px;font-weight:var(--sb);padding-left:8px;border-left:3px solid var(--primary);line-height:20px}
+.btns{display:flex;gap:4px}
+.bl{padding:2px 8px;border:none;background:none;font-size:var(--fsm);color:var(--primary);cursor:pointer;border-radius:var(--r2)}
+.bl:hover{background:var(--lbg)}
+/* FORM */
+.fb{padding:20px}
+.sec{margin-bottom:var(--sxl)}.sec:last-child{margin-bottom:0}
+.shd{display:flex;align-items:center;gap:var(--ssm);margin-bottom:var(--sb2);cursor:pointer;user-select:none}
+.st{font-size:var(--fb);font-weight:var(--sb);color:var(--primary)}
+.sa{width:14px;height:14px;transition:transform .2s}
+.sec.cl .sa{transform:rotate(-90deg)}.sec.cl .sc{display:none}
+/* GRID */
+.fr{display:flex;gap:var(--sb2);margin-bottom:var(--sb2)}.fr:last-child{margin-bottom:0}
+.fi{flex:1;min-width:0}.fi.fw{flex:0 0 100%}
+.fl{display:block;font-size:var(--fsm);color:var(--t1);margin-bottom:var(--ssm);line-height:1;font-weight:var(--sb)}
+.fl .rq{color:var(--red)}.fl .h{font-weight:400;color:var(--t2);font-size:var(--fxs);margin-left:var(--sxs)}
+/* INPUTS */
+.in{box-sizing:border-box;width:100%;height:32px;padding:5px 8px;border:1px solid var(--bd);border-radius:var(--r2);font-size:var(--fsm);color:var(--t1);background:#fff;transition:all var(--tf);font-family:inherit}
+.in::placeholder{color:var(--t3)}.in:hover{border-color:var(--phover)}.in:focus{outline:none;border-color:var(--pactive);box-shadow:0 0 0 2px rgba(35,100,204,.1)}
+.in:disabled{background:var(--hd);color:var(--td);cursor:not-allowed}
+.ta{box-sizing:border-box;width:100%;min-height:80px;padding:8px 12px;border:1px solid var(--bd);border-radius:var(--r2);font-size:var(--fsm);color:var(--t1);background:#fff;transition:all var(--tf);font-family:inherit;resize:vertical;line-height:1.5}
+.ta:focus{outline:none;border-color:var(--pactive)}
+.sel{box-sizing:border-box;width:100%;height:32px;padding:5px 28px 5px 8px;border:1px solid var(--bd);border-radius:var(--r2);font-size:var(--fsm);color:var(--t1);appearance:none;background:#fff url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='%237C8493'%3E%3Cpath d='M4 6L8 10L12 6' stroke='%237C8493' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") no-repeat right 8px center;background-size:12px;cursor:pointer}
+.sel:hover{border-color:var(--phover)}.sel:focus{outline:none;border-color:var(--pactive)}
+.sel:disabled{background:var(--hd);cursor:not-allowed}
+/* TABLE */
+.dt{width:100%;border-collapse:collapse}.dt th{padding:var(--ssm) var(--sb2);text-align:left;font-size:var(--fsm);font-weight:var(--sb);color:var(--t1);background:var(--hd);border-bottom:1px solid var(--dv)}
+.dt td{padding:var(--ssm) var(--sb2);border-bottom:1px solid var(--dv)}.dt tr:nth-child(even){background:var(--hd)}
+.dt .in{border:none;border-radius:0;height:24px;padding:2px 4px;background:transparent}.dt .in:focus{box-shadow:none;outline:1px solid var(--pactive)}
+.dt .ac{text-align:center;width:50px}.dt .ac button{color:var(--red);border:none;background:none;cursor:pointer;font-size:var(--fxs)}
+/* UPLOAD */
+.up{border:1px dashed var(--bd);border-radius:var(--r2);padding:var(--ssm) var(--sb2);text-align:center;cursor:pointer;background:var(--hd);transition:all var(--tf)}
+.up:hover{border-color:var(--primary);background:var(--lbg)}.up .ut{font-size:var(--fsm);color:var(--t2)}
+/* DEV NOTES (old per-section, removed) */
+/* UNIFIED DEV NOTES — bottom of each step page */
+.da{margin-top:var(--sxl);border:1px solid var(--dv);border-radius:var(--r3);overflow:hidden}
+.dah{display:flex;align-items:center;gap:var(--sxs);padding:var(--ssm) var(--smd);cursor:pointer;font-size:var(--fsm);color:var(--t2);background:var(--hd);font-weight:var(--sb)}
+.dah:hover{background:var(--dv)}.dab{padding:var(--smd) var(--sb2);display:none;font-size:var(--fxs);line-height:1.7;color:var(--t2);background:#fafbfc}
+.da.op .dab{display:block}.dv2{width:12px;height:12px;transition:transform .2s}.da.op .dv2{transform:rotate(90deg)}
+.dag{font-size:var(--fsm);color:var(--t1);font-weight:var(--sb);margin:var(--ssm) 0 var(--sxs)}
+.dai{display:flex;flex-direction:column;gap:2px;padding-left:var(--smd);margin-bottom:var(--smd)}
+.dai>div{padding:2px 0;border-bottom:1px dotted #e8e8e8}.dai>div:last-child{border:none}
+.stb{font-size:var(--fxs);color:var(--t2);font-weight:var(--sb);margin-bottom:var(--ssm)}
+/* COMBINED FIELD */
+.dc{display:flex;align-items:center;gap:4px}.dc .in{flex:1}.dc span{color:var(--t2);font-size:var(--fxs)}
+/* WIDTH OVERRIDE */
+.fw2{flex:2!important}
+/* TABLE TOOLBAR */
+.dtb{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--ssm);padding:var(--ssm) 0}
+.btm{padding:4px 10px;border:1px solid var(--bd);border-radius:var(--r2);font-size:var(--fxs);background:var(--card);color:var(--t1);cursor:pointer;transition:all var(--tf);font-family:inherit}
+.btm:hover{border-color:var(--primary);color:var(--primary)}
+/* DIM */
+.dim{opacity:.5}.dim .in,.dim .ta,.dim .sel{pointer-events:none}.dim label{color:var(--t2)}
+.ft{display:flex;justify-content:flex-end;gap:var(--ssm);padding:var(--smd) var(--sb2);border-top:1px solid var(--dv)}
+.bt{padding:6px 20px;border-radius:var(--r2);font-size:var(--fsm);cursor:pointer;border:1px solid transparent;transition:all var(--tf);height:32px;font-family:inherit}
+.bt1{background:var(--primary);color:#fff}.bt1:hover{background:var(--phover)}
+.bt2{background:#fff;color:var(--t2);border:1px solid var(--bd)}.bt2:hover{border-color:var(--primary);color:var(--primary)}
+/* BADGE */
+.bg{display:inline-block;font-size:10px;padding:1px 6px;border-radius:999px;font-weight:600;vertical-align:middle;margin-left:4px}
+.bgr{background:var(--rlight);color:var(--red)}.bgg{background:var(--hd);color:var(--t2)}.bgb{background:var(--lbg);color:var(--primary)}
+/* STEP HEADER */
+.step-bar{display:flex;align-items:center;gap:var(--sb2);padding:var(--sb2);background:var(--hd);border-bottom:1px solid var(--dv)}
+.step-dot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:var(--sb);font-size:var(--flg);flex-shrink:0}
+.step-dot.ap{background:var(--glight);color:var(--green);border:2px solid var(--green)}
+.step-dot.ex{background:var(--lbg);color:var(--primary);border:2px solid var(--primary)}
+.step-dot.ex.pa{background:#f0f0ff;color:#7c3aed;border:2px solid #7c3aed}
+.step-info{flex:1}.step-info .sn{font-size:var(--flg);font-weight:var(--sb)}.step-info .sm{font-size:var(--fsm);color:var(--t2);margin-top:2px}
+.step-rules{text-align:right;font-size:var(--fxs);color:var(--t2)}
+.step-rules span{margin-left:12px}.step-rules .no{color:var(--red);font-weight:var(--sb)}.step-rules .yes{color:var(--green)}
+.step-note{background:#FFF9F0;padding:var(--ssm) var(--sb2);font-size:var(--fxs);color:var(--t2);border-bottom:1px solid #f0e0c0}
+/* COMBINED FIELD */
+.dc{display:flex;align-items:center;gap:4px}.dc .in{flex:1}.dc span{color:var(--t2);font-size:var(--fxs)}
+/* WIDTH OVERRIDE */
+.fw2{flex:2!important}
+/* TABLE TOOLBAR */
+.dtb{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--ssm);padding:var(--ssm) 0}
+.btm{padding:4px 10px;border:1px solid var(--bd);border-radius:var(--r2);font-size:var(--fxs);background:var(--card);color:var(--t1);cursor:pointer;transition:all var(--tf);font-family:inherit}
+.btm:hover{border-color:var(--primary);color:var(--primary)}
+/* DIM */
+.dim{opacity:.5}.dim .in,.dim .ta,.dim .sel{pointer-events:none}.dim label{color:var(--t2)}
+/* SECTION BORDER */
+.hr{margin:var(--sb2) 0;padding-top:var(--sb2);border-top:1px solid var(--dv)}
+.hr-t{font-size:var(--fxs);color:var(--t2);margin-bottom:var(--sb2)}
+</style></head><body>
+
+<svg style="display:none">
+<symbol id="cd" viewBox="0 0 16 16"><path d="M2.576 5.076a.637.637 0 01.848-.07l.083.07L8 9.651l4.576-4.575a.637.637 0 01.848-.07l.083.07a.637.637 0 01.07.848l-.07.083-4.8 4.8a.637.637 0 01-.848.07l-.083-.07-4.8-4.8a.637.637 0 010-.9z" fill="currentColor"/></symbol>
+<symbol id="cr" viewBox="0 0 16 16"><path d="M5.076 2.576a.637.637 0 01.07.848l-.07.083L9.651 8l-4.575 4.576a.637.637 0 01-.07.848l-.07.083a.637.637 0 01-.848.07l-.083-.07-4.8-4.8a.637.637 0 01-.07-.848l.07-.083 4.8-4.8a.637.637 0 01.9 0z" fill="currentColor"/></symbol>
+</svg>
+
+<header class="top"><div class="tl"><svg class="logo" viewBox="0 0 180 42"><text x="16" y="28" font-size="16" font-weight="700" fill="currentColor">JOMOO 九牧</text></svg><nav class="tm"><a>首页</a><a>流程中心</a><a class="on">研发管理</a><a>系统管理</a></nav></div><div class="tr"><span>研发设计部</span><span>👤 当前用户</span></div></header>
+
+<nav class="side" id="sidebar">
+<div class="sg">流程环节</div>
+<!-- Sidebar items populated by JS -->
+</nav>
+
+<div class="main"><div class="ctn"><div class="card">
+<div class="cbar"><div class="ct" id="pageTitle">CAE分析申请流程</div><div class="btns"><button class="bl" onclick="document.getElementById('flowModal').style.display='flex'">📐 流程图</button><button class="bl">🔮 审批预测</button><button class="bl">❓ 帮助</button></div></div>
+<div id="stepHeader"></div>
+<div class="fb" id="stepContent"></div>
+<div class="ft"><button class="bt bt2">返回</button><button class="bt bt2" onclick="alert('草稿已保存')">保存草稿</button><button class="bt bt1" onclick="alert('申请已提交！\n流程将流转至：三级组织负责人审批')">提交申请</button></div>
+</div></div></div>
+
+<div id="flowModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
+<div style="background:#fff;padding:24px;border-radius:8px;max-width:1024px;width:92%">
+<button onclick="document.getElementById('flowModal').style.display='none'" style="float:right;border:none;background:none;font-size:18px;cursor:pointer">✕</button>
+<h3 style="margin-bottom:16px">CAE分析申请流程 — 审批流程图 V1.6</h3>
+<svg viewBox="0 0 1400 280" width="100%"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#999" stroke-width="1.5"/></marker><marker id="ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52c41a" stroke-width="1.5"/></marker><marker id="ab" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#597ef7" stroke-width="1.5"/></marker></defs>
+<rect width="1400" height="280" fill="#f8f9fa" rx="8"/>
+<text x="700" y="22" text-anchor="middle" font-family="Microsoft YaHei" font-size="14" font-weight="700" fill="#1a1a1a">CAE分析申请流程 — 审批流程图 V1.6</text>
+<circle cx="50" cy="130" r="13" fill="#f6ffed" stroke="#b7eb8f" stroke-width="2"/><circle cx="50" cy="130" r="5" fill="#52c41a"/><text x="50" y="158" text-anchor="middle" font-size="10" fill="#8c8c8c">开始</text>
+<line x1="63" y1="130" x2="232" y2="130" stroke="#52c41a" stroke-width="1.5" marker-end="url(#ag)"/>
+<rect x="237" y="102" width="116" height="56" rx="5" fill="#f6ffed" stroke="#b7eb8f" stroke-width="1.5"/><text x="295" y="122" text-anchor="middle" font-size="11" font-weight="700" fill="#262626">三级组织负责人</text><text x="295" y="138" text-anchor="middle" font-size="9" fill="#8c8c8c">审批 · 单审</text><text x="295" y="152" text-anchor="middle" font-size="9" fill="#8c8c8c">汇报关系-S3</text>
+<line x1="353" y1="130" x2="422" y2="130" stroke="#597ef7" stroke-width="1.5" marker-end="url(#ab)"/>
+<rect x="427" y="102" width="116" height="56" rx="5" fill="#f0f5ff" stroke="#adc6ff" stroke-width="1.5"/><text x="485" y="122" text-anchor="middle" font-size="11" font-weight="700" fill="#262626">分配工单</text><text x="485" y="138" text-anchor="middle" font-size="9" fill="#8c8c8c">执行 · 单审</text><text x="485" y="152" text-anchor="middle" font-size="9" fill="#8c8c8c">工艺工程师/PRD10014</text>
+<line x1="543" y1="130" x2="612" y2="130" stroke="#597ef7" stroke-width="1.5" marker-end="url(#ab)"/>
+<rect x="617" y="102" width="138" height="56" rx="5" fill="#f0f5ff" stroke="#adc6ff" stroke-width="1.5"/><text x="686" y="122" text-anchor="middle" font-size="11" font-weight="700" fill="#262626">分析工程师提交报告</text><text x="686" y="138" text-anchor="middle" font-size="9" fill="#8c8c8c">执行 · 并审</text><text x="686" y="152" text-anchor="middle" font-size="9" fill="#8c8c8c">CAE分析工程师</text>
+<line x1="755" y1="130" x2="824" y2="130" stroke="#52c41a" stroke-width="1.5" marker-end="url(#ag)"/>
+<rect x="829" y="102" width="130" height="56" rx="5" fill="#f6ffed" stroke="#b7eb8f" stroke-width="1.5"/><text x="894" y="122" text-anchor="middle" font-size="11" font-weight="700" fill="#262626">三级组织负责人</text><text x="894" y="138" text-anchor="middle" font-size="9" fill="#8c8c8c">审批 · 单审</text><text x="894" y="152" text-anchor="middle" font-size="9" fill="#8c8c8c">汇报关系-S3(工程师)</text>
+<line x1="959" y1="130" x2="1028" y2="130" stroke="#597ef7" stroke-width="1.5" marker-end="url(#ab)"/>
+<rect x="1033" y="102" width="100" height="56" rx="5" fill="#f0f5ff" stroke="#adc6ff" stroke-width="1.5"/><text x="1083" y="122" text-anchor="middle" font-size="11" font-weight="700" fill="#262626">申请人确认</text><text x="1083" y="138" text-anchor="middle" font-size="9" fill="#8c8c8c">执行 · 单审</text><text x="1083" y="152" text-anchor="middle" font-size="9" fill="#8c8c8c">确认后结束</text>
+<line x1="1133" y1="130" x2="1202" y2="130" stroke="#999" stroke-width="1.5" marker-end="url(#ar)"/>
+<circle cx="1240" cy="130" r="13" fill="#fff" stroke="#ff4d4f" stroke-width="2"/><circle cx="1240" cy="130" r="5" fill="none" stroke="#ff4d4f" stroke-width="1.5"/><text x="1240" y="158" text-anchor="middle" font-size="10" fill="#8c8c8c">结束</text>
+<rect x="20" y="200" width="1360" height="46" rx="4" fill="#fff" stroke="#e8e8e8"/><text x="40" y="222" font-size="10" font-weight="700" fill="#1a1a1a">流程说明：</text><text x="40" y="238" font-size="10" fill="#8c8c8c">表单填写→三级组织负责人审批→分配工单(工艺工程师)→分析工程师提交报告(并审)→三级组织负责人审核→申请人确认→流程结束</text>
+</svg></div></div>
+
+<script>
+// ====== DATA ======
+const fields={
+  applicant:[
+    {n:'申请人',t:'文本',r:!0},{n:'手机',t:'文本',r:!0},{n:'电话',t:'文本',r:!0},{n:'邮箱',t:'文本',r:!0},
+    {n:'工号 / 岗位',t:'双字段',r:!0},{n:'部门',t:'文本',r:!0,w:2}
+  ],
+  apply:[
+    {n:'分析项目名称',t:'单行文本',r:!0},{n:'所属单位',t:'下拉选择',r:!0,o:['业务范围-工厂'],note:'来源于业务范围-工厂基础数据'},
+    {n:'需要完成日期',t:'日期',r:!0},{n:'分析问题类型',t:'下拉选择',r:!0,o:['力学分析','流体分析','热分析','其他']},
+    {n:'分析目的说明',t:'多行文本',r:!0},{n:'备选方案说明',t:'多行文本',r:!1}
+  ],
+  structure:{n:'结构材料（尽量提供材料物性表）',cols:['零件名称','材料牌号','屈服强度（MPa）','密度（kg/m³）','杨氏模量（GPa）'],r:!1,note:'全部非必填，尽量提供材料物性表'},
+  fluid:{n:'流体属性',cols:['流体名称','摩尔质量（kg/kmol）','密度（Kg/m³）','比热容（J/(g·k)）','动力粘度（kg/(m·s)）','导热系数（W/(m·k)）'],r:!0,note:'流体名称：下拉选择（水/空气/其他），其余字段均为单行文本，全部必填'},
+  sim:[
+    {n:'需模拟条件说明',t:'多行文本',r:!1,s:0},
+    {n:'示意图',t:'附件',r:!1,s:0},
+    {n:'CAE分析工程师',t:'人员选择器(单选)',r:!0,s:2,note:'默认：胡瑞清/00060470'},
+    {n:'预估完成日期',t:'日期',r:!0,s:2},
+    {n:'实际分析问题类型',t:'下拉多选',r:!0,s:3,note:'力学/流体/热/其他'},
+    {n:'模拟依据',t:'多选',r:!0,s:3,note:'申请人要求/工作状态/等效简化'},
+    {n:'模拟条件及状态说明',t:'单行文本',r:!0,s:3},
+    {n:'分析结论',t:'单行文本',r:!0,s:3},
+    {n:'用户评价',t:'单选',r:!0,s:5,note:'非常满意(优秀)/满意(良)/一般/不满意(差)'},
+    {n:'实施状态',t:'单行文本',r:!0,s:5}
+  ],
+  attach:[
+    {n:'附件列表',t:'附件上传(多文件)',r:!0,s:0,note:'未上传提示「请上传三维模型附件！」'},
+    {n:'CAE分析报告',t:'附件上传(单文件)',r:!0,s:3,note:'未上传提示「请上传CAE分析报告附件！」'}
+  ]
+};
+
+const steps=[
+  {id:'overview',name:'概览',sub:'全部字段+开发备注',icon:'📋'},
+  {id:0,name:'起草',sub:'提交人填写表单',icon:'✏️',type:'ex',approver:'提交人',skipE:'—',skipS:'—',note:'申请人填写表单基础信息，提交后流转至三级组织负责人审批'},
+  {id:1,name:'三级组织负责人',sub:'审批·单审',icon:'①',type:'ap',approver:'汇报关系-S3',skipE:'是',skipS:'是',skipR:'纯审批，可跳过',note:'表单填写完成后首先提交至三级组织负责人审批。本环节为纯审批环节，无需填写任何字段'},
+  {id:2,name:'分配工单',sub:'执行·单审',icon:'②',type:'ex',approver:'工艺工程师/PRD10014',skipE:'否',skipS:'否',skipR:'需填写字段，不可跳过',note:'工艺工程师分配工单，指定CAE分析工程师（单选）及预估完成日期。默认人员：胡瑞清/00060470'},
+  {id:3,name:'分析工程师提交报告',sub:'执行·并审',icon:'③',type:'ex',pa:!0,approver:'CAE分析工程师(取自步骤②)',skipE:'否',skipS:'否',skipR:'需填写字段+上传报告，不可跳过',note:'CAE分析工程师（多人并审）完成仿真分析后，填写分析结果并上传CAE分析报告'},
+  {id:4,name:'三级组织负责人审核',sub:'审批·单审',icon:'④',type:'ap',approver:'汇报关系-S3(分析工程师)',skipE:'是',skipS:'是',skipR:'纯审批，可跳过',note:'分析工程师提交报告后，流转至其三级组织负责人审核。本环节为纯审批环节'},
+  {id:5,name:'申请人确认',sub:'执行·单审',icon:'⑤',type:'ex',approver:'申请人',skipE:'否',skipS:'否',skipR:'需填写用户评价+实施状态，不可跳过',note:'申请人确认分析结果，填写用户评价和实施状态，确认完成后流程结束'}
+];
+
+// ====== BUILD SIDEBAR ======
+const sb=document.getElementById('sidebar');
+let html='<div class="sg">📋 表单</div>';
+steps.forEach((s,i)=>{
+  let cls='';
+  if(s.type==='ap')cls='g'; else if(s.type==='ex')cls=s.pa?'b bpa':'b';
+  html+=`<div class="si" data-step="${s.id}" data-group="form" onclick="selectStep('${s.id}')"><span class="dot ${cls}"></span>${s.icon} ${s.name}</div>`;
+});
+html+='<div class="sg">📐 流程</div>';
+html+='<div class="si" data-step="flow" data-group="flow" onclick="selectFlow()"><span class="dot" style="background:var(--green)"></span>📐 审批流程图 V1.6</div>';
+html+='<div class="sg">📊 配置表<span class="sgn">(暂无)</span></div>';
+html+='<div class="sg">✉️ 邮件内容<span class="sgn">(暂无)</span></div>';
+sb.innerHTML=html;
+// Default: select overview
+selectStep('overview');
+
+// ====== RENDER HELPERS ======
+function label(n,r,h){return`<label class="fl">${r?`<span class="rq">*</span>`:''}${n}${h?` <span class="h">${h}</span>`:''}</label>`}
+function renderRow(arr,state,stepId){
+  if(!arr||!arr.length)return'';
+  let h='';arr.forEach(f=>{let st=f._st||state;let wCls=(f.w&&f.w===2?' fw2':'');h+='<div class="fi'+(f.t==='多行文本'||f.t==='附件'||f.t&&f.t.includes('附件')?' fw':wCls)+'">';
+    if(f.t==='双字段'){
+      let dis=st!=='edit'?'disabled':'';
+      h+=`<label class="fl"><span class="rq">*</span>工号 <span style="font-weight:400;color:var(--t2);font-size:var(--fxs)">/ 岗位</span></label><div class="dc"><input class="in" ${dis} placeholder="${dis?'系统获取':''}"><span>/</span><input class="in" ${dis} placeholder="${dis?'系统获取':''}"></div>`;
+    }else if((f.t&&f.t.includes('附件'))||f.t==='附件'){
+      let dim=st!=='edit';
+      h+=label(f.n)+`<div class="up${dim?' dim':''}"><div class="ut">📎 ${dim?'本环节不可上传':'点击上传'+(f.n.includes('报告')?'CAE分析报告':'附件（支持多文件）')}</div></div>`;
+    }else if(f.t==='多行文本'){
+      h+=label(f.n,f.r,(st!=='edit'?'':'非必填'))+`<textarea class="ta" ${st!=='edit'?'disabled':''} placeholder="${st!=='edit'?'本环节只读':''}"></textarea>`;
+    }else if(f.t==='下拉选择'||f.t==='下拉多选'){
+      let opt=f.o||[];
+      h+=label(f.n,f.r)+`<select class="sel" ${st!=='edit'?'disabled':''}><option>${st!=='edit'?'请选择：'+opt.join('/'):'请选择：'+opt.join('/')}</option>${opt.map(x=>'<option>'+x+'</option>').join('')}</select>`;
+    }else if(f.t==='多选'){
+      let opt=f.note?f.note.split('/'):[];
+      h+=label(f.n,f.r)+`<select class="sel" ${st!=='edit'?'disabled':''}><option>${'请选择：'+opt.join('/')}</option>${opt.map(x=>'<option>'+x+'</option>').join('')}</select>`;
+    }else if(f.t==='人员选择器(多选)'){
+      h+=label(f.n,f.r)+`<input class="in" ${st!=='edit'?'disabled':''} placeholder="${st==='edit'?'选择CAE分析工程师（多选）':'本环节只读'}">`;
+    }else if(f.t==='人员选择器(单选)'){
+      h+=label(f.n,f.r)+`<input class="in" ${st!=='edit'?'disabled':''} placeholder="${st==='edit'?'选择CAE分析工程师':'本环节只读'}">`;
+    }else if(f.t==='日期'){
+      h+=label(f.n,f.r)+`<input class="in" type="date" ${st!=='edit'?'disabled':''}>`;
+    }else if(f.t==='单选'){
+      let opt='非常满意(优秀)/满意(良)/一般/不满意(差)'.split('/');
+      h+=label(f.n,f.r)+`<select class="sel" ${st!=='edit'?'disabled':''}><option>${'请选择：'+opt.join('/')}</option>${opt.map(x=>'<option>'+x+'</option>').join('')}</select>`;
+    }else{
+      h+=label(f.n,f.r)+`<input class="in" ${st!=='edit'?'disabled':''} placeholder="${st!=='edit'?'本环节只读':''}">`;
+    }
+    h+='</div>';
+  });
+  return h;
+}
+function gridRows(arr,state,stepId){
+  let rows=[],cur=[],curW=0;
+  arr.forEach(f=>{
+    let full=f.t==='多行文本'||f.t==='附件'||(f.t&&f.t.includes('附件'));
+    let w=f.w||1;
+    if(full||curW+w>4){
+      if(cur.length)rows.push(cur);
+      cur=[];curW=0;
+    }
+    if(full){rows.push([f]);}else{cur.push(f);curW+=w;}
+  });
+  if(cur.length)rows.push(cur);
+  // 严格只用4列或2列，绝不用3列：3字段(w1各1)的行拆为2+1
+  let fixed=[];
+  rows.forEach(r=>{
+    let tw=r.reduce((s,x)=>s+(x.w||1),0);
+    if(r.length===3 && tw===3 && !r.some(x=>x.t==='多行文本'||x.t==='附件'||(x.t&&x.t.includes('附件')))){
+      fixed.push(r.slice(0,2));
+      fixed.push([r[2]]);
+    }else{
+      fixed.push(r);
+    }
+  });
+  return fixed.map(r=>`<div class="fr${r.every(x=>{let st=x._st||state;return st!=='edit'})?' dim':''}">${renderRow(r,state,stepId)}</div>`).join('');
+}
+
+// ====== SELECT STEP ======
+function selectFlow(){
+  document.querySelectorAll('.si').forEach(el=>el.classList.toggle('on',el.dataset.step==='flow'));
+  document.getElementById('pageTitle').textContent='CAE分析申请流程 — 审批流程图 V1.6';
+  document.getElementById('stepHeader').innerHTML='';
+  document.getElementById('stepContent').innerHTML=`
+    <div style="background:var(--hd);border-radius:var(--r3);padding:var(--sb2);margin-bottom:var(--sb2)">
+      <svg viewBox="0 0 1400 280" width="100%">
+        <defs><marker id="ar2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#999" stroke-width="1.5"/></marker><marker id="ag2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52c41a" stroke-width="1.5"/></marker><marker id="ab2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#597ef7" stroke-width="1.5"/></marker></defs>
+        <rect width="1400" height="280" fill="#f8f9fa" rx="8"/>
+        <text x="700" y="22" text-anchor="middle" font-family="Microsoft YaHei" font-size="14" font-weight="700" fill="#1a1a1a">CAE分析申请流程 — 审批流程图 V1.6</text>
+        <circle cx="50" cy="130" r="13" fill="#f6ffed" stroke="#b7eb8f" stroke-width="2"/><circle cx="50" cy="130" r="5" fill="#52c41a"/><text x="50" y="158" text-anchor="middle" font-size="10" fill="#8c8c8c">开始</text>
+        <line x1="63" y1="130" x2="232" y2="130" stroke="#52c41a" stroke-width="1.5" marker-end="url(#ag2)"/>
+        <rect x="237" y="102" width="116" height="56" rx="5" fill="#f6ffed" stroke="#b7eb8f" stroke-width="1.5"/><text x="295" y="122" text-anchor="middle" font-size="11" font-weight="700" fill="#262626">三级组织负责人</text><text x="295" y="138" text-anchor="middle" font-size="9" fill="#8c8c8c">审批 · 单审</text><text x="295" y="152" text-anchor="middle" font-size="9" fill="#8c8c8c">汇报关系-S3</text>
+        <line x1="353" y1="130" x2="422" y2="130" stroke="#597ef7" stroke-width="1.5" marker-end="url(#ab2)"/>
+        <rect x="427" y="102" width="116" height="56" rx="5" fill="#f0f5ff" stroke="#adc6ff" stroke-width="1.5"/><text x="485" y="122" text-anchor="middle" font-size="11" font-weight="700" fill="#262626">分配工单</text><text x="485" y="138" text-anchor="middle" font-size="9" fill="#8c8c8c">执行 · 单审</text><text x="485" y="152" text-anchor="middle" font-size="9" fill="#8c8c8c">工艺工程师/PRD10014</text>
+        <line x1="543" y1="130" x2="612" y2="130" stroke="#597ef7" stroke-width="1.5" marker-end="url(#ab2)"/>
+        <rect x="617" y="102" width="138" height="56" rx="5" fill="#f0f5ff" stroke="#adc6ff" stroke-width="1.5"/><text x="686" y="122" text-anchor="middle" font-size="11" font-weight="700" fill="#262626">分析工程师提交报告</text><text x="686" y="138" text-anchor="middle" font-size="9" fill="#8c8c8c">执行 · 并审</text><text x="686" y="152" text-anchor="middle" font-size="9" fill="#8c8c8c">CAE分析工程师</text>
+        <line x1="755" y1="130" x2="824" y2="130" stroke="#52c41a" stroke-width="1.5" marker-end="url(#ag2)"/>
+        <rect x="829" y="102" width="130" height="56" rx="5" fill="#f6ffed" stroke="#b7eb8f" stroke-width="1.5"/><text x="894" y="122" text-anchor="middle" font-size="11" font-weight="700" fill="#262626">三级组织负责人</text><text x="894" y="138" text-anchor="middle" font-size="9" fill="#8c8c8c">审批 · 单审</text><text x="894" y="152" text-anchor="middle" font-size="9" fill="#8c8c8c">汇报关系-S3(工程师)</text>
+        <line x1="959" y1="130" x2="1028" y2="130" stroke="#597ef7" stroke-width="1.5" marker-end="url(#ab2)"/>
+        <rect x="1033" y="102" width="100" height="56" rx="5" fill="#f0f5ff" stroke="#adc6ff" stroke-width="1.5"/><text x="1083" y="122" text-anchor="middle" font-size="11" font-weight="700" fill="#262626">申请人确认</text><text x="1083" y="138" text-anchor="middle" font-size="9" fill="#8c8c8c">执行 · 单审</text><text x="1083" y="152" text-anchor="middle" font-size="9" fill="#8c8c8c">确认后结束</text>
+        <line x1="1133" y1="130" x2="1202" y2="130" stroke="#999" stroke-width="1.5" marker-end="url(#ar2)"/>
+        <circle cx="1240" cy="130" r="13" fill="#fff" stroke="#ff4d4f" stroke-width="2"/><circle cx="1240" cy="130" r="5" fill="none" stroke="#ff4d4f" stroke-width="1.5"/><text x="1240" y="158" text-anchor="middle" font-size="10" fill="#8c8c8c">结束</text>
+        <rect x="20" y="200" width="1360" height="46" rx="4" fill="#fff" stroke="#e8e8e8"/><text x="40" y="222" font-size="10" font-weight="700" fill="#1a1a1a">流程说明：</text><text x="40" y="238" font-size="10" fill="#8c8c8c">表单填写→三级组织负责人审批→分配工单(工艺工程师)→分析工程师提交报告(并审)→三级组织负责人审核→申请人确认→流程结束</text>
+      </svg>
+    </div>
+    <!-- 流程图说明文档 -->
+    <div class="sec"><div class="shd" onclick="this.parentElement.classList.toggle('cl')"><span class="st">📋 流程基本信息</span><svg class="sa"><use href="#cd"/></svg></div><div class="sc">
+      <table style="width:100%;border-collapse:collapse;font-size:var(--fsm)">
+        <tr><td style="padding:6px 12px;border-bottom:1px solid var(--dv);color:var(--t2);width:140px">流程ID</td><td style="padding:6px 12px;border-bottom:1px solid var(--dv);font-weight:var(--sb)">RD02004</td><td style="padding:6px 12px;border-bottom:1px solid var(--dv);color:var(--t2);width:140px">业务对象</td><td style="padding:6px 12px;border-bottom:1px solid var(--dv);font-weight:var(--sb)">WO_RD02004</td></tr>
+        <tr><td style="padding:6px 12px;border-bottom:1px solid var(--dv);color:var(--t2)">流程分类</td><td style="padding:6px 12px;border-bottom:1px solid var(--dv)">研发管理 > 研发设计</td><td style="padding:6px 12px;border-bottom:1px solid var(--dv);color:var(--t2)">适用范围</td><td style="padding:6px 12px;border-bottom:1px solid var(--dv)">全员</td></tr>
+        <tr><td style="padding:6px 12px;border-bottom:1px solid var(--dv);color:var(--t2)">产品人员</td><td style="padding:6px 12px;border-bottom:1px solid var(--dv)">徐海洋</td><td style="padding:6px 12px;border-bottom:1px solid var(--dv);color:var(--t2)">审批流版本</td><td style="padding:6px 12px;border-bottom:1px solid var(--dv)">V1.6</td></tr>
+      </table>
+    </div></div>
+    <div class="sec"><div class="shd" onclick="this.parentElement.classList.toggle('cl')"><span class="st">📐 审批跳过规则</span><svg class="sa"><use href="#cd"/></svg></div><div class="sc">
+      <div style="padding:var(--smd) 0;font-size:var(--fsm);color:var(--t2);margin-bottom:var(--ssm)">核心原则：环节中若有字段需要填写，则该环节<strong style="color:var(--red)">不允许任何形式跳过</strong>，否则无人填写内容。</div>
+      <table style="width:100%;border-collapse:collapse;font-size:var(--fsm)">
+        <thead><tr style="background:var(--hd)"><th style="padding:8px 12px;text-align:left;border-bottom:1px solid var(--dv)">环节</th><th style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv)">有字段需填写？</th><th style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv)">为空跳过</th><th style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv)">相同审批人跳过</th><th style="padding:8px 12px;text-align:left;border-bottom:1px solid var(--dv)">说明</th></tr></thead>
+        <tbody>
+          <tr><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">1-三级组织负责人</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--green)">否（纯审批）</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--green)">是</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--green)">是</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv);color:var(--t2)">无填写内容，可正常跳过</td></tr>
+          <tr><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">2-分配工单</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--red);font-weight:var(--sb)"><span style="background:var(--rlight);padding:2px 8px;border-radius:999px">是</span></td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--red);font-weight:var(--sb)">否</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--red);font-weight:var(--sb)">否</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv);color:var(--t2)">CAE分析工程师+预估完成日期，必须有人填写</td></tr>
+          <tr><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">3-分析工程师提交报告</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--red);font-weight:var(--sb)"><span style="background:var(--rlight);padding:2px 8px;border-radius:999px">是</span></td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--red);font-weight:var(--sb)">否</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--red);font-weight:var(--sb)">否</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv);color:var(--t2)">分析结论+报告等必须填写，多人并审</td></tr>
+          <tr><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">4-三级组织负责人审核</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--green)">否（纯审批）</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--green)">是</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--green)">是</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv);color:var(--t2)">无填写内容，可正常跳过</td></tr>
+          <tr><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">5-申请人确认</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--red);font-weight:var(--sb)"><span style="background:var(--rlight);padding:2px 8px;border-radius:999px">是</span></td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--red);font-weight:var(--sb)">否</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--red);font-weight:var(--sb)">否</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv);color:var(--t2)">用户评价+实施状态必须填写</td></tr>
+        </tbody>
+      </table>
+    </div></div>
+    <div class="sec"><div class="shd" onclick="this.parentElement.classList.toggle('cl')"><span class="st">🔧 步骤详细配置</span><svg class="sa"><use href="#cd"/></svg></div><div class="sc">
+      <table style="width:100%;border-collapse:collapse;font-size:var(--fsm)">
+        <thead><tr style="background:var(--hd)"><th style="padding:8px 12px;text-align:left;border-bottom:1px solid var(--dv)">步骤</th><th style="padding:8px 12px;text-align:left;border-bottom:1px solid var(--dv)">属性</th><th style="padding:8px 12px;text-align:left;border-bottom:1px solid var(--dv)">审批人</th><th style="padding:8px 12px;text-align:left;border-bottom:1px solid var(--dv)">可填写字段</th><th style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv)">退回</th><th style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv)">跳过</th></tr></thead>
+        <tbody>
+          <tr><td style="padding:8px 12px;border-bottom:1px solid var(--dv)"><span style="background:var(--glight);color:var(--green);padding:2px 8px;border-radius:999px;font-size:var(--fxs)">审批</span> 1</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">审批 · 单审</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">汇报关系-S3</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv);color:var(--t3)">—</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--green)">是</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--green)">是</td></tr>
+          <tr><td style="padding:8px 12px;border-bottom:1px solid var(--dv)"><span style="background:var(--lbg);color:var(--primary);padding:2px 8px;border-radius:999px;font-size:var(--fxs)">执行</span> 2</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">执行 · 单审</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">工艺工程师/PRD10014</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">CAE分析工程师（多选/必填）<br>预估完成日期（必填）</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--green)">是</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--red)">否</td></tr>
+          <tr><td style="padding:8px 12px;border-bottom:1px solid var(--dv)"><span style="background:var(--lbg);color:var(--primary);padding:2px 8px;border-radius:999px;font-size:var(--fxs)">执行</span> 3</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">执行 · 并审</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">CAE分析工程师<br>（取自步骤2选择的人员）</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">实际分析问题类型<br>模拟依据 / 模拟条件及状态说明<br>分析结论（均必填）<br>CAE分析报告（必填）</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--green)">是</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--red)">否</td></tr>
+          <tr><td style="padding:8px 12px;border-bottom:1px solid var(--dv)"><span style="background:var(--glight);color:var(--green);padding:2px 8px;border-radius:999px;font-size:var(--fxs)">审批</span> 4</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">审批 · 单审</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">汇报关系-S3（分析工程师）</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv);color:var(--t3)">—</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--green)">是</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--green)">是</td></tr>
+          <tr><td style="padding:8px 12px;border-bottom:1px solid var(--dv)"><span style="background:var(--lbg);color:var(--primary);padding:2px 8px;border-radius:999px;font-size:var(--fxs)">执行</span> 5</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">执行 · 单审</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">申请人</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">用户评价（必填）<br>实施状态（必填）</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--green)">是</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--dv);color:var(--red)">否</td></tr>
+        </tbody>
+      </table>
+    </div></div>
+    <div class="sec"><div class="shd" onclick="this.parentElement.classList.toggle('cl')"><span class="st">🔔 通知配置</span><svg class="sa"><use href="#cd"/></svg></div><div class="sc">
+      <div style="padding:var(--smd);text-align:center;color:var(--t3);font-size:var(--fsm)">本流程各环节均无邮件/传阅/短信通知配置</div>
+    </div></div>
+    <div class="sec"><div class="shd"><span class="st">📎 流程角色</span></div><div class="sc">
+      <table style="width:100%;border-collapse:collapse;font-size:var(--fsm)">
+        <thead><tr style="background:var(--hd)"><th style="padding:8px 12px;text-align:left;border-bottom:1px solid var(--dv)">角色ID</th><th style="padding:8px 12px;text-align:left;border-bottom:1px solid var(--dv)">角色名称</th><th style="padding:8px 12px;text-align:left;border-bottom:1px solid var(--dv)">说明</th></tr></thead>
+        <tbody>
+          <tr><td style="padding:8px 12px;border-bottom:1px solid var(--dv);font-weight:var(--sb)">PRD10014</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">工艺工程师</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv);color:var(--t2)">入参默认=组织，负责分配工单</td></tr>
+        </tbody>
+      </table>
+    </div></div>`;
+  document.querySelector('.ft').style.display='none';
+  document.getElementById('flowModal').style.display='none';
+}
+
+function selectStep(id){
+  document.querySelector('.ft').style.display='flex';
+  document.querySelectorAll('.si').forEach(el=>el.classList.toggle('on',el.dataset.step===''+id));
+  if(id==='overview'){renderOverview();return}
+  id=parseInt(id);
+  let s=steps.find(x=>x.id===id);
+  if(!s)return;
+
+  // Header
+  let dotCls=s.type==='ap'?'ap':'ex'+(s.pa?' pa':'');
+  let tag=s.type==='ap'?'审批':'执行'+(s.pa?' · 并审':' · 单审');
+  let tagCls=s.type==='ap'?'glight green':'lbg';
+  document.getElementById('pageTitle').textContent='CAE分析申请流程 — '+s.name;
+  document.getElementById('stepHeader').innerHTML=`
+    <div class="step-bar">
+      <div class="step-dot ${dotCls}">${s.icon}</div>
+      <div class="step-info"><div class="sn">${s.name} <span style="font-size:var(--fxs);background:${s.type==='ap'?'var(--glight)':'var(--lbg)'};color:${s.type==='ap'?'var(--green)':'var(--primary)'};padding:2px 8px;border-radius:999px;margin-left:8px">${tag}</span></div><div class="sm">审批人：${s.approver}</div></div>
+      <div class="step-rules">为空跳过：<b class="${s.skipE==='否'?'no':'yes'}">${s.skipE}</b><span>相同跳过：<b class="${s.skipS==='否'?'no':'yes'}">${s.skipS}</b></span><div style="font-size:10px;color:var(--t3);margin-top:4px">${s.skipR}</div></div>
+    </div>
+    <div class="step-note">📌 ${s.note}</div>`;
+
+  // Content — fixed group order per document §1.1
+  let c='',devAll=[];
+  
+  // 字段可视性 helper（本流程无不�见要求，全部字段显示）
+  function fv(f,stepId){
+    let s=f.s;
+    if(s===undefined||s===null)return 'readonly'; // applicant fields always readonly
+    if(s===stepId)return 'edit'; // this step's editable fields
+    return 'readonly'; // all fields visible, just read-only in other steps
+  }
+
+  // 1-申请人信息（全局可见，默认折叠）
+  c+=secHTML('申请人信息',gridRows(fields.applicant.map(f=>({...f,_st:'readonly'})),'readonly',id),true);
+  devAll.push({t:'申请人信息',i:['全部文本 ｜ 只读 ｜ 系统自动获取当前登录用户信息']});
+
+  // 2-申请信息
+  c+=secHTML('申请信息',gridRows(fields.apply.map(f=>({...f,_st:id===0?'edit':'readonly'})),id===0?'edit':'readonly',id));
+  devAll.push({t:'申请信息',i:['分析项目名称：单行文本，必填','所属单位：下拉选择，必填（来源：业务范围-工厂）','需要完成日期：日期选择框，必填','分析问题类型：下拉选择，必填。选项：力学/流体/热/其他','分析目的说明：多行文本，必填','备选方案说明：多行文本，非必填']});
+
+  // 3-结构材料
+  c+=secHTML('结构材料（尽量提供材料物性表）',dataTable(fields.structure.cols,[{}],{n:'子表',rq:false}));
+  devAll.push({t:'结构材料子表',i:['全部单行文本 ｜ 非必填 ｜ 提示：尽量提供材料物性表']});
+
+  // 4-流体属性
+  c+=secHTML('流体属性',dataTable(fields.fluid.cols,[{}],{n:'子表',rq:true,types:['select','text','text','text','text','text'],selOpts:[['水','空气','其他']]}));
+  devAll.push({t:'流体属性子表',i:['流体名称：下拉选择（水/空气/其他），必填','其余字段：单行文本 ｜ 必填 ｜ 摩尔质量/密度/比热容/动力粘度/导热系数']});
+
+  // 5-仿真要求（字段分布在不同环节）
+  let simAll=fields.sim.map(f=>({...f,_st:fv(f,id)})).filter(x=>x._st!=='hidden');
+  if(simAll.length){
+    let simEd=simAll.filter(x=>x._st==='edit'),simRd=simAll.filter(x=>x._st==='readonly');
+    c+=`<div class="sec"><div class="shd" onclick="this.parentElement.classList.toggle('cl')"><span class="st">仿真要求 <span class="h">（外载荷情况，连接状态等）</span></span><svg class="sa"><use href="#cd"/></svg></div><div class="sc">`;
+    if(simEd.length)c+=`<div class="stb">本环节可编辑</div>`+gridRows(simEd,'edit',id);
+    if(simRd.length){
+      c+=(simEd.length?`<div class="hr"><div class="hr-t">📌 其他环节字段（只读）</div>`:'<div class="hr-t" style="margin-bottom:var(--ssm)">全部只读</div>')+gridRows(simRd,'readonly',id)+(simEd.length?`</div>`:'');
+    }
+    c+=`</div></div>`;
+  }
+  devAll.push({t:'仿真要求',i:['需模拟条件说明/示意图：起草环节非必填','CAE分析工程师（人员选择器·单选·必填）/预估完成日期：分配工单环节必填','实际分析问题类型/模拟依据/模拟条件及状态说明/分析结论：提交报告环节必填','用户评价/实施状态：申请人确认环节必填']});
+
+  // 6-附件信息
+  let attAll=fields.attach.map(f=>({...f,_st:fv(f,id)})).filter(x=>x._st!=='hidden');
+  if(attAll.length){
+    let attEd=attAll.filter(x=>x._st==='edit'),attRd=attAll.filter(x=>x._st==='readonly');
+    c+=`<div class="sec"><div class="shd" onclick="this.parentElement.classList.toggle('cl')"><span class="st">附件信息</span><svg class="sa"><use href="#cd"/></svg></div><div class="sc">`;
+    if(attEd.length)c+=gridRows(attEd,'edit',id);
+    if(attRd.length){
+      c+=(attEd.length?`<div class="hr"><div class="hr-t">📌 其他环节字段（只读）</div>`:'<div class="hr-t">全部只读</div>')+gridRows(attRd,'readonly',id)+(attEd.length?`</div>`:'');
+    }
+    c+=`</div></div>`;
+  }
+  devAll.push({t:'附件信息',i:['附件列表：多文件上传，必填。未上传 → 提示「请上传三维模型附件！」','CAE分析报告：单文件上传，必填。未上传 → 提示「请上传CAE分析报告附件！」']});
+
+  // 统一开发备注区域（所有环节底部）
+  c+=`<div class="da"><div class="dah" onclick="this.parentElement.classList.toggle('op')"><svg class="dv2"><use href="#cr"/></svg> 📋 开发备注（${devAll.length}项）</div><div class="dab">`;
+  devAll.forEach(d=>{c+=`<div class="dag">${d.t}</div><div class="dai">${d.i.map(x=>'<div>'+x+'</div>').join('')}</div>`;});
+  c+=`</div></div>`;
+
+  document.getElementById('stepContent').innerHTML=c;
+}
+
+function dataTable(cols,rows,opts){
+  let n=opts?opts.n||'':'';rows=rows||[{}];let rq=opts?opts.rq:false;let types=opts?opts.types||[]:[];let selOpts=opts?opts.selOpts||[]:[];
+  let tg=`<div class="dtb">${n?`<span style="font-weight:var(--sb);font-size:var(--fb)">${n}</span>`:''}<div style="display:flex;gap:4px">`;
+  tg+=`<button class="btm" onclick="addRow(this)">＋ 新增行</button>`;
+  tg+=`<button class="btm" onclick="importCSV(this)">⬆ 导入</button>`;
+  tg+=`<button class="btm" onclick="exportCSV(this)">⬇ 导出</button>`;
+  tg+=`</div></div><table class="dt"><thead><tr>${cols.map(x=>'<th>'+(rq?'<span class="rq">*</span>':'')+x+'</th>').join('')}<th class="ac">操作</th></tr></thead><tbody>`;
+  // store types on table for addRow reference
+  let typesStr=types.length?` data-types="${types.join(',')}"`:'';let selOptsStr=selOpts.length?` data-selopts="${selOpts.map(x=>x.join('|')).join(';;')}"`:'';
+  tg=tg.replace('<table class="dt"','<table class="dt"'+typesStr+selOptsStr);
+  rows.forEach(()=>{
+    tg+=`<tr>${cols.map((c,i)=>'<td>'+tc(i,types,selOpts)+'</td>').join('')}<td class="ac"><button onclick="delRow(this)">🗑</button></td></tr>`;
+  });
+  return tg+`</tbody></table>`;
+}
+function tc(i,types,selOpts){
+  if(types[i]==='select'){let o=selOpts[i]||[];return`<select class="sel" style="height:24px;padding:2px;font-size:var(--fxs)">${o.map(x=>'<option>'+x+'</option>').join('')}</select>`;}
+  return `<input class="in">`;
+}
+function addRow(btn){
+  let tbl=btn.closest('.sec').querySelector('table');let tbody=tbl.querySelector('tbody');
+  let types=(tbl.dataset.types||'').split(',');let selOpts=[];
+  (tbl.dataset.selopts||'').split(';;').forEach(x=>{selOpts.push(x.split('|'));});
+  let nCols=tbody.querySelector('tr').querySelectorAll('td').length;
+  let nr=document.createElement('tr');
+  for(let i=0;i<nCols-1;i++){let td=document.createElement('td');td.innerHTML=tc(i,types,selOpts);nr.appendChild(td);}
+  let ac=document.createElement('td');ac.className='ac';ac.innerHTML='<button onclick="delRow(this)">🗑</button>';nr.appendChild(ac);
+  tbody.appendChild(nr);
+}
+function delRow(btn){
+  let tbody=btn.closest('tbody');
+  if(tbody.querySelectorAll('tr').length>1)btn.closest('tr').remove();else alert('至少保留一行数据');
+}
+function importCSV(btn){alert('导入功能：支持上传CSV/Excel文件，请对接后端实现')}
+function exportCSV(btn){alert('导出功能：将表格数据导出为CSV文件，请对接后端实现')}
+function secHTML(title,body,collapsed){return`<div class="sec${collapsed?' cl':''}"><div class="shd" onclick="this.parentElement.classList.toggle('cl')"><span class="st">${title}</span><svg class="sa"><use href="#cd"/></svg></div><div class="sc">${body}</div></div>`}
+
+function renderOverview(){
+  document.querySelectorAll('.si').forEach(el=>el.classList.toggle('on',el.dataset.step==='overview'));
+  document.getElementById('pageTitle').textContent='CAE分析申请流程 — 概览';
+  document.getElementById('stepHeader').innerHTML=`
+    <div class="step-bar"><div class="step-dot ex">📋</div><div class="step-info"><div class="sn">全部字段与开发备注</div><div class="sm">流程ID：RD02004 · 业务对象：WO_RD02004 · V1.6</div></div></div>
+    <div class="step-note">📌 流程：起草→三级组织负责人审批→分配工单→分析工程师提交报告(并审)→三级组织负责人审核→申请人确认</div>`;
+
+  let c='',devAll=[];
+  // 申请人信息
+  c+=secHTML('申请人信息',gridRows(fields.applicant,'readonly',0));
+  devAll.push({t:'申请人信息',i:['全部文本 ｜ 只读 ｜ 系统自动获取当前登录用户信息']});
+  // 申请信息
+  c+=secHTML('申请信息',gridRows(fields.apply,'edit',0));
+  devAll.push({t:'申请信息',i:['分析项目名称：单行文本，必填','所属单位：下拉选择，必填（基础数据·待定）','需要完成日期：日期选择框，必填','分析问题类型：下拉选择，必填（选项：力学/流体/热/其他，选"其他"无需额外录入）','分析目的说明：多行文本，必填','备选方案说明：多行文本，非必填']});
+  // 结构材料
+  c+=secHTML('结构材料（尽量提供材料物性表）',dataTable(fields.structure.cols,[{}],{n:'子表',rq:false}));
+  devAll.push({t:'结构材料子表',i:['全部单行文本 ｜ 非必填 ｜ 提示：尽量提供材料物性表','字段：零件名称 / 材料牌号 / 屈服强度（MPa）/ 密度（kg/m³）/ 杨氏模量（GPa）']});
+  // 流体属性
+  c+=secHTML('流体属性',dataTable(fields.fluid.cols,[{}],{n:'子表',rq:true,types:['select','text','text','text','text','text'],selOpts:[['水','空气','其他']]}));
+  devAll.push({t:'流体属性子表',i:['流体名称：下拉选择（水/空气/其他），必填','其余字段：单行文本 ｜ 必填 ｜ 摩尔质量/密度/比热容/动力粘度/导热系数']});
+  // 仿真要求
+  let s0=fields.sim.filter(x=>x.s===0),s2=fields.sim.filter(x=>x.s===2),s3=fields.sim.filter(x=>x.s===3),s5=fields.sim.filter(x=>x.s===5);
+  c+=`<div class="sec"><div class="shd" onclick="this.parentElement.classList.toggle('cl')"><span class="st">仿真要求（外载荷情况，连接状态等）</span><svg class="sa"><use href="#cd"/></svg></div><div class="sc">`;
+  c+=`<div class="stb">起草环节</div>`+gridRows(s0,'edit',0);
+  c+=`<div class="hr"><div class="stb">分配工单环节</div>`+gridRows(s2,'edit',2)+`</div>`;
+  c+=`<div class="hr"><div class="stb">提交报告环节</div>`+gridRows(s3,'edit',3)+`</div>`;
+  c+=`<div class="hr"><div class="stb">申请人确认环节</div>`+gridRows(s5,'edit',5)+`</div></div></div>`;
+  devAll.push({t:'仿真要求分布',i:['分配工单：CAE分析工程师（人员选择器·单选·必填，默认胡瑞清/00060470）、预估完成日期（日期·必填）','提交报告：实际分析问题类型 / 模拟依据 / 模拟条件及状态说明 / 分析结论，均必填','申请人确认：用户评价（单选·必填，选项：非常满意/满意/一般/不满意）、实施状态（单行文本·必填）','有字段需填写 → 不可跳过（为空跳过=否，相同跳过=否）']});
+  // 附件
+  let a0=fields.attach.filter(x=>x.s===0),a3=fields.attach.filter(x=>x.s===3);
+  c+=`<div class="sec"><div class="shd" onclick="this.parentElement.classList.toggle('cl')"><span class="st">附件信息</span><svg class="sa"><use href="#cd"/></svg></div><div class="sc">`;
+  c+=`<div class="stb">起草环节</div>`+gridRows(a0,'edit',0);
+  c+=`<div class="hr"><div class="stb">提交报告环节</div>`+gridRows(a3,'edit',3)+`</div></div></div>`;
+  devAll.push({t:'附件校验',i:['附件列表（多文件）：必填，提交时未上传 → 提示「请上传三维模型附件！」阻止提交','CAE分析报告（单文件）：必填，步骤③提交时未上传 → 提示「请上传CAE分析报告附件！」']});
+
+  // 统一开发备注
+  c+=`<div class="da"><div class="dah" onclick="this.parentElement.classList.toggle('op')"><svg class="dv2"><use href="#cr"/></svg> 📋 开发备注（${devAll.length}项）</div><div class="dab">`;
+  devAll.forEach(d=>{c+=`<div class="dag">${d.t}</div><div class="dai">${d.i.map(x=>'<div>'+x+'</div>').join('')}</div>`;});
+  c+=`</div></div>`;
+
+  // 流程元数据
+  c+=`<div class="sec"><div class="shd" onclick="this.parentElement.classList.toggle('cl')"><span class="st">📝 标题生成规则</span><svg class="sa"><use href="#cd"/></svg></div><div class="sc">
+    <table style="width:100%;border-collapse:collapse;font-size:var(--fsm)">
+      <thead><tr style="background:var(--hd)"><th style="padding:8px 12px;text-align:left;border-bottom:1px solid var(--dv)">标题类型</th><th style="padding:8px 12px;text-align:left;border-bottom:1px solid var(--dv)">说明</th><th style="padding:8px 12px;text-align:left;border-bottom:1px solid var(--dv)">规则</th><th style="padding:8px 12px;text-align:left;border-bottom:1px solid var(--dv)">示例</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid var(--dv);font-weight:var(--sb)">填写时标题</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">用户填写表单时显示的标题</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">默认使用流程通用名称</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">CAE分析申请流程</td></tr>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid var(--dv);font-weight:var(--sb)">提交后标题</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">系统生成，用于流程列表展示</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">[申请人][流程名称]-[年月]-[流水号]</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">张三CAE分析申请-202606-0001</td></tr>
+      </tbody>
+    </table>
+  </div></div>`;
+
+  c+=`<div class="sec"><div class="shd" onclick="this.parentElement.classList.toggle('cl')"><span class="st">🔗 字段联动关系</span><svg class="sa"><use href="#cd"/></svg></div><div class="sc">
+    <div style="padding:var(--smd);text-align:center;color:var(--t3);font-size:var(--fsm)">本流程字段间无联动关系</div>
+  </div></div>`;
+
+  c+=`<div class="sec"><div class="shd" onclick="this.parentElement.classList.toggle('cl')"><span class="st">🔔 通知配置</span><svg class="sa"><use href="#cd"/></svg></div><div class="sc">
+    <div style="padding:var(--smd);text-align:center;color:var(--t3);font-size:var(--fsm)">本流程各环节均无邮件/传阅/短信通知配置</div>
+  </div></div>`;
+
+  c+=`<div class="sec"><div class="shd" onclick="this.parentElement.classList.toggle('cl')"><span class="st">📎 流程角色（附录）</span><svg class="sa"><use href="#cd"/></svg></div><div class="sc">
+    <table style="width:100%;border-collapse:collapse;font-size:var(--fsm)">
+      <thead><tr style="background:var(--hd)"><th style="padding:8px 12px;text-align:left;border-bottom:1px solid var(--dv)">角色ID</th><th style="padding:8px 12px;text-align:left;border-bottom:1px solid var(--dv)">角色名称</th><th style="padding:8px 12px;text-align:left;border-bottom:1px solid var(--dv)">说明</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid var(--dv);font-weight:var(--sb)">PRD10014</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv)">工艺工程师</td><td style="padding:8px 12px;border-bottom:1px solid var(--dv);color:var(--t2)">入参默认=组织，负责分配工单</td></tr>
+      </tbody>
+    </table>
+  </div></div>`;
+
+  document.getElementById('stepContent').innerHTML=c;
+}
+
+// ====== INIT ======
+selectStep('overview');
+</script></body></html>
