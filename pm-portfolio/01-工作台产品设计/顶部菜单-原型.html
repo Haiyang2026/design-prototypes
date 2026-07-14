@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>顶部菜单 V1.0 - 原型</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #0069FF; --primary-light: #E9F1FF;
+      --bg-page: #F5F7FA; --bg-card: #FFFFFF;
+      --text-dark: #141B24; --text-gray: #4A5568; --text-light: #8697AE;
+      --border: #D2D7E1; --border-light: #EBEEF2;
+      --red: #FF4D5D; --orange: #FF813B; --green: #04D999;
+      --shadow: 0 2px 8px rgba(0,0,0,0.04); --radius: 6px;
+      --font: "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
+      --note-color: #FF6B6B;
+    }
+    body { font-family: var(--font); background: var(--bg-page); color: var(--text-dark); font-size: 14px; line-height: 1.5; }
+
+    /* ===== 原型文档布局 ===== */
+    .proto-wrapper { display: flex; min-height: 100vh; }
+    .proto-main { flex: 1; min-width: 0; }
+
+    .tag-todo { background: #FFF3CD; color: #856404; }
+    .tag-note { background: #D4EDDA; color: #155724; }
+    .tag-question { background: #F8D7DA; color: #721C24; }
+
+    /* ===== Top Bar ===== */
+    .top-bar {
+      position: fixed; top: 0; left: 0; right: 0; height: 48px;
+      background: #fff; border-bottom: 1px solid var(--border-light);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px; z-index: 100;
+    }
+    .top-bar .logo { font-size: 20px; font-weight: 700; color: var(--primary); margin-right: 24px; }
+    .top-tabs { display: flex; align-items: center; gap: 4px; flex: 1; }
+    .top-tab { 
+      padding: 8px 16px; font-size: 13px; color: var(--text-gray); cursor: pointer; 
+      border-radius: 4px; transition: all 0.15s; white-space: nowrap; 
+      position: relative; user-select: none;
+    }
+    .top-tab:hover { background: #F5F6F8; }
+    .top-tab.active { background: var(--primary-light); color: var(--primary); font-weight: 500; }
+    .top-tab.drag-active { opacity: 0.5; border: 2px dashed var(--primary); }
+    .top-bar .actions { display: flex; align-items: center; gap: 8px; }
+    .btn-old { background: var(--primary); color: #fff; border: none; padding: 6px 14px; border-radius: 4px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .icon-btn { width: 32px; height: 32px; border-radius: 50%; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-gray); font-size: 18px; position: relative; }
+    .icon-btn:hover { background: #F5F6F8; }
+    .badge { position: absolute; top: 2px; right: 2px; width: 8px; height: 8px; background: var(--red); border-radius: 50%; }
+    .user-avatar { 
+      width: 32px; height: 32px; border-radius: 50%; background: var(--primary-light); color: var(--primary); 
+      display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; 
+      cursor: pointer; position: relative; border: 2px solid transparent; transition: all 0.15s;
+    }
+    .user-avatar:hover { border-color: var(--primary); background: #E9F1FF; }
+    .avatar-gear-badge {
+      position: absolute; bottom: -2px; right: -2px; width: 14px; height: 14px;
+      background: var(--primary); color: #fff; border-radius: 50%; font-size: 9px;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+
+    /* 设置模式标记 */
+    .top-bar.setting-mode .top-tab { 
+      padding-right: 32px; 
+      cursor: grab;
+    }
+    .top-bar.setting-mode .top-tab:active { cursor: grabbing; }
+    .tab-star {
+      position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+      font-size: 14px; cursor: pointer; line-height: 1;
+      display: none;
+      transition: transform 0.15s;
+    }
+    .top-bar.setting-mode .tab-star { display: inline; }
+    .tab-star:hover { transform: translateY(-50%) scale(1.3); }
+    .tab-star.filled { color: #FFB800; }
+    .tab-star.empty { color: var(--border); }
+    .tab-star.empty:hover { color: #FFB800; }
+
+    /* 拖拽幽灵 */
+    .drag-ghost {
+      position: fixed; pointer-events: none; z-index: 99999;
+      padding: 8px 16px; background: var(--primary-light); color: var(--primary);
+      border: 1px solid var(--primary); border-radius: 4px;
+      font-size: 13px; font-weight: 500; box-shadow: 0 4px 12px rgba(0,105,255,0.25);
+      opacity: 0.9;
+    }
+
+    /* 更多菜单 */
+    .more-dropdown {
+      position: absolute; top: 44px; right: 0;
+      background: #fff; border: 1px solid var(--border); border-radius: 6px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1); display: none; z-index: 9999;
+      min-width: 120px; padding: 4px 0;
+    }
+    .more-dropdown.show { display: block; }
+    .more-dropdown-item { padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--text-gray); }
+    .more-dropdown-item:hover { background: #F5F6F8; color: var(--text-dark); }
+
+    /* 保存/取消工具栏 */
+    .setting-toolbar {
+      display: none; position: fixed; bottom: 0; left: 0; right: 0;
+      height: 52px; background: #fff; border-top: 1px solid var(--border-light);
+      align-items: center; justify-content: center; gap: 12px; z-index: 10000;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+    }
+    .setting-toolbar.show { display: flex; }
+    .setting-toolbar .hint { font-size: 13px; color: var(--text-light); }
+    .btn-save { padding: 8px 28px; border: none; border-radius: 4px; background: var(--primary); color: #fff; font-size: 14px; cursor: pointer; font-family: inherit; }
+    .btn-save:hover { opacity: 0.9; }
+    .btn-cancel { padding: 8px 28px; border: 1px solid var(--border); border-radius: 4px; background: #fff; color: var(--text-gray); font-size: 14px; cursor: pointer; font-family: inherit; }
+    .btn-cancel:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-outline-sm {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 5px 12px; border: 1px solid var(--border-light); border-radius: 4px;
+      background: #fff; font-size: 12px; color: var(--text-gray); cursor: pointer;
+      font-family: inherit; transition: all 0.15s;
+    }
+    .btn-outline-sm:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* ===== 个人设置抽屉 ===== */
+    .settings-drawer-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.3); z-index: 9998;
+    }
+    .settings-drawer-overlay.show { display: block; }
+
+    .settings-drawer {
+      position: fixed; top: 0; right: -380px; bottom: 0; width: 360px;
+      background: #fff; z-index: 9999; transition: right 0.3s ease;
+      display: flex; flex-direction: column; box-shadow: -4px 0 20px rgba(0,0,0,0.1);
+    }
+    .settings-drawer.show { right: 0; }
+
+    .drawer-section { padding: 16px 20px; }
+    .drawer-divider { border-top: 1px solid var(--border-light); }
+
+    /* 个人信息区 */
+    .drawer-profile {
+      display: flex; flex-direction: column; gap: 10px;
+      padding: 20px;
+    }
+    .profile-avatar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+    .profile-avatar {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: linear-gradient(135deg, #0069FF, #00C6FF);
+      color: #fff; display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 600;
+    }
+    .profile-name { font-size: 16px; font-weight: 600; color: var(--text-dark); }
+    .profile-id { font-size: 12px; color: var(--text-light); }
+
+    .profile-field {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 4px 0; font-size: 13px;
+    }
+    .profile-field .label { color: var(--text-light); min-width: 70px; }
+    .profile-field .value { color: var(--text-dark); flex: 1; }
+    .profile-field .readonly { color: var(--text-gray); }
+    .profile-field .action-icon {
+      cursor: pointer; color: var(--primary); font-size: 15px; margin-left: 8px;
+      opacity: 0.7; transition: opacity 0.15s;
+    }
+    .profile-field .action-icon:hover { opacity: 1; }
+    .profile-field .info-icon {
+      cursor: help; color: var(--text-light); font-size: 14px; margin-left: 4px;
+      transition: color 0.15s; position: relative;
+    }
+    .profile-field .info-icon:hover { color: var(--primary); }
+
+    /* 办公手机 hover 气泡 — 显示在图标左侧，避免被右侧抽屉截断 */
+    .phone-tooltip {
+      position: absolute; right: 100%; top: 50%; transform: translateY(-50%);
+      margin-right: 8px; width: 240px;
+      background: #fffef5; border: 1px solid #F0E68C; border-radius: 6px;
+      padding: 8px 12px; font-size: 12px; color: #555;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 10000;
+      line-height: 1.5; opacity: 0; pointer-events: none; transition: opacity 0.15s;
+    }
+    .phone-tooltip::before {
+      content: ''; position: absolute; right: -6px; top: 50%; transform: translateY(-50%);
+      border-width: 6px 0 6px 6px; border-style: solid;
+      border-color: transparent transparent transparent #F0E68C;
+    }
+    .info-icon:hover .phone-tooltip { opacity: 1; }
+
+    /* 内联编辑 */
+    .profile-field.editing { padding: 2px 0; }
+    .profile-field .edit-input {
+      flex: 1; padding: 4px 8px; border: 1px solid var(--primary); border-radius: 4px;
+      font-size: 13px; font-family: inherit; outline: none;
+    }
+    .profile-field .edit-actions { display: flex; gap: 4px; margin-left: 8px; }
+    .profile-field .edit-actions button {
+      padding: 2px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; font-family: inherit;
+      border: 1px solid var(--border);
+    }
+    .profile-field .edit-actions .btn-confirm { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .profile-field .edit-actions .btn-confirm:hover { opacity: 0.9; }
+    .profile-field .edit-actions .btn-abort { background: #fff; color: var(--text-gray); }
+    .profile-field .edit-actions .btn-abort:hover { border-color: var(--primary); color: var(--primary); }
+
+    .btn-password {
+      display: block; width: 100%; padding: 8px; border: 1px solid var(--border);
+      border-radius: 4px; background: #fff; color: var(--primary);
+      font-size: 13px; cursor: pointer; font-family: inherit; text-align: center;
+      margin-top: 6px; transition: all 0.15s;
+    }
+    .btn-password:hover { border-color: var(--primary); background: var(--primary-light); }
+
+    /* 功能区 */
+    .drawer-menu-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 20px; cursor: pointer; transition: background 0.15s;
+      font-size: 14px; color: var(--text-dark);
+    }
+    .drawer-menu-item:hover { background: #F5F6F8; }
+    .drawer-menu-item .left { display: flex; align-items: center; gap: 10px; }
+    .drawer-menu-item .icon { font-size: 18px; width: 24px; text-align: center; }
+    .drawer-menu-item .arrow { color: var(--text-light); font-size: 14px; }
+    .drawer-menu-item .msg-count {
+      background: var(--red); color: #fff; border-radius: 10px;
+      padding: 1px 7px; font-size: 11px; font-weight: 500;
+    }
+
+    /* 退出区 */
+    .drawer-logout {
+      padding: 16px 20px; margin-top: auto;
+    }
+    .btn-logout {
+      display: block; width: 100%; padding: 10px;
+      border: 1px solid var(--red); border-radius: 6px;
+      background: #fff; color: var(--red); font-size: 14px;
+      cursor: pointer; font-family: inherit; transition: all 0.15s;
+    }
+    .btn-logout:hover { background: #FFF5F5; }
+
+    /* ===== 页面设置全屏弹窗 ===== */
+    .page-settings-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 10001;
+    }
+    .page-settings-overlay.show { display: block; }
+
+    .page-settings-modal {
+      position: fixed; inset: 0;
+      background: #fff; display: flex; flex-direction: column;
+      box-shadow: none;
+    }
+    .page-settings-modal .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 24px; border-bottom: 1px solid var(--border-light);
+      background: #fff;
+    }
+    .page-settings-modal .modal-title { font-size: 18px; font-weight: 600; }
+    .page-settings-modal .modal-close {
+      width: 32px; height: 32px; border-radius: 50%; border: none;
+      background: transparent; font-size: 20px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-light);
+    }
+    .page-settings-modal .modal-close:hover { background: #F5F6F8; color: var(--text-dark); }
+
+    .page-settings-modal .modal-body { flex: 1; display: flex; overflow: hidden; }
+
+    /* 左侧：菜单设置 */
+    .menu-settings-panel {
+      flex: 0 0 33.333%; padding: 20px 24px; overflow-y: auto;
+      border-right: 1px solid var(--border-light); background: #FAFBFC;
+    }
+    .menu-settings-panel h4 { font-size: 15px; font-weight: 600; margin-bottom: 8px; color: var(--text-dark); }
+    .menu-settings-panel .hint { font-size: 12px; color: var(--text-light); margin-bottom: 16px; }
+
+    .menu-setting-item {
+      display: flex; align-items: center; padding: 10px 14px;
+      border: 1px solid var(--border-light); border-radius: 6px;
+      margin-bottom: 6px; background: #FAFBFC;
+      transition: all 0.15s; cursor: grab;
+    }
+    .menu-setting-item:hover { border-color: var(--primary); background: #fff; }
+    .menu-setting-item.drag-over { border-color: var(--primary); border-style: dashed; }
+    .menu-setting-item.dragging { opacity: 0.4; }
+    .menu-setting-item .drag-handle {
+      color: var(--text-light); font-size: 16px; margin-right: 12px; cursor: grab;
+    }
+    .menu-setting-item .menu-name { flex: 1; font-size: 14px; font-weight: 500; }
+    .menu-setting-item .default-star {
+      font-size: 18px; cursor: pointer; transition: transform 0.15s;
+      color: var(--border);
+    }
+    .menu-setting-item .default-star:hover { transform: scale(1.3); }
+    .menu-setting-item .default-star.filled { color: #FFB800; }
+    .menu-setting-item .default-tag {
+      font-size: 11px; padding: 2px 8px; border-radius: 10px;
+      background: #FFF8E1; color: #E8A400; font-weight: 500; margin-left: 8px;
+    }
+
+    /* 右侧：页面布局设置 */
+    .layout-settings-panel {
+      flex: 1; padding: 20px 24px; overflow-y: auto;
+      display: flex; flex-direction: column; background: #fff;
+    }
+    .layout-settings-panel h4 { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: var(--text-dark); }
+    .layout-settings-panel .hint { font-size: 12px; color: var(--text-light); margin-bottom: 16px; }
+
+    /* 菜单选择器 */
+    .menu-selector {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
+    }
+    .menu-selector label { font-size: 13px; color: var(--text-gray); }
+    .menu-selector select {
+      flex: 1; max-width: 260px; padding: 8px 12px; border: 1px solid var(--border);
+      border-radius: 4px; font-size: 13px; font-family: inherit; cursor: pointer;
+      background: #fff;
+    }
+    .menu-selector select:focus { outline: none; border-color: var(--primary); }
+    .layout-embed-placeholder {
+      flex: 1; min-height: 300px; border: 2px dashed var(--border);
+      border-radius: 8px; background: #FAFBFC;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      color: var(--text-light); font-size: 14px; gap: 8px;
+    }
+    .layout-embed-placeholder .embed-icon { font-size: 40px; }
+    .layout-embed-placeholder .embed-note { font-size: 12px; color: var(--primary); }
+
+    .modal-toolbar {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      padding: 12px 24px; border-top: 2px solid var(--primary-light);
+      background: #FAFBFC;
+    }
+    .modal-toolbar .hint {
+      font-size: 12px; color: var(--text-light); margin-right: auto;
+    }
+
+    /* ===== 修改密码全屏弹窗 ===== */
+    .password-modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 10002;
+    }
+    .password-modal-overlay.show { display: block; }
+
+    .password-modal {
+      position: fixed; inset: 0; background: #fff;
+      display: flex; flex-direction: column;
+    }
+    .password-modal .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 24px; border-bottom: 1px solid var(--border-light);
+      background: #fff;
+    }
+    .password-modal .modal-title { font-size: 18px; font-weight: 600; }
+    .password-modal .modal-close {
+      width: 32px; height: 32px; border-radius: 50%; border: none;
+      background: transparent; font-size: 20px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; color: var(--text-light);
+    }
+    .password-modal .modal-close:hover { background: #F5F6F8; color: var(--text-dark); }
+    .password-modal .modal-body {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 24px; gap: 16px;
+    }
+    .password-modal .redirect-icon { font-size: 48px; color: var(--primary); }
+    .password-modal .redirect-text { font-size: 16px; color: var(--text-dark); font-weight: 500; }
+    .password-modal .redirect-note { font-size: 13px; color: var(--text-light); }
+    .password-modal .modal-actions {
+      display: flex; gap: 12px; padding: 16px 24px; border-top: 1px solid var(--border-light);
+      justify-content: center; background: #FAFBFC;
+    }
+    .password-modal .modal-actions .btn-cancel,
+    .password-modal .modal-actions .btn-save { padding: 8px 28px; }
+
+    /* ===== 切换确认弹窗 ===== */
+    .confirm-dialog-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4); z-index: 10003;
+      justify-content: center; align-items: center;
+    }
+    .confirm-dialog-overlay.show { display: flex; }
+    .confirm-dialog {
+      background: #fff; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      width: 360px; padding: 24px; text-align: center;
+    }
+    .confirm-dialog .title { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+    .confirm-dialog .message { font-size: 13px; color: var(--text-dark); margin-bottom: 20px; line-height: 1.6; }
+    .confirm-dialog .actions { display: flex; gap: 10px; justify-content: center; }
+    .confirm-dialog .actions button { padding: 8px 16px; border-radius: 4px; font-size: 13px; cursor: pointer; font-family: inherit; }
+    .confirm-dialog .btn-save { border: none; background: var(--primary); color: #fff; }
+    .confirm-dialog .btn-discard { border: 1px solid var(--border); background: #fff; color: var(--text-gray); }
+    .confirm-dialog .btn-cancel { border: 1px solid var(--border); background: #fff; color: var(--text-gray); }
+    .confirm-dialog .btn-discard:hover,
+    .confirm-dialog .btn-cancel:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* ===== Toast ===== */
+    .toast {
+      position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
+      background: var(--green); color: #fff; padding: 10px 24px; border-radius: 6px;
+      font-size: 14px; z-index: 99999; opacity: 0; transition: opacity 0.3s;
+      box-shadow: 0 4px 12px rgba(4, 217, 153, 0.3);
+    }
+    .toast.show { opacity: 1; }
+
+    /* ===== 主内容 ===== */
+    .main-content { margin-top: 48px; padding: 16px; }
+    .banner-large { height: 160px; background: linear-gradient(135deg, #0069FF 0%, #00C6FF 100%); border-radius: 8px; position: relative; overflow: hidden; display: flex; align-items: center; padding: 24px; color: #fff; margin-bottom: 16px; }
+    .banner-large::before { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 50%; background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200"><rect fill="%23ffffff10" x="280" y="20" width="80" height="120" rx="8"/><rect fill="%23ffffff10" x="200" y="40" width="60" height="100" rx="8"/><circle fill="%23ffffff15" cx="120" cy="100" r="60"/></svg>') no-repeat center; background-size: contain; }
+    .banner-title { font-size: 22px; font-weight: 600; position: relative; z-index: 1; }
+    .card { background: #fff; border-radius: 8px; box-shadow: var(--shadow); margin-bottom: 16px; overflow: hidden; }
+    .card-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--border-light); }
+    .card-title { font-size: 15px; font-weight: 600; color: var(--text-dark); }
+    .my-apps-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; padding: 12px 16px; }
+    .app-card {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 12px; border: 1px solid var(--border-light); border-radius: 8px;
+      background: #fff; cursor: pointer; transition: all 0.2s;
+    }
+    .app-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); border-color: var(--primary); transform: translateY(-2px); }
+    .app-card .app-icon-box { width: 40px; height: 40px; border-radius: 8px; background: #F5F7FA; border: 1px solid var(--border-light); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .app-card .app-name { font-size: 13px; font-weight: 500; color: var(--text-dark); }
+  </style>
+</head>
+<body>
+<div class="proto-wrapper">
+<div class="proto-main">
+
+  <!-- ===== Toast ===== -->
+  <div class="toast" id="toast">保存成功</div>
+
+  <!-- ===== Top Bar ===== -->
+  <header class="top-bar" id="topBar">
+    <div style="display:flex;align-items:center;">
+      <span class="logo">JOMO</span>
+      <div class="top-tabs" id="topTabs">
+        <span class="top-tab active" data-id="portal">门户首页</span>
+        <span class="top-tab" data-id="flow">流程中心</span>
+        <span class="top-tab" data-id="todo">待办中心</span>
+        <span class="top-tab" data-id="knowledge">知识中心</span>
+        <span class="top-tab" data-id="apps">应用中心</span>
+        <span class="top-tab" data-id="hr">人力平台</span>
+        <span class="top-tab" data-id="rd">研发平台</span>
+        <span class="top-tab" data-id="rpa">RPA管理</span>
+        <span class="top-tab" data-id="dev">开发者平台</span>
+        <span class="top-tab" data-id="contacts">通讯录</span>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn-old"><span>↗</span> 旧门户</button>
+      <div class="user-avatar" id="btnGear" title="个人设置">
+        怀
+        <span class="avatar-gear-badge">⚙</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== 个人设置抽屉 ===== -->
+  <div class="settings-drawer-overlay" id="drawerOverlay"></div>
+  <div class="settings-drawer" id="settingsDrawer">
+    <!-- 个人信息区 -->
+    <div class="drawer-profile">
+      <div class="profile-avatar-row">
+        <div class="profile-avatar">怀</div>
+        <div>
+          <div class="profile-name">徐海洋</div>
+          <div class="profile-id">工号：00112223</div>
+        </div>
+      </div>
+      <div class="drawer-divider"></div>
+      <div class="profile-field">
+        <span class="label">账号</span>
+        <span class="value readonly">00112223</span>
+      </div>
+      <div class="profile-field" style="position:relative;">
+        <span class="label">办公手机</span>
+        <span class="value readonly">138****1234</span>
+        <span class="info-icon" title="查看说明">ⓘ
+          <span class="phone-tooltip">⚠️ 请在 OA - 流程中心 - 人资管理类 - 其它管理 - 手机业务办理申请 - 工作手机号码变更</span>
+        </span>
+      </div>
+      <div class="profile-field">
+        <span class="label">邮箱</span>
+        <span class="value readonly">xuhaiyang@jomoo.com</span>
+      </div>
+      <div class="profile-field editable-field" data-field="mobile" data-required="true" data-value="138****5678">
+        <span class="label">个人手机</span>
+        <span class="value">138****5678</span>
+        <span class="action-icon" title="编辑（必填）">✏</span>
+      </div>
+      <div class="profile-field editable-field" data-field="phone" data-required="false" data-value="0592-xxxx">
+        <span class="label">座机</span>
+        <span class="value">0592-xxxx</span>
+        <span class="action-icon" title="编辑（非必填）">✏</span>
+      </div>
+      <button class="btn-password">修改密码 →</button>
+    </div>
+
+    <div class="drawer-divider"></div>
+
+    <!-- 功能区 -->
+    <div class="drawer-menu-item" id="btnPageSettings">
+      <span class="left"><span class="icon">📋</span> 页面设置</span>
+      <span class="arrow">›</span>
+    </div>
+    <div class="drawer-menu-item">
+      <span class="left"><span class="icon">📥</span> 下载移动端</span>
+      <span class="arrow">›</span>
+    </div>
+    <div class="drawer-menu-item">
+      <span class="left"><span class="icon">💬</span> 消息</span>
+      <span class="msg-count">12</span>
+    </div>
+    <div class="drawer-menu-item">
+      <span class="left"><span class="icon">🌐</span> 常用语言</span>
+      <span class="arrow">›</span>
+    </div>
+    <div class="drawer-menu-item">
+      <span class="left"><span class="icon">🎨</span> 常用皮肤</span>
+      <span class="arrow">›</span>
+    </div>
+
+    <!-- 退出区 -->
+    <div class="drawer-logout">
+      <button class="btn-logout">退出登录</button>
+    </div>
+  </div>
+
+  <!-- ===== 页面设置全屏弹窗 ===== -->
+  <div class="page-settings-overlay" id="pageSettingsOverlay">
+    <div class="page-settings-modal">
+      <div class="modal-header">
+        <span class="modal-title">页面设置</span>
+        <button class="modal-close" id="modalClose">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- 左侧：菜单设置 -->
+        <div class="menu-settings-panel">
+          <h4>菜单设置</h4>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <p class="hint" style="margin-bottom:0;">拖拽调整顺序，点击 ★ 设置默认页</p>
+            <button class="btn-outline-sm" id="btnResetDefault">恢复默认</button>
+          </div>
+          <div id="menuSettingList">
+            <!-- 动态生成 -->
+          </div>
+        </div>
+        <!-- 右侧：页面布局设置 -->
+        <div class="layout-settings-panel">
+          <h4>页面布局设置</h4>
+          <div class="menu-selector">
+            <label for="layoutMenuSelect">菜单选择</label>
+            <select id="layoutMenuSelect">
+              <option value="portal">门户首页（集团门户）</option>
+              <option value="hr">人力平台</option>
+              <option value="rd">研发平台</option>
+            </select>
+          </div>
+          <div class="layout-embed-placeholder">
+            <span class="embed-icon">⛶</span>
+            <span>嵌入门户引擎原有「页面布局设置」页</span>
+            <span class="embed-note">复用门户引擎既有能力，不另做</span>
+            <button class="btn-outline-sm" id="btnSimulateModify" style="margin-top:12px;">模拟修改当前布局</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-toolbar">
+        <span class="hint">拖拽调整顺序，点击 ★ 设置默认页</span>
+        <button class="btn-cancel" id="modalCancel">取消</button>
+        <button class="btn-save" id="modalSave">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 修改密码全屏弹窗 ===== -->
+  <div class="password-modal-overlay" id="passwordModalOverlay">
+    <div class="password-modal">
+      <div class="modal-header">
+        <span class="modal-title">修改密码</span>
+        <button class="modal-close" id="passwordModalClose">✕</button>
+      </div>
+      <div class="modal-body">
+        <span class="redirect-icon">🔐</span>
+        <span class="redirect-text">即将跳转至用户中心修改密码页</span>
+        <span class="redirect-note">原密码不在当前页面展示，跳转后由用户中心统一处理</span>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="passwordModalCancel">取消</button>
+        <button class="btn-save" id="passwordModalConfirm">确认跳转</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 布局切换确认弹窗 ===== -->
+  <div class="confirm-dialog-overlay" id="layoutConfirmOverlay">
+    <div class="confirm-dialog">
+      <div class="title">切换菜单前请确认</div>
+      <div class="message" id="layoutConfirmMessage">当前菜单布局有未保存的修改，切换前是否保存？</div>
+      <div class="actions">
+        <button class="btn-discard" id="layoutDiscard">不保存</button>
+        <button class="btn-cancel" id="layoutCancel">取消</button>
+        <button class="btn-save" id="layoutSave">保存并切换</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 主内容区（示意） -->
+  <div class="main-content">
+    <div class="banner-large">
+      <div class="banner-title">集团门户</div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">我的应用</span>
+      </div>
+      <div class="my-apps-grid">
+        <div class="app-card"><div class="app-icon-box">✉</div><div class="app-name">邮箱</div></div>
+        <div class="app-card"><div class="app-icon-box">📅</div><div class="app-name">日历</div></div>
+        <div class="app-card"><div class="app-icon-box">📊</div><div class="app-name">报表</div></div>
+        <div class="app-card"><div class="app-icon-box">👥</div><div class="app-name">通讯录</div></div>
+        <div class="app-card"><div class="app-icon-box">📝</div><div class="app-name">审批</div></div>
+        <div class="app-card"><div class="app-icon-box">📁</div><div class="app-name">文档</div></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- proto-main -->
+
+</div><!-- proto-wrapper -->
+
+<script>
+// ===== DOM 引用 =====
+const topBar = document.getElementById('topBar');
+const topTabs = document.getElementById('topTabs');
+const btnGear = document.getElementById('btnGear');
+const drawerOverlay = document.getElementById('drawerOverlay');
+const settingsDrawer = document.getElementById('settingsDrawer');
+const btnPageSettings = document.getElementById('btnPageSettings');
+const pageSettingsOverlay = document.getElementById('pageSettingsOverlay');
+const modalClose = document.getElementById('modalClose');
+const modalCancel = document.getElementById('modalCancel');
+const modalSave = document.getElementById('modalSave');
+const menuSettingList = document.getElementById('menuSettingList');
+const toast = document.getElementById('toast');
+const layoutMenuSelect = document.getElementById('layoutMenuSelect');
+const btnSimulateModify = document.getElementById('btnSimulateModify');
+const layoutConfirmOverlay = document.getElementById('layoutConfirmOverlay');
+const layoutConfirmMessage = document.getElementById('layoutConfirmMessage');
+const layoutSave = document.getElementById('layoutSave');
+const layoutDiscard = document.getElementById('layoutDiscard');
+const layoutCancel = document.getElementById('layoutCancel');
+const passwordModalOverlay = document.getElementById('passwordModalOverlay');
+const passwordModalClose = document.getElementById('passwordModalClose');
+const passwordModalCancel = document.getElementById('passwordModalCancel');
+const passwordModalConfirm = document.getElementById('passwordModalConfirm');
+const btnPassword = document.querySelector('.btn-password');
+
+// ===== 状态 =====
+let currentOrder = null;      // 菜单项ID数组（进入弹窗时的快照）
+let defaultPageId = 'portal'; // 默认页菜单项ID
+let dragSrc = null;           // 当前拖拽的菜单项
+let layoutModified = false;   // 当前布局是否有未保存修改
+let pendingMenuValue = null;  // 菜单切换前临时记录的目标值
+
+// ===== 抽屉打开/关闭 =====
+btnGear.addEventListener('click', () => {
+  settingsDrawer.classList.add('show');
+  drawerOverlay.classList.add('show');
+});
+
+drawerOverlay.addEventListener('click', () => {
+  settingsDrawer.classList.remove('show');
+  drawerOverlay.classList.remove('show');
+});
+
+// ===== 页面设置弹窗打开/关闭 =====
+btnPageSettings.addEventListener('click', () => {
+  settingsDrawer.classList.remove('show');
+  drawerOverlay.classList.remove('show');
+  openPageSettings();
+});
+
+function openPageSettings() {
+  // 快照当前菜单顺序
+  const tabs = document.querySelectorAll('#topTabs .top-tab');
+  currentOrder = Array.from(tabs).map(t => t.dataset.id);
+  
+  // 重置布局状态
+  layoutModified = false;
+  resetSimulateButton();
+  layoutMenuSelect.value = 'portal';
+  layoutMenuSelect.dataset.current = 'portal';
+  
+  // 渲染左侧菜单设置列表
+  renderMenuSettingList();
+  
+  pageSettingsOverlay.classList.add('show');
+  // 记录当前打开的模式（menu / layout）
+  window._confirmMode = 'close';
+}
+
+function closePageSettings() {
+  pageSettingsOverlay.classList.remove('show');
+}
+
+function tryCloseModal(skipLayout) {
+  if (!skipLayout && layoutModified) {
+    window._confirmMode = 'close';
+    window._pendingCloseAction = () => { restoreOrder(); closePageSettings(); };
+    layoutConfirmMessage.textContent = '当前布局页有未保存的修改，关闭前是否保存？';
+    layoutSave.textContent = '保存并关闭';
+    layoutDiscard.textContent = '直接关闭';
+    layoutConfirmOverlay.classList.add('show');
+    return;
+  }
+  restoreOrder();
+  closePageSettings();
+}
+
+modalClose.addEventListener('click', () => tryCloseModal());
+modalCancel.addEventListener('click', () => tryCloseModal());
+pageSettingsOverlay.addEventListener('click', (e) => {
+  if (e.target === pageSettingsOverlay) {
+    tryCloseModal();
+  }
+});
+
+// ===== 修改密码弹窗 =====
+btnPassword.addEventListener('click', () => {
+  passwordModalOverlay.classList.add('show');
+});
+
+function closePasswordModal() {
+  passwordModalOverlay.classList.remove('show');
+}
+
+passwordModalClose.addEventListener('click', closePasswordModal);
+passwordModalCancel.addEventListener('click', closePasswordModal);
+passwordModalConfirm.addEventListener('click', () => {
+  closePasswordModal();
+  toast.textContent = '跳转至用户中心修改密码';
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+});
+
+// ===== 布局切换：未保存修改提示 =====
+if (btnSimulateModify) {
+  btnSimulateModify.addEventListener('click', () => {
+    layoutModified = true;
+    btnSimulateModify.textContent = '当前布局已修改（未保存）';
+    btnSimulateModify.style.borderColor = 'var(--orange)';
+    btnSimulateModify.style.color = 'var(--orange)';
+  });
+}
+
+layoutMenuSelect.addEventListener('change', () => {
+  if (layoutModified) {
+    window._confirmMode = 'switch';
+    pendingMenuValue = layoutMenuSelect.value;
+    layoutMenuSelect.value = layoutMenuSelect.dataset.current || 'portal';
+    layoutConfirmMessage.textContent = '当前菜单布局有未保存的修改，切换前是否保存？';
+    layoutSave.textContent = '保存并切换';
+    layoutDiscard.textContent = '不保存';
+    layoutConfirmOverlay.classList.add('show');
+  } else {
+    switchLayoutMenu(layoutMenuSelect.value);
+  }
+});
+
+layoutSave.addEventListener('click', () => {
+  layoutModified = false;
+  resetSimulateButton();
+  layoutConfirmOverlay.classList.remove('show');
+  if (window._confirmMode === 'close') {
+    // 关闭模式：执行 pendingCloseAction
+    if (window._pendingCloseAction) {
+      window._pendingCloseAction();
+      window._pendingCloseAction = null;
+    }
+    toast.textContent = '布局已保存';
+  } else {
+    // 切换模式
+    switchLayoutMenu(pendingMenuValue);
+    toast.textContent = '布局已保存并切换';
+  }
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+});
+
+layoutDiscard.addEventListener('click', () => {
+  layoutModified = false;
+  resetSimulateButton();
+  layoutConfirmOverlay.classList.remove('show');
+  if (window._confirmMode === 'close') {
+    if (window._pendingCloseAction) {
+      window._pendingCloseAction();
+      window._pendingCloseAction = null;
+    }
+  } else {
+    switchLayoutMenu(pendingMenuValue);
+  }
+});
+
+layoutCancel.addEventListener('click', () => {
+  pendingMenuValue = null;
+  layoutConfirmOverlay.classList.remove('show');
+});
+
+function resetSimulateButton() {
+  if (btnSimulateModify) {
+    btnSimulateModify.textContent = '模拟修改当前布局';
+    btnSimulateModify.style.borderColor = '';
+    btnSimulateModify.style.color = '';
+  }
+}
+
+// ===== ESC 键全局关闭 =====
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    // 先关最低层确认弹窗
+    if (layoutConfirmOverlay.classList.contains('show')) {
+      layoutConfirmOverlay.classList.remove('show');
+      pendingMenuValue = null;
+      return;
+    }
+    if (passwordModalOverlay.classList.contains('show')) {
+      closePasswordModal();
+      return;
+    }
+    if (pageSettingsOverlay.classList.contains('show')) {
+      tryCloseModal();
+      return;
+    }
+    if (settingsDrawer.classList.contains('show')) {
+      settingsDrawer.classList.remove('show');
+      drawerOverlay.classList.remove('show');
+      return;
+    }
+  }
+});
+
+// ===== 恢复默认 =====
+const btnResetDefault = document.getElementById('btnResetDefault');
+if (btnResetDefault) {
+  btnResetDefault.addEventListener('click', () => {
+    if (confirm('确认恢复默认菜单顺序和默认页？')) {
+      // 恢复默认顺序（按 data-id 字母序模拟后台默认）
+      const tabs = document.querySelectorAll('#topTabs .top-tab');
+      const sorted = Array.from(tabs).sort((a, b) => a.dataset.id.localeCompare(b.dataset.id));
+      sorted.forEach(t => topTabs.appendChild(t));
+      defaultPageId = 'portal';
+      renderMenuSettingList();
+      toast.textContent = '已恢复默认设置';
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  });
+}
+
+function switchLayoutMenu(menuId) {
+  layoutMenuSelect.dataset.current = menuId;
+  layoutMenuSelect.value = menuId;
+  const menuNames = {
+    portal: '门户首页（集团门户）',
+    hr: '人力平台',
+    rd: '研发平台'
+  };
+  toast.textContent = `已切换至 ${menuNames[menuId] || menuId} 布局页`;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// ===== 渲染菜单设置列表 =====
+function renderMenuSettingList() {
+  const tabs = document.querySelectorAll('#topTabs .top-tab');
+  const count = tabs.length;
+  menuSettingList.innerHTML = '';
+  
+  tabs.forEach(tab => {
+    const item = document.createElement('div');
+    item.className = 'menu-setting-item';
+    item.draggable = true;
+    item.dataset.id = tab.dataset.id;
+    item.dataset.name = tab.textContent.trim();
+    
+    const isDefault = tab.dataset.id === defaultPageId;
+    
+    // 单菜单项：隐藏拖拽手柄和星标
+    if (count <= 1) {
+      item.draggable = false;
+      item.style.cursor = 'default';
+      item.innerHTML = `
+        <span class="menu-name">${tab.textContent.trim()}</span>
+        <span class="default-tag">默认页</span>
+      `;
+    } else {
+      item.innerHTML = `
+        <span class="drag-handle">⋮⋮</span>
+        <span class="menu-name">${tab.textContent.trim()}</span>
+        ${isDefault ? '<span class="default-tag">默认页</span>' : ''}
+        <span class="default-star${isDefault ? ' filled' : ''}" data-id="${tab.dataset.id}">★</span>
+      `;
+      
+      // 拖拽事件
+      item.addEventListener('dragstart', handleDragStart);
+      item.addEventListener('dragover', handleDragOver);
+      item.addEventListener('dragleave', handleDragLeave);
+      item.addEventListener('drop', handleDrop);
+      item.addEventListener('dragend', handleDragEnd);
+      
+      // ★ 点击
+      const star = item.querySelector('.default-star');
+      star.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleDefaultStar(tab.dataset.id);
+      });
+    }
+    
+    menuSettingList.appendChild(item);
+  });
+}
+
+// ===== 拖拽排序（含 auto-scroll）=====
+function handleDragStart(e) {
+  dragSrc = this;
+  this.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', this.dataset.id);
+  // 启动 auto-scroll
+  window._dragScrollInterval = setInterval(autoScrollOnDrag, 50);
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  this.classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+  this.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  this.classList.remove('drag-over');
+  
+  if (dragSrc !== this) {
+    const items = Array.from(menuSettingList.children);
+    const srcIdx = items.indexOf(dragSrc);
+    const dstIdx = items.indexOf(this);
+    
+    if (srcIdx < dstIdx) {
+      menuSettingList.insertBefore(dragSrc, this.nextSibling);
+    } else {
+      menuSettingList.insertBefore(dragSrc, this);
+    }
+  }
+}
+
+function handleDragEnd(e) {
+  this.classList.remove('dragging');
+  document.querySelectorAll('.menu-setting-item').forEach(el => el.classList.remove('drag-over'));
+  dragSrc = null;
+  clearInterval(window._dragScrollInterval);
+}
+
+function autoScrollOnDrag() {
+  const panel = menuSettingList.closest('.menu-settings-panel');
+  if (!panel || !dragSrc) return;
+  const rect = panel.getBoundingClientRect();
+  const mouseY = window._lastMouseY || 0;
+  const threshold = 60;
+  if (mouseY < rect.top + threshold) {
+    panel.scrollTop -= 8;
+  } else if (mouseY > rect.bottom - threshold) {
+    panel.scrollTop += 8;
+  }
+}
+
+document.addEventListener('dragover', (e) => {
+  window._lastMouseY = e.clientY;
+});
+
+// ===== ★ 默认页切换 =====
+function toggleDefaultStar(id) {
+  // 清除所有★
+  document.querySelectorAll('#menuSettingList .default-star').forEach(s => {
+    s.classList.remove('filled');
+  });
+  // 清除所有默认标签
+  document.querySelectorAll('#menuSettingList .default-tag').forEach(t => {
+    t.remove();
+  });
+  
+  const star = document.querySelector(`#menuSettingList .default-star[data-id="${id}"]`);
+  if (star) {
+    star.classList.add('filled');
+    const item = star.closest('.menu-setting-item');
+    const tag = document.createElement('span');
+    tag.className = 'default-tag';
+    tag.textContent = '默认页';
+    star.before(tag);
+    defaultPageId = id;
+  }
+}
+
+// ===== 保存 =====
+modalSave.addEventListener('click', () => {
+  // 获取弹窗中的顺序
+  const items = document.querySelectorAll('#menuSettingList .menu-setting-item');
+  const newOrder = Array.from(items).map(el => el.dataset.id);
+  
+  // 更新顶部菜单DOM顺序
+  const tabsMap = {};
+  document.querySelectorAll('#topTabs .top-tab').forEach(t => {
+    tabsMap[t.dataset.id] = t;
+  });
+  
+  // 按新顺序重新排列
+  newOrder.forEach(id => {
+    if (tabsMap[id]) {
+      topTabs.appendChild(tabsMap[id]);
+    }
+  });
+  
+  // 默认页选中联动：切换当前高亮菜单为默认页
+  document.querySelectorAll('#topTabs .top-tab').forEach(t => t.classList.remove('active'));
+  const defaultTab = document.querySelector(`#topTabs .top-tab[data-id="${defaultPageId}"]`);
+  if (defaultTab) {
+    defaultTab.classList.add('active');
+    // 更新主内容区标题
+    const bannerTitle = document.querySelector('.banner-title');
+    if (bannerTitle) bannerTitle.textContent = defaultTab.textContent.trim();
+  }
+  
+  closePageSettings();
+  
+  // Toast 提示
+  toast.textContent = '保存成功';
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+});
+
+// ===== 恢复原始顺序 =====
+function restoreOrder() {
+  if (!currentOrder) return;
+  const tabsMap = {};
+  document.querySelectorAll('#topTabs .top-tab').forEach(t => {
+    tabsMap[t.dataset.id] = t;
+  });
+  currentOrder.forEach(id => {
+    if (tabsMap[id]) {
+      topTabs.appendChild(tabsMap[id]);
+    }
+  });
+  currentOrder = null;
+}
+
+// ===== 个人信息内联编辑 =====
+document.querySelectorAll('.editable-field').forEach(field => {
+  const actionIcon = field.querySelector('.action-icon');
+  actionIcon.addEventListener('click', () => enterEditMode(field));
+});
+
+function enterEditMode(field) {
+  const label = field.querySelector('.label').textContent;
+  const value = field.dataset.value;
+  const required = field.dataset.required === 'true';
+  
+  field.classList.add('editing');
+  field.innerHTML = `
+    <span class="label">${label}</span>
+    <input type="text" class="edit-input" value="${value}" placeholder="${required ? '必填' : '选填'}" />
+    <div class="edit-actions">
+      <button class="btn-confirm">保存</button>
+      <button class="btn-abort">取消</button>
+    </div>
+  `;
+  
+  const input = field.querySelector('.edit-input');
+  input.focus();
+  input.select();
+  
+  field.querySelector('.btn-confirm').addEventListener('click', () => saveEdit(field, input.value));
+  field.querySelector('.btn-abort').addEventListener('click', () => cancelEdit(field));
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') saveEdit(field, input.value);
+    if (e.key === 'Escape') cancelEdit(field);
+  });
+}
+
+function saveEdit(field, newValue) {
+  const required = field.dataset.required === 'true';
+  if (required && !newValue.trim()) {
+    alert('个人手机为必填项');
+    return;
+  }
+  field.dataset.value = newValue;
+  renderEditableField(field);
+}
+
+function cancelEdit(field) {
+  renderEditableField(field);
+}
+
+function renderEditableField(field) {
+  const label = field.querySelector('.label').textContent;
+  const value = field.dataset.value;
+  const required = field.dataset.required === 'true';
+  
+  field.classList.remove('editing');
+  field.innerHTML = `
+    <span class="label">${label}</span>
+    <span class="value">${value}</span>
+    <span class="action-icon" title="编辑（${required ? '必填' : '非必填'}）">✏</span>
+  `;
+  field.querySelector('.action-icon').addEventListener('click', () => enterEditMode(field));
+}
+
+// ===== 菜单项点击切换 =====
+document.querySelectorAll('#topTabs .top-tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('#topTabs .top-tab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// ===== Hash 路由：支持直接跳转到指定页面 =====
+// 用法：顶部菜单-原型.html#drawer  → 打开个人设置抽屉
+//       顶部菜单-原型.html#password → 打开修改密码弹窗
+//       顶部菜单-原型.html#page-set  → 打开页面设置弹窗
+//       顶部菜单-原型.html#layout-mod → 打开页面设置+模拟修改布局
+function applyHashRoute() {
+  const hash = location.hash.replace('#', '');
+  
+  // 先关闭所有状态
+  settingsDrawer.classList.remove('show');
+  drawerOverlay.classList.remove('show');
+  pageSettingsOverlay.classList.remove('show');
+  passwordModalOverlay.classList.remove('show');
+  layoutConfirmOverlay.classList.remove('show');
+  
+  if (!hash) return;
+  switch (hash) {
+    case 'drawer':
+      settingsDrawer.classList.add('show');
+      drawerOverlay.classList.add('show');
+      break;
+    case 'password':
+      passwordModalOverlay.classList.add('show');
+      break;
+    case 'page-set':
+      openPageSettings();
+      break;
+    case 'layout-mod':
+      openPageSettings();
+      setTimeout(() => {
+        if (btnSimulateModify) btnSimulateModify.click();
+      }, 300);
+      break;
+    case 'confirm':
+      settingsDrawer.classList.add('show');
+      drawerOverlay.classList.add('show');
+      setTimeout(() => { openPageSettings(); }, 500);
+      setTimeout(() => {
+        if (btnSimulateModify) btnSimulateModify.click();
+        setTimeout(() => {
+          layoutMenuSelect.value = 'hr';
+          layoutMenuSelect.dispatchEvent(new Event('change'));
+        }, 200);
+      }, 800);
+      break;
+  }
+}
+
+applyHashRoute();
+window.addEventListener('hashchange', applyHashRoute);
+</script>
+</body>
+</html>
