@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>邮件润色助手 · 小步快跑清单</title>
+<style>
+:root{--blue:#1a5fd6;--ink:#1f2733;--sub:#5b6675;--line:#e4e8ef;--bg:#f6f8fb;--card:#fff;--ok:#1f9d6b;--warn:#d9822b;--hot:#e04556}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;padding:20px}
+.wrap{max-width:1000px;margin:0 auto}
+header{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px 30px;margin-bottom:18px}
+header h1{font-size:20px;font-weight:700}
+header p{font-size:13px;color:var(--sub);margin-top:4px}
+.banner{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.banner span{font-size:12px;padding:4px 12px;border-radius:8px;font-weight:600}
+.b-on{background:#e6f7ec;color:var(--ok)}.b-off{background:#fde8ec;color:var(--hot)}.b-ref{background:#fef3e4;color:var(--warn)}
+
+h2{font-size:16px;margin:20px 0 10px;display:flex;align-items:center;gap:6px}
+h2::before{content:'';width:6px;height:18px;background:var(--blue);border-radius:3px;display:inline-block}
+
+.row{display:flex;gap:14px;flex-wrap:wrap}
+.col{flex:1;min-width:300px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:14px}
+.col h3{font-size:14px;font-weight:650;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.col h3 .n{flex-shrink:0;width:26px;height:26px;border-radius:7px;background:var(--blue);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center}
+
+.item{padding:7px 0;border-top:1px dashed var(--line);font-size:12.5px;display:flex;align-items:flex-start;gap:8px}
+.item:first-child{border-top:none}
+.item .icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.item b{color:var(--ink)}
+.item .who{font-size:10px;color:var(--sub);margin-left:4px;background:#f0f2f5;padding:1px 6px;border-radius:5px}
+
+.section-wide{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin-bottom:14px}
+.section-wide h3{font-size:14px;font-weight:650;margin-bottom:10px}
+
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{background:var(--bg);padding:8px 10px;text-align:left;font-weight:600;font-size:12px;color:var(--sub)}
+td{padding:7px 10px;border-bottom:1px solid var(--line)}
+tr:hover td{background:#fafbfc}
+.tag-sm{padding:2px 7px;border-radius:6px;font-size:10px;font-weight:700}
+.t-do{background:var(--blue);color:#fff}.t-plan{background:#f0f2f5;color:var(--sub)}.t-later{background:#fde8ec;color:var(--hot)}
+
+.foot{background:var(--card);border:2px solid var(--blue);border-radius:14px;padding:16px 22px;margin-top:16px}
+.foot h3{font-size:14px;margin-bottom:6px}
+.foot p{font-size:13px;color:var(--sub);line-height:1.7}
+
+.note{font-size:11px;color:#8a94a3;text-align:center;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>📧 邮件润色助手 · 小步快跑清单</h1>
+  <p>聚焦「纯模型+前端」可做的轻量优化，0 企业系统依赖，参考 Grammarly / Outlook Copilot / 网易邮箱 AI 已验证方向</p>
+  <div class="banner">
+    <span class="b-on">✓ 不需员工身份</span>
+    <span class="b-on">✓ 不需历史邮件</span>
+    <span class="b-on">✓ 不需OA/CRM</span>
+    <span class="b-on">✓ 纯模型+前端</span>
+    <span class="b-ref">⚡ 12个竞品已验证方向</span>
+  </div>
+</header>
+
+<h2>竞品在做什么（三人成虎式的验证）</h2>
+
+<div class="row">
+  <div class="col">
+    <h3><span class="n">G</span> Grammarly</h3>
+    <div class="item"><span class="icon">🔊</span><b>Tone Detector</b> <span class="who">核心卖点</span> — 实时检测语气标签（自信/友好/正式/急切），发出去之前告诉你这封信读起来什么感觉</div>
+    <div class="item"><span class="icon">✏️</span><b>Tone Rewrite</b> — 一键把同一段话切到不同语气（正式→友好、冷淡→温暖）</div>
+    <div class="item"><span class="icon">📏</span><b>Clarity & Conciseness</b> — 标出啰嗦句、被动语态、冗余修饰词，给精简建议</div>
+    <div class="item"><span class="icon">📚</span><b>Vocabulary Enhancement</b> — 标出弱词/重复词，建议更精准的同义替换</div>
+    <div class="item"><span class="icon">🤖</span><b>AI Detector</b> — 检测文本是否像AI写的，提示哪些段落可以改得更自然</div>
+    <div class="item"><span class="icon">👁️</span><b>Reader Reaction</b> — 模拟读者感受，提示哪些话可能让对方不舒服</div>
+  </div>
+  <div class="col">
+    <h3><span class="n">M</span> Outlook Copilot</h3>
+    <div class="item"><span class="icon">🩺</span><b>Email Coaching</b> <span class="who">招牌功能</span> — 发送前诊断：语气、清晰度、读者感受三维评分 + 逐条修改建议</div>
+    <div class="item"><span class="icon">📎</span><b>Attachment Summary</b> — 自动摘要附件的Word/PPT/PDF内容，不用打开附件</div>
+    <div class="item"><span class="icon">⚡</span><b>Draft from Bullets</b> — 给几个要点，生成完整邮件</div>
+    <div class="item"><span class="icon">🔄</span><b>Rewrite Options</b> — 生成多版改写，点一下切换</div>
+  </div>
+  <div class="col">
+    <h3><span class="n">W</span> 网易邮箱 AI</h3>
+    <div class="item"><span class="icon">🎭</span><b>多风格切换</b> <span class="who">高频功能</span> — 正式商务/客气礼貌/简洁高效，一键切换全文风格</div>
+    <div class="item"><span class="icon">✍️</span><b>智能续写</b> — 写了开头两三行，AI 分析上下文自动补全</div>
+    <div class="item"><span class="icon">📝</span><b>邮件总结</b> — 长邮件提炼核心要点+待办事项</div>
+    <div class="item"><span class="icon">📋</span><b>内置主题库</b> — 产品介绍/会议邀请/工作汇报/考勤申请等多场景模板库</div>
+    <div class="item"><span class="icon">🗣️</span><b>多版本回复</b> — 针对来信生成致谢/婉拒/催促跟进等多个回复版本</div>
+  </div>
+</div>
+
+<h2>九牧能抄的 12 个小步快跑（按投入产出排序）</h2>
+
+<div class="section-wide">
+  <table>
+    <tr><th style="width:6%">#</th><th style="width:22%">功能</th><th style="width:30%">一句话</th><th style="width:12%">竞品来源</th><th style="width:18%">技术实现</th><th style="width:12%">建议</th></tr>
+    <tr>
+      <td>1</td>
+      <td><b>语气检测器</b></td>
+      <td>写完邮件自动显示语气标签：自信/友好/正式/急切/冷漠，让用户自己判断要不要改</td>
+      <td>Grammarly Tone Detector</td>
+      <td>纯LLM分类，0依赖</td>
+      <td><span class="tag-sm t-do">先做</span></td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><b>发送前诊断</b></td>
+      <td>Email Coaching——点击诊断按钮，给语气/清晰度/礼貌度三维评分+逐条建议</td>
+      <td>Outlook Copilot Coaching</td>
+      <td>纯LLM评分+规则</td>
+      <td><span class="tag-sm t-do">先做</span></td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><b>语气一键切换</b></td>
+      <td>正式商务↔友好亲切↔简洁高效↔诚恳道歉，四种预设一键切换全文</td>
+      <td>网易邮箱AI / Grammarly</td>
+      <td>纯LLM改写，0依赖</td>
+      <td><span class="tag-sm t-do">先做</span></td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td><b>啰嗦检测+精简</b></td>
+      <td>标出啰嗦句/被动语态/冗余词，点击一键精简。Grammarly核心付费功能</td>
+      <td>Grammarly Clarity</td>
+      <td>纯LLM标注+改写</td>
+      <td><span class="tag-sm t-do">先做</span></td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td><b>主题行评分</b></td>
+      <td>给你的邮件标题打分（0-100），指出问题并生成3个优化版标题</td>
+      <td>自创（三类竞品都有标题优化）</td>
+      <td>纯LLM评分+生成</td>
+      <td><span class="tag-sm t-do">先做</span></td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td><b>多版本对比</b></td>
+      <td>一次生成正式版/精简版/温和版三个版本，左右对比，选最合适的</td>
+      <td>网易邮箱AI多版本回复</td>
+      <td>纯LLM+前端对比UI</td>
+      <td><span class="tag-sm t-plan">跟进</span></td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td><b>智能续写</b></td>
+      <td>用户写了开头2-3行点续写，AI分析上下文自动补全后续内容</td>
+      <td>网易邮箱AI智能续写</td>
+      <td>纯LLM续写</td>
+      <td><span class="tag-sm t-plan">跟进</span></td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td><b>读者感受模拟</b></td>
+      <td>模拟收件人读这封信的感受——哪些话可能冒犯、哪些话可能被误解</td>
+      <td>Grammarly Reader Reaction</td>
+      <td>纯LLM角色扮演</td>
+      <td><span class="tag-sm t-plan">跟进</span></td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td><b>场景模板库</b></td>
+      <td>内置20+高频场景模板（催办/道歉/汇报/邀约/感谢/请假…），用户选模板填空</td>
+      <td>网易邮箱AI主题库</td>
+      <td>前端模板+变量填充</td>
+      <td><span class="tag-sm t-plan">跟进</span></td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td><b>邮件反向总结</b></td>
+      <td>用户写好长篇邮件后，AI提炼核心要点和待办事项，确认是否传达了想说的</td>
+      <td>网易邮箱AI邮件总结</td>
+      <td>纯LLM摘要</td>
+      <td><span class="tag-sm t-later">待定</span></td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td><b>词汇增强</b></td>
+      <td>标出弱词/重复词，推荐更精准的同义替换（如"搞"→"落实"，"弄"→"整理"）</td>
+      <td>Grammarly Vocabulary</td>
+      <td>纯LLM+词库</td>
+      <td><span class="tag-sm t-later">待定</span></td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td><b>AI痕迹检测+去味</b></td>
+      <td>检测邮件是否有"AI味"（模板化、空洞、缺乏个性），标出可疑段落并建议改写</td>
+      <td>Grammarly AI Detector + Humanizer</td>
+      <td>纯LLM分类+改写</td>
+      <td><span class="tag-sm t-later">待定</span></td>
+    </tr>
+  </table>
+</div>
+
+<h2>跟之前那堆宏大叙事的区别</h2>
+
+<div class="row">
+  <div class="col">
+    <h3 style="color:var(--hot)">✕ 之前依赖企业数据的（先放一放）</h3>
+    <div class="item"><span class="icon">🚫</span>收件人角色自适应 → 需要LDAP/通讯录</div>
+    <div class="item"><span class="icon">🚫</span>敏感信息合规检测 → 需要合规词库+组织信息</div>
+    <div class="item"><span class="icon">🚫</span>个性化记忆/偏好学习 → 需要长期用户画像</div>
+    <div class="item"><span class="icon">🚫</span>智能跟进/未回复提醒 → 需要读取历史邮件</div>
+    <div class="item"><span class="icon">🚫</span>企业知识增强 → 需要产品库/知识库</div>
+    <div class="item"><span class="icon">🚫</span>OA/审批/企微对接 → 需要系统集成</div>
+  </div>
+  <div class="col">
+    <h3 style="color:var(--ok)">✓ 现在就能做的（12个全绿灯）</h3>
+    <div class="item"><span class="icon">✅</span>语气检测+切换 → 纯LLM，Grammarly年入几亿就靠这俩</div>
+    <div class="item"><span class="icon">✅</span>发送前Coaching → Outlook Copilot招牌，零依赖</div>
+    <div class="item"><span class="icon">✅</span>啰嗦检测/精简 → Grammarly付费核心功能</div>
+    <div class="item"><span class="icon">✅</span>主题行评分+优化 → 三类竞品都做</div>
+    <div class="item"><span class="icon">✅</span>多版本生成+对比 → 网易AI高频使用</div>
+    <div class="item"><span class="icon">✅</span>智能续写+场景模板库 → 全是前端+模型活</div>
+  </div>
+</div>
+
+<div class="foot">
+  <h3>建议的MVP（就4个，2周能出）</h3>
+  <p>
+    <b>① 语气检测器</b> —— 用户写完邮件，侧边栏实时显示「当前语气：正式 85% / 友好 60%」，纯粹的信息展示，不侵入。<br>
+    <b>② 语气一键切换</b> —— 在语气检测基础上，点「切换为友好语气」，全文改写。这俩天然捆绑，Grammarly 也是这样设计的。<br>
+    <b>③ 发送前诊断</b> —— 点一下按钮出三格分数+三条建议。用户心智已有（Outlook Copilot教育过市场），信任门槛极低。<br>
+    <b>④ 啰嗦检测+精简</b> —— 标黄冗余表达，点一下精简。这是 Grammarly 最让用户觉得"值"的功能。
+  </p>
+  <p style="margin-top:8px;font-size:12px;color:var(--sub)">
+    这四个全是纯 LLM prompt 工程 + 前端交互，不碰任何企业数据。Grammarly 前三个功能就撑起了 $12/月/人的付费转化，可以参考它们的交互设计。
+  </p>
+</div>
+
+<div class="note">参考竞品：Grammarly（4000万用户）/ Outlook Copilot / 网易邮箱AI / WPS AI / Superhuman</div>
+
+</div>
+</body>
+</html>
