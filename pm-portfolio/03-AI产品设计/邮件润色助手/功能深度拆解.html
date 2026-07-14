@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>邮件润色助手 · 重点方向深度拆解</title>
+<style>
+:root{
+  --blue:#1a5fd6;--blue2:#e8f0fe;--ink:#1f2733;--sub:#5b6675;--line:#e4e8ef;
+  --bg:#f6f8fb;--card:#fff;--ok:#1f9d6b;--warn:#d9822b;--hot:#e04556;--purple:#7c3aed
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.68;padding:24px 18px}
+.wrap{max-width:1060px;margin:0 auto}
+header{background:linear-gradient(120deg,#1a5fd6,#4f46e5);color:#fff;border-radius:18px;padding:30px 36px 26px;margin-bottom:24px;box-shadow:0 8px 30px rgba(26,95,214,.15)}
+header h1{font-size:24px;font-weight:750;letter-spacing:.6px}
+header p{margin-top:6px;opacity:.88;font-size:14px}
+
+/* 导航标签 */
+.tabs{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.tab{padding:9px 18px;border-radius:22px;font-size:13.5px;font-weight:600;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--sub);transition:.18s;user-select:none}
+.tab:hover{color:var(--blue);border-color:var(--blue)}
+.tab.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* 内容区 */
+.section{display:none;animation:fade .25s ease}
+.section.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
+
+/* 深度卡片 */
+.deep-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 26px;margin-bottom:16px;box-shadow:0 1px 4px rgba(16,24,40,.04)}
+.deep-card h2{font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.deep-card h2 .em{font-size:13px;font-weight:500;color:var(--blue);background:var(--blue2);padding:2px 10px;border-radius:10px}
+.deep-card .intro{font-size:13.5px;color:var(--sub);margin-bottom:14px}
+
+/* 子章节 */
+.subsec{margin-top:18px}
+.subsec h4{font-size:14.5px;font-weight:650;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.subsec h4::before{content:'';width:5px;height:16px;background:var(--blue);border-radius:3px;display:inline-block}
+
+/* 场景表格 */
+table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}
+th{background:var(--blue2);color:var(--blue);font-weight:650;padding:10px 12px;text-align:left;font-size:12.5px}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:hover td{background:#fafbfc}
+
+.tag-sm{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-right:4px}
+.t-urg{background:#fde8ec;color:var(--hot)}
+.t-form{background:var(--blue2);color:var(--blue)}
+.t-neu{background:#f0f2f5;color:var(--sub)}
+.t-warn{background:#fef3e4;color:var(--warn)}
+
+/* 流程图 */
+.flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;margin:12px 0;padding:8px 0}
+.flow .node{background:var(--blue2);color:var(--blue);padding:6px 14px;border-radius:8px;font-weight:600;white-space:nowrap}
+.flow .arrow{color:var(--sub)}
+.highlight{background:#fefce8;border-left:3px solid var(--warn);padding:10px 14px;border-radius:0 8px 8px 0;font-size:13px;margin:10px 0}
+
+/* 矩阵 */
+.matrix{display:grid;grid-template-columns:180px repeat(5,1fr);font-size:12px;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:10px 0}
+.matrix>div{padding:8px 10px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);display:flex;align-items:center}
+.matrix .head{background:var(--blue2);color:var(--blue);font-weight:650}
+.matrix .label{font-weight:600;color:var(--ink);background:#fafbfc}
+.matrix .dot{justify-content:center}
+.matrix .dot.rec::after{content:'●';color:var(--ok);font-size:14px}
+.matrix .dot.may::after{content:'◐';color:var(--warn);font-size:14px}
+.matrix .dot.no::after{content:'○';color:#cdd5e0;font-size:14px}
+
+/* 角色卡片 */
+.role-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:10px 0}
+.role-card{background:var(--bg);border-radius:10px;padding:12px 14px;font-size:13px;border:1px solid transparent}
+.role-card b{display:block;margin-bottom:4px;font-size:13.5px}
+.role-card .desc{font-size:12px;color:var(--sub)}
+
+/* 补充方向卡片 */
+.extra-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px}
+.extra-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;transition:.18s}
+.extra-card:hover{border-color:var(--purple);box-shadow:0 4px 14px rgba(124,58,237,.08)}
+.extra-card h4{font-size:14px;font-weight:650;color:var(--purple);margin-bottom:6px}
+.extra-card .sum{font-size:12.5px;color:var(--sub);margin-bottom:8px}
+.extra-card li{font-size:12.5px;color:var(--ink);margin-bottom:3px;list-style-position:inside}
+
+.badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;margin-left:6px}
+.b-data{background:#fde8ec;color:var(--hot)}
+.b-quick{background:var(--blue2);color:var(--blue)}
+.b-new{background:#e6f7ec;color:var(--ok)}
+
+.summary-box{background:var(--card);border:2px solid var(--blue);border-radius:14px;padding:18px 22px;margin-top:20px}
+.summary-box h3{font-size:15px;margin-bottom:8px;font-weight:700}
+.summary-box ol{margin-left:18px;font-size:13px;color:var(--sub);line-height:1.9}
+
+.note-sm{font-size:12px;color:#8a94a3;text-align:center;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>🔍 邮件润色助手 · 重点方向深度拆解</h1>
+  <p>三大明星功能详细设计思路 + 被漏掉的潜力方向</p>
+</header>
+
+<!-- 导航 -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('s1')">1. 语气场景+强度滑杆</div>
+  <div class="tab" onclick="switchTab('s2')">2. 一句话生成+要点扩写</div>
+  <div class="tab" onclick="switchTab('s3')">3. 收件人角色自适应</div>
+  <div class="tab" onclick="switchTab('s4')">补充：漏掉的方向</div>
+</div>
+
+<!-- ===== TAB 1: 语气场景 + 强度滑杆 ===== -->
+<div class="section active" id="s1">
+
+<div class="deep-card">
+  <h2>🎚️ 语气场景切换 + 强度滑杆 <span class="em">核心体验升级</span></h2>
+  <p class="intro">当前润色最大的问题：用户说「帮我润色一下」，AI不知道他要什么——更正式？更温和？更短？用户得反复试。场景模板+滑杆解决了「意图对齐」这件事。</p>
+
+  <!-- 场景分类 -->
+  <div class="subsec">
+    <h4>场景分类体系（10大高频场景）</h4>
+    <table>
+      <tr><th>场景</th><th>用户心里话</th><th>润色要点</th><th>推荐强度</th><th>标签</th></tr>
+      <tr>
+        <td><b>正式汇报</b></td>
+        <td>得让领导觉得我靠谱</td>
+        <td>条理清晰、数据先行、结论明确、适当谦逊</td>
+        <td>中偏强</td>
+        <td><span class="tag-sm t-form">正式</span></td>
+      </tr>
+      <tr>
+        <td><b>催办跟进</b></td>
+        <td>别让人觉得我咄咄逼人，但他得回我</td>
+        <td>先肯定对方、点明时间节点、给台阶下</td>
+        <td>温→坚决</td>
+        <td><span class="tag-sm t-urg">紧急</span></td>
+      </tr>
+      <tr>
+        <td><b>诚挚道歉</b></td>
+        <td>出了岔子，要让人消气</td>
+        <td>开门致歉、承认问题、给方案、不找借口</td>
+        <td>温和真诚</td>
+        <td><span class="tag-sm t-warn">敏感</span></td>
+      </tr>
+      <tr>
+        <td><b>委婉拒绝</b></td>
+        <td>不行，但别得罪人</td>
+        <td>先肯定再转折、给替代方案、留日后余地</td>
+        <td>温和</td>
+        <td><span class="tag-sm t-warn">敏感</span></td>
+      </tr>
+      <tr>
+        <td><b>感谢致意</b></td>
+        <td>要有诚意，不能像群发</td>
+        <td>具体指出感谢事项、表达对后续的期待</td>
+        <td>温和</td>
+        <td><span class="tag-sm t-neu">日常</span></td>
+      </tr>
+      <tr>
+        <td><b>会议邀约</b></td>
+        <td>让人一看就知道要干嘛、必须来</td>
+        <td>时间地点目的三要素、明确议程、回复要求</td>
+        <td>中</td>
+        <td><span class="tag-sm t-neu">日常</span></td>
+      </tr>
+      <tr>
+        <td><b>通知公告</b></td>
+        <td>让大家都知道，别没看到</td>
+        <td>要点前置、分层阅读、关键信息加粗</td>
+        <td>中</td>
+        <td><span class="tag-sm t-neu">日常</span></td>
+      </tr>
+      <tr>
+        <td><b>慰问关怀</b></td>
+        <td>要真诚，不敷衍</td>
+        <td>感同身受、具体关心、给实际支持</td>
+        <td>温和</td>
+        <td><span class="tag-sm t-neu">日常</span></td>
+      </tr>
+      <tr>
+        <td><b>商务谈判</b></td>
+        <td>既要守住底线，又要留余地</td>
+        <td>专业陈述、留空间、不把话说死</td>
+        <td>中偏强</td>
+        <td><span class="tag-sm t-form">正式</span></td>
+      </tr>
+      <tr>
+        <td><b>投诉处理</b></td>
+        <td>安抚+方案+让对方觉得被重视</td>
+        <td>迅速响应、共情、明确解决时间、负责人</td>
+        <td>温和但有力</td>
+        <td><span class="tag-sm t-urg">紧急</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- 强度滑杆 -->
+  <div class="subsec">
+    <h4>语气强度滑杆：不是二元开关，是连续控制</h4>
+    <p style="font-size:13px;color:var(--sub);margin-bottom:8px">
+      滑杆分三段（温和 · 适中 · 坚决），底层是多个维度的组合调节，不是简单地「加感叹号不加感叹号」。
+    </p>
+
+    <table>
+      <tr><th>调节维度</th><th>温和端效果</th><th>坚决端效果</th></tr>
+      <tr><td><b>句式</b></td><td>「方便的话…」「不知能否…」</td><td>「请于X日前…」「需要你…」</td></tr>
+      <tr><td><b>程度副词</b></td><td>「略」「可能」「或许」</td><td>「务必」「确实」「必须」</td></tr>
+      <tr><td><b>敬语层级</b></td><td>「烦请」「劳驾」「恳请」</td><td>「请」「望」「请落实」</td></tr>
+      <tr><td><b>正文章节</b></td><td>问候+铺垫+正文+致谢</td><td>直奔主题+明确要求+截止时间</td></tr>
+      <tr><td><b>落款语气</b></td><td>「祝工作顺利，期待您的回复」</td><td>「请于X日前回复确认」</td></tr>
+      <tr><td><b>缓冲词使用</b></td><td>频繁（「稍微」「一点」「可否」）</td><td>极少/去除</td></tr>
+    </table>
+
+    <div class="highlight" style="margin-top:12px">
+      <b>💡 设计要点：</b> 滑杆默认值要根据「场景」和「收件人角色」自动落到合理位置，用户只需微调。比如：「催办上级」默认偏温和，「催办供应商」默认偏坚决。
+    </div>
+  </div>
+
+  <!-- 组合矩阵 -->
+  <div class="subsec">
+    <h4>场景 × 强度 组合矩阵（推荐搭配）</h4>
+    <div class="matrix">
+      <div class="head">场景 ╲ 强度</div><div class="head">很温和</div><div class="head">温和</div><div class="head">适中</div><div class="head">坚决</div><div class="head">很坚决</div>
+
+      <div class="label">正式汇报</div><div class="dot no"></div><div class="dot may"></div><div class="dot rec"></div><div class="dot rec"></div><div class="dot no"></div>
+      <div class="label">催办跟进</div><div class="dot no"></div><div class="dot rec"></div><div class="dot rec"></div><div class="dot rec"></div><div class="dot may"></div>
+      <div class="label">诚挚道歉</div><div class="dot rec"></div><div class="dot rec"></div><div class="dot no"></div><div class="dot no"></div><div class="dot no"></div>
+      <div class="label">委婉拒绝</div><div class="dot may"></div><div class="dot rec"></div><div class="dot may"></div><div class="dot no"></div><div class="dot no"></div>
+      <div class="label">感谢致意</div><div class="dot rec"></div><div class="dot rec"></div><div class="dot no"></div><div class="dot no"></div><div class="dot no"></div>
+      <div class="label">商务谈判</div><div class="dot no"></div><div class="dot may"></div><div class="dot rec"></div><div class="dot rec"></div><div class="dot may"></div>
+      <div class="label">投诉处理</div><div class="dot no"></div><div class="dot rec"></div><div class="dot rec"></div><div class="dot may"></div><div class="dot no"></div>
+    </div>
+    <p style="font-size:11px;color:#8a94a3;margin-top:4px">● 推荐 ·  ○ 不推荐 ·  ◐ 可接受</p>
+  </div>
+
+  <!-- 交互思路 -->
+  <div class="subsec">
+    <h4>交互原型思路</h4>
+    <div class="flow">
+      <div class="node">粘贴原文</div><span class="arrow">→</span>
+      <div class="node">AI 自动识别场景</div><span class="arrow">→</span>
+      <div class="node">预填场景+滑杆默认位置</div><span class="arrow">→</span>
+      <div class="node">用户可调/可确认</div><span class="arrow">→</span>
+      <div class="node">实时预览润色结果</div><span class="arrow">→</span>
+      <div class="node">一键替换/回退</div>
+    </div>
+    <ul style="font-size:12.5px;color:var(--sub);margin-left:16px;line-height:1.9;margin-top:8px">
+      <li>场景识别关键词触发：含「截止」「请尽快」→ 预判「催办跟进」；含「抱歉」「对不起」→ 预判「诚挚道歉」</li>
+      <li>用户也可手动切换场景、手动拖滑杆，两者联动变化</li>
+      <li>支持对比预览：原文 vs 润色版，改动高亮显示</li>
+      <li>历史记录记忆：同一对话内的偏好保持，不用每次重设</li>
+    </ul>
+  </div>
+</div>
+
+</div><!-- end s1 -->
+
+<!-- ===== TAB 2: 一句话生成 + 要点扩写 ===== -->
+<div class="section" id="s2">
+
+<div class="deep-card">
+  <h2>⚡ 一句话生成 + 要点扩写 <span class="em">能力跃迁</span></h2>
+  <p class="intro">润色只是「改」，生成才是「写」。这个能力让用户的打开场景从「我已经写了草稿」扩展到「我需要一封邮件」——使用频率和场景都拓开了。</p>
+
+  <div class="subsec">
+    <h4>两种输入模式，覆盖90%的写邮件场景</h4>
+
+    <table>
+      <tr><th style="width:18%">模式</th><th style="width:32%">输入示例</th><th style="width:50%">AI 要完成的事</th></tr>
+      <tr>
+        <td><b>A. 一句话生成</b></td>
+        <td style="color:var(--sub);font-size:12.5px">
+          「帮张总写封邮件，催王主任交6月区域销售报表，语气客气但要让他知道急，抄送我」
+        </td>
+        <td style="font-size:12.5px;color:var(--sub)">
+          ① 解析意图：催办邮件 → ② 提取要素：发件人=张总、收件人=王主任、事项=6月报表、语气=客气但急、抄送=我<br>
+          ③ 匹配场景模板：催办跟进-温和偏中<br>
+          ④ 补全：组织称呼、时间节点、背景说明、落款<br>
+          ⑤ 生成全文 + 主题行
+        </td>
+      </tr>
+      <tr>
+        <td><b>B. 要点扩写</b></td>
+        <td style="color:var(--sub);font-size:12.5px">
+          「· 周三下午2点碰销售数据<br>· 各部门准备上月分析报告<br>· 重点讨论Q2区域差距<br>· 请确认是否能参加」
+        </td>
+        <td style="font-size:12.5px;color:var(--sub)">
+          ① 识别结构：会议邀约邮件 → ② 补全开头问候+背景铺垫<br>
+          ③ 要点→正文段落，逻辑串联<br>
+          ④ 补充议程/附件/回复要求<br>
+          ⑤ 生成全文 + 会议主题行
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="subsec">
+    <h4>「润色」与「生成」的协作关系（不是替代，是互补）</h4>
+    <div class="flow">
+      <div class="node">一句话指令</div><span class="arrow">→</span>
+      <div class="node">AI 生成初稿</div><span class="arrow">→</span>
+      <div class="node">用户确认/修改</div><span class="arrow">→</span>
+      <div class="node" style="background:#e6f7ec;color:var(--ok)">润色精修</div><span class="arrow">→</span>
+      <div class="node" style="background:#e6f7ec;color:var(--ok)">发送</div>
+    </div>
+    <p style="font-size:12.5px;color:var(--sub);margin-top:6px">
+      生成负责「从0到1」，润色负责「从1到100」。两种能力共用一个场景/语气/角色感知引擎，保持风格一致。
+    </p>
+  </div>
+
+  <div class="subsec">
+    <h4>设计细节：让用户信任 AI 生成的内容</h4>
+    <table>
+      <tr><th>信任点</th><th>实现方式</th></tr>
+      <tr><td><b>要素回显</b></td><td>生成结果旁展示「已识别：场景=催办、收件人=王主任、语气=客气但急」，让用户知道 AI 理解对了</td></tr>
+      <tr><td><b>分段可编辑</b></td><td>开头/正文/结尾/主题行，各段独立可编辑，不整段重来</td></tr>
+      <tr><td><b>多版本生成</b></td><td>一次出 A/B 两个版本供选择（如「直接版」和「委婉版」），降低选型焦虑</td></tr>
+      <tr><td><b>一键重新生成</b></td><td>不满意的段落可以局部重新生成，不丢上下文</td></tr>
+      <tr><td><b>撤回/回退</b></td><td>每次修改都有历史版本，可随时回退到上一版或原文</td></tr>
+      <tr><td><b>敏感话术检测</b></td><td>生成结果自动跑一遍敏感信息+合规检测，发现问题标红提示</td></tr>
+    </table>
+  </div>
+
+  <div class="subsec">
+    <h4>要点扩写的进阶玩法</h4>
+    <div class="highlight">
+      <b>🔮 进阶 1：智能补全上下文。</b> 用户只写了「周三开会讨论Q2数据」，AI 自动补全——①从历史邮件拉相关讨论上下文 ②从附件/知识库拉 Q2 数据摘要 ③自动加到正文中供用户确认。<br><br>
+      <b>🔮 进阶 2：跨文档生成。</b> 用户说「根据附件Excel的数据，写一封给李总的汇报邮件」，AI 自动读取 Excel，提炼关键数字，生成汇报正文。<br><br>
+      <b>🔮 进阶 3：语音要点输入。</b> 对着手机说「帮我记一下：第一催张三交报表，第二约李四下周吃饭，第三通知全员周五培训」，AI 自动拆成3封邮件草稿。
+    </div>
+  </div>
+</div>
+
+</div><!-- end s2 -->
+
+<!-- ===== TAB 3: 收件人角色自适应 ===== -->
+<div class="section" id="s3">
+
+<div class="deep-card">
+  <h2>👤 收件人角色自适应 <span class="em">让润色「懂人」</span></h2>
+  <p class="intro">同样说「这个活什么时候能好」，给下属是正常询问，给老板就是冒犯。角色自适应让 AI 读懂关系、匹配措辞，这是从「工具」到「助手」的关键一步。</p>
+
+  <div class="subsec">
+    <h4>角色分类体系（不只是「上级/平级/下属」这么简单）</h4>
+    <div class="role-grid">
+      <div class="role-card"><b>🫅 直属上级</b><span class="desc">汇报关系直接汇报的 leader。语气偏正式、谦逊，信息要清晰可快速阅读。</span></div>
+      <div class="role-card"><b>🏛️ 跨级领导</b><span class="desc">上级的上级或更高层级。语气高度尊重，开门见山，不要铺垫，不要「小作文」。</span></div>
+      <div class="role-card"><b>🤝 部门平级</b><span class="desc">同级的同事。语气直接而友好，不必太正式，效率优先。</span></div>
+      <div class="role-card"><b>👥 下属/团队成员</b><span class="desc">自己管的人。语气明确、有指导性，不卑微但也不强势，留出讨论空间。</span></div>
+      <div class="role-card"><b>🏭 外部供应商</b><span class="desc">合作方/乙方。语气专业而保持距离，催办可以坚决，但要注意合规措辞。</span></div>
+      <div class="role-card"><b>👔 外部客户</b><span class="desc">九牧的客户/经销商。语气专业、有温度，避免内部缩写和行话，合规敏感度最高。</span></div>
+      <div class="role-card"><b>📋 跨部门协作</b><span class="desc">其他部门的同级或稍高级别。语气友好但正式，不要假设对方了解你的背景。</span></div>
+      <div class="role-card"><b>🧑‍💼 HR/行政</b><span class="desc">公司职能部门。正式但轻松，涉及人事相关内容注意措辞精确。</span></div>
+    </div>
+  </div>
+
+  <div class="subsec">
+    <h4>自适应的5个维度（一句话到底怎么变？）</h4>
+    <table>
+      <tr><th style="width:16%">维度</th><th style="width:42%">对上级的表现</th><th style="width:42%">对下属的表现</th></tr>
+      <tr>
+        <td><b>称呼</b></td>
+        <td>「王总，您好」「张总」</td>
+        <td>「小王」「直接叫名字」</td>
+      </tr>
+      <tr>
+        <td><b>开头方式</b></td>
+        <td>「就XX工作向您汇报一下：」</td>
+        <td>「XX的工作，确认一下进度：」</td>
+      </tr>
+      <tr>
+        <td><b>措辞</b></td>
+        <td>「建议」「是否可以考虑」「请您指示」</td>
+        <td>「需要你」「请落实」「尽快处理」</td>
+      </tr>
+      <tr>
+        <td><b>篇幅</b></td>
+        <td>简洁，结论先行，细节放后面</td>
+        <td>可以详细，包含完整要求和背景</td>
+      </tr>
+      <tr>
+        <td><b>结尾</b></td>
+        <td>「以上，请您审阅指导」</td>
+        <td>「请本周五前完成，有问题随时沟通」</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="subsec">
+    <h4>角色判断逻辑（AI 怎么知道收件人是谁？）</h4>
+    <table>
+      <tr><th>信息来源</th><th>优先级</th><th>能判断什么</th><th>准确度</th></tr>
+      <tr><td><b>企业通讯录 / LDAP</b></td><td>⭐最靠谱</td><td>组织架构、汇报关系、部门、职级</td><td>高</td></tr>
+      <tr><td><b>邮箱域名</b></td><td>⭐⭐</td><td>内部 @jomoo.com vs 外部域名 → 基本的内外区分</td><td>高</td></tr>
+      <tr><td><b>历史往来频率</b></td><td>⭐⭐⭐</td><td>你和谁经常发邮件→关系远近；历史邮件的语气风格反向参考</td><td>中</td></tr>
+      <tr><td><b>用户手动标签</b></td><td>⭐⭐⭐⭐</td><td>用户给收件人打标签（供应商/大客户/敏感），AI 优先采用</td><td>最高</td></tr>
+      <tr><td><b>邮件正文自己写的称呼</b></td><td>⭐⭐⭐⭐⭐</td><td>正文写「王总」→ 判断为上级/重要人物；写「小王」→ 判断为下属/熟人</td><td>辅助</td></tr>
+    </table>
+    <div class="highlight" style="margin-top:10px">
+      <b>⚡ 关键设计：</b> 角色判断结果必须<b>对用户可见且可修改</b>。比如收件人旁边显示一个小标签「王主任 · 外部供应商」，用户点一下可以改成「客户」或「经销商」。AI 猜错了不可怕，猜错了还不让改才可怕。
+    </div>
+  </div>
+
+  <div class="subsec">
+    <h4>结合场景的复杂决策</h4>
+    <p style="font-size:13px;color:var(--sub);margin-bottom:8px">真实场景往往是角色+场景的组合。比如同样是「催办」：</p>
+    <table>
+      <tr><th>场景</th><th>收件人</th><th>策略</th></tr>
+      <tr><td>催办</td><td>直属上级</td><td>温和提醒+给台阶+提供帮助（"您那边如果忙的话我可以先整理一版…"）</td></tr>
+      <tr><td>催办</td><td>下属</td><td>明确截止时间+要求回复（"请周三下班前完成并回复"）</td></tr>
+      <tr><td>催办</td><td>供应商</td><td>引用合同条款+正式通牒+留协商空间（"根据合同，贵司需于…如确有困难请提前沟通"）</td></tr>
+      <tr><td>催办</td><td>客户</td><td>先感谢后提醒+以服务为切入（"为确保及时为您处理，烦请确认…"）</td></tr>
+    </table>
+  </div>
+</div>
+
+</div><!-- end s3 -->
+
+<!-- ===== TAB 4: 补充漏掉的方向 ===== -->
+<div class="section" id="s4">
+
+<div class="deep-card">
+  <h2>🧭 九大方向之外，还有哪些被漏掉的？</h2>
+  <p class="intro">上轮梳理把核心能力、安全合规、体验升级都覆盖了，但海洋姐你站在九牧数字化的全局视角，这几个方向也值得放进来——</p>
+</div>
+
+<div class="extra-cards">
+
+  <div class="extra-card">
+    <h4>10. 企业知识增强 <span class="badge b-new">NEW</span></h4>
+    <div class="sum">让邮件不再是「靠记忆写」，而是 AI 帮你把公司的准确信息带出来。</div>
+    <ul>
+      <li><b>产品知识库接入：</b> 写「智能马桶」相关邮件时，自动引用正确的产品型号、参数、卖点</li>
+      <li><b>售后政策/价格库：</b> 避免客服邮件中写出过时的退换货政策或错误报价</li>
+      <li><b>FAQ 自动匹配：</b> 常见问题自动引用标准话术，保持部门间口径一致</li>
+      <li><b>合同条款自动关联：</b> 涉及合同条款时，关联最新合同模板中的标准表述</li>
+      <li><b>行业术语库：</b> 卫浴/建材/制造行业专业术语，避免写错显得不专业</li>
+    </ul>
+  </div>
+
+  <div class="extra-card">
+    <h4>11. 邮件健康度评分 <span class="badge b-data">数据</span></h4>
+    <div class="sum">给每封邮件在发出前打分，像「体检报告」一样提前发现问题。</div>
+    <ul>
+      <li><b>易读性得分：</b> 段落长度、结构清晰度、关键信息突出度</li>
+      <li><b>情绪风险分：</b> 检测可能的负面/冒犯表达，特别是跨文化/跨部门场景</li>
+      <li><b>行动力得分：</b> 收件人是否一看就知道要做什么（明确的 action item）</li>
+      <li><b>合规风险分：</b> 综合敏感词、外部发送、承诺性话术等</li>
+      <li><b>个性化建议：</b> 根据得分配套给出具体修改建议（"第3段可能让供应商不舒服，建议加个缓冲句"）</li>
+    </ul>
+  </div>
+
+  <div class="extra-card">
+    <h4>12. 邮件工作流自动化 <span class="badge b-quick">效率</span></h4>
+    <div class="sum">不只是润色和生成，而是把邮件变成自动化的业务触发点。</div>
+    <ul>
+      <li><b>定时/条件发送：</b> 「周五下午4点帮我发封周末提醒」；对方回邮件后自动触发下一步</li>
+      <li><b>邮件模板 + 变量填充：</b> 像批量合同一样，{客户名}{产品型号}{报价}，一键填充并润色</li>
+      <li><b>串联审批：</b> 对外/对客户的邮件 → 自动进入审批流 → 审批通过后自动发送</li>
+      <li><b>邮件分类+自动归档：</b> 收件箱智能分类，配合标签和自动回复建议</li>
+      <li><b>周期性报告：</b> 「每月1号自动生成上月的客户回访总结邮件发给张总」</li>
+    </ul>
+  </div>
+
+  <div class="extra-card">
+    <h4>13. 跨文化沟通适配 <span class="badge b-new">NEW</span></h4>
+    <div class="sum">九牧有海外业务的话，这个方向特别值。</div>
+    <ul>
+      <li><b>文化敏感度提示：</b> 发给日本客户 vs 美国客户，道歉的深度和表达方式完全不同</li>
+      <li><b>时区+节假日感知：</b> 自动提醒收件人当地时间，避免在对方节假日发催办邮件</li>
+      <li><b>颜色/数字禁忌：</b> 不同文化对颜色（白/红）、数字（4/13）的忌讳</li>
+      <li><b>多语言语气对齐：</b> 英语的 polite 和中文的「客气」不完全对应，需做跨语言适配</li>
+    </ul>
+  </div>
+
+  <div class="extra-card">
+    <h4>14. A/B 测试 + 效果归因 <span class="badge b-data">数据</span></h4>
+    <div class="sum">把邮件变成一个可优化的产品，量化润色的真实价值。</div>
+    <ul>
+      <li><b>A/B 版本测试：</b> 同一场景生成两版邮件，统计哪个回复率更高、回复时间更短</li>
+      <li><b>话术效果归因：</b> 「加「辛苦」这个字，是否真的影响了对方的回复语气？」</li>
+      <li><b>部门/场景排行榜：</b> 哪个部门润色频率最高？哪个场景最依赖 AI？</li>
+      <li><b>ROI 计算：</b> 量化「每润色一封邮件节省X分钟」，证明投入产出</li>
+    </ul>
+  </div>
+
+  <div class="extra-card">
+    <h4>15. 邮件+IM 打通 <span class="badge b-quick">效率</span></h4>
+    <div class="sum">很多内部沟通已经迁移到企微/钉钉了，邮件润色的能力能不能也用在 IM 上？</div>
+    <ul>
+      <li><b>企微/钉钉消息润色：</b> 同样的场景+语气引擎，润色即时消息</li>
+      <li><b>邮件↔IM 转写：</b> 把一封正式邮件自动转成一段适合发在群里的消息，反之亦然</li>
+      <li><b>群聊摘要→邮件：</b> 一个群聊讨论了很久，AI 自动生成会议纪要/决策摘要邮件</li>
+      <li><b>统一沟通风格：</b> 同一个人的邮件和 IM 消息风格一致，升级品牌形象</li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- 总结 -->
+<div class="summary-box">
+  <h3>📌 给海洋姐的优先级重排建议</h3>
+  <ol>
+    <li><b>最低成本、最高收益 —— 先做「场景模板+强度滑杆」+「角色自适应」：</b> 两个功能共享同一套底层引擎，可以一起做。不涉及外部系统对接，纯前端+模型调优就能出效果。</li>
+    <li><b>价值爆发 —— 紧接「一句话生成+要点扩写」：</b> 这是让用户从「偶尔用」变成「天天用」的功能。需要多一些模型调优工作，但用户价值最大。</li>
+    <li><b>安全底线 —— 同步推进「敏感信息检测+合规拦截」：</b> 用的人越多，出事的概率越大。这个不能等，有和没有是质变。</li>
+    <li><b>新补充的方向中，优先「企业知识增强」和「邮件健康度评分」：</b> 前者直接提升内容准确性（降低业务风险），后者是一个低成本的用户心智加分项（让用户觉得「AI 在替我把关」）。</li>
+    <li><b>「邮件+IM打通」和「跨文化适配」作为中期布局：</b> 根据九牧的企微使用率和海外业务节奏来定。</li>
+  </ol>
+</div>
+
+</div><!-- end s4 -->
+
+<div class="note-sm">点击上方标签切换不同内容区 · 所有功能建议均基于九牧（卫浴/制造行业）业务场景定制</div>
+
+</div>
+
+<script>
+function switchTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  var tabs = document.querySelectorAll('.tab');
+  var labels = ['s1','s2','s3','s4'];
+  for(var i=0;i<labels.length;i++){ if(labels[i]===id){ tabs[i].classList.add('active'); break; } }
+}
+</script>
+</body>
+</html>
