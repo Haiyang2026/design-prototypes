@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能品类二开流程变更测试验证清单 - V2.1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .check-item { transition: all 0.2s ease; }
+        .check-item:hover { background-color: #f0f9ff; }
+        .detail-panel { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+        .detail-panel.open { max-height: 500px; }
+        .status-badge { font-size: 12px; padding: 2px 8px; border-radius: 12px; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-4xl mx-auto p-6">
+        <!-- 标题 -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">智能品类二开流程变更测试验证清单</h1>
+                    <p class="text-gray-500 mt-1">版本：V2.1 | 日期：2026-05-13 | 提出人：徐海洋</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-gray-500">涉及流程</div>
+                    <div class="text-sm font-medium text-gray-800">WF_YN001（主流程）</div>
+                    <div class="text-sm font-medium text-gray-800">WF_YN002（子流程）</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主流程检查项 -->
+        <div class="bg-white rounded-lg shadow-sm mb-6">
+            <div class="px-6 py-4 border-b bg-blue-50 rounded-t-lg">
+                <h2 class="text-lg font-semibold text-blue-800">
+                    <i class="fas fa-flow-cascade mr-2"></i>主流程检查项（智能品类二开工厂确认流程）
+                </h2>
+            </div>
+            <div class="p-4 space-y-3">
+                
+                <!-- 检查项1 -->
+                <div class="check-item border rounded-lg p-4 cursor-pointer" onclick="toggleDetail('detail1')">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-blue-600 mr-3">
+                            <span class="font-medium text-gray-800">【渠道】字段业务范围验证</span>
+                            <span class="ml-2 text-xs text-gray-500">变更项1.1</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="status-badge bg-yellow-100 text-yellow-700 mr-2">待验证</span>
+                            <i class="fas fa-chevron-down text-gray-400 transition-transform" id="icon1"></i>
+                        </div>
+                    </div>
+                    <div class="detail-panel mt-3 pl-8" id="detail1">
+                        <div class="bg-gray-50 rounded p-4 text-sm">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <div class="text-gray-500 mb-1">验证步骤</div>
+                                    <ol class="list-decimal list-inside text-gray-700 space-y-1">
+                                        <li>发起流程，进入明细列表</li>
+                                        <li>点击【渠道】字段下拉框</li>
+                                        <li>检查下拉选项是否为"销售渠道"业务范围</li>
+                                        <li>确认选项包含：小牧卫浴、九牧国际等</li>
+                                    </ol>
+                                </div>
+                                <div>
+                                    <div class="text-gray-500 mb-1">预期结果</div>
+                                    <div class="text-green-600">渠道下拉选项来源于"销售渠道"业务范围，而非"品牌品类渠道"</div>
+                                    <div class="mt-2 text-gray-500">涉及配置：1.3明细列表 → 【渠道】字段 → 来源/默认值</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 检查项2 -->
+                <div class="check-item border rounded-lg p-4 cursor-pointer" onclick="toggleDetail('detail2')">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-blue-600 mr-3">
+                            <span class="font-medium text-gray-800">传阅2入参范围验证</span>
+                            <span class="ml-2 text-xs text-gray-500">变更项1.2</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="status-badge bg-yellow-100 text-yellow-700 mr-2">待验证</span>
+                            <i class="fas fa-chevron-down text-gray-400 transition-transform" id="icon2"></i>
+                        </div>
+                    </div>
+                    <div class="detail-panel mt-3 pl-8" id="detail2">
+                        <div class="bg-gray-50 rounded p-4 text-sm">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <div class="text-gray-500 mb-1">验证步骤</div>
+                                    <ol class="list-decimal list-inside text-gray-700 space-y-1">
+                                        <li>发起流程，明细列表选择"小牧卫浴"渠道</li>
+                                        <li>流程审批至结束</li>
+                                        <li>检查OA传阅通知人员</li>
+                                        <li>确认施国庆收到传阅通知</li>
+                                    </ol>
+                                </div>
+                                <div>
+                                    <div class="text-gray-500 mb-1">预期结果</div>
+                                    <div class="text-green-600">传阅2按销售渠道入参通知对应人员</div>
+                                    <div class="mt-2 text-gray-500">角色：渠道订单专员/PSM10005</div>
+                                    <div class="text-gray-500">入参：销售渠道</div>
+                                    <div class="text-gray-500">小牧卫浴→施国庆；九牧国际→姚书文</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 检查项3 -->
+                <div class="check-item border rounded-lg p-4 cursor-pointer" onclick="toggleDetail('detail3')">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-blue-600 mr-3">
+                            <span class="font-medium text-gray-800">邮件2入参范围验证</span>
+                            <span class="ml-2 text-xs text-gray-500">变更项1.3</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="status-badge bg-yellow-100 text-yellow-700 mr-2">待验证</span>
+                            <i class="fas fa-chevron-down text-gray-400 transition-transform" id="icon3"></i>
+                        </div>
+                    </div>
+                    <div class="detail-panel mt-3 pl-8" id="detail3">
+                        <div class="bg-gray-50 rounded p-4 text-sm">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <div class="text-gray-500 mb-1">验证步骤</div>
+                                    <ol class="list-decimal list-inside text-gray-700 space-y-1">
+                                        <li>发起流程，明细列表选择渠道</li>
+                                        <li>流程审批至结束</li>
+                                        <li>检查邮件通知人员</li>
+                                        <li>确认品类项目经理+渠道订单专员收到邮件</li>
+                                    </ol>
+                                </div>
+                                <div>
+                                    <div class="text-gray-500 mb-1">预期结果</div>
+                                    <div class="text-green-600">邮件2汇总传阅1+传阅2人员，渠道订单专员按销售渠道入参</div>
+                                    <div class="mt-2 text-gray-500">角色：品类项目经理/PRD10008 + 渠道订单专员/PSM10005</div>
+                                    <div class="text-gray-500">入参：销售渠道</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 检查项4 -->
+                <div class="check-item border rounded-lg p-4 cursor-pointer" onclick="toggleDetail('detail4')">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-blue-600 mr-3">
+                            <span class="font-medium text-gray-800">环节名称变更验证</span>
+                            <span class="ml-2 text-xs text-gray-500">变更项2</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="status-badge bg-yellow-100 text-yellow-700 mr-2">待验证</span>
+                            <i class="fas fa-chevron-down text-gray-400 transition-transform" id="icon4"></i>
+                        </div>
+                    </div>
+                    <div class="detail-panel mt-3 pl-8" id="detail4">
+                        <div class="bg-gray-50 rounded p-4 text-sm">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <div class="text-gray-500 mb-1">验证步骤</div>
+                                    <ol class="list-decimal list-inside text-gray-700 space-y-1">
+                                        <li>发起流程</li>
+                                        <li>查看审批流程图/审批步骤</li>
+                                        <li>检查步骤ID 3的环节名称</li>
+                                    </ol>
+                                </div>
+                                <div>
+                                    <div class="text-gray-500 mb-1">预期结果</div>
+                                    <div class="text-green-600">步骤ID 3环节名称显示为"工厂评审回复"</div>
+                                    <div class="mt-2 text-red-500">原名称：等待渠道收集资料</div>
+                                    <div class="text-green-600">新名称：工厂评审回复</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 检查项5 -->
+                <div class="check-item border rounded-lg p-4 cursor-pointer" onclick="toggleDetail('detail5')">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-blue-600 mr-3">
+                            <span class="font-medium text-gray-800">渠道代码展示验证（缺陷修复）</span>
+                            <span class="ml-2 text-xs text-red-500">缺陷</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="status-badge bg-yellow-100 text-yellow-700 mr-2">待验证</span>
+                            <i class="fas fa-chevron-down text-gray-400 transition-transform" id="icon5"></i>
+                        </div>
+                    </div>
+                    <div class="detail-panel mt-3 pl-8" id="detail5">
+                        <div class="bg-gray-50 rounded p-4 text-sm">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <div class="text-gray-500 mb-1">验证步骤</div>
+                                    <ol class="list-decimal list-inside text-gray-700 space-y-1">
+                                        <li>在子流程导入明细数据</li>
+                                        <li>数据回填到主流程明细列表</li>
+                                        <li>检查渠道代码列是否正常显示</li>
+                                    </ol>
+                                </div>
+                                <div>
+                                    <div class="text-gray-500 mb-1">预期结果</div>
+                                    <div class="text-green-600">导入的渠道代码在列表正常展示</div>
+                                    <div class="mt-2 text-red-500">实例ID：2054446135339352064</div>
+                                    <div class="text-gray-500">影响范围：明细列表渠道代码字段</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 检查项6 -->
+                <div class="check-item border rounded-lg p-4 cursor-pointer" onclick="toggleDetail('detail6')">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-blue-600 mr-3">
+                            <span class="font-medium text-gray-800">结论字段导出导入验证</span>
+                            <span class="ml-2 text-xs text-gray-500">变更项4</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="status-badge bg-yellow-100 text-yellow-700 mr-2">待验证</span>
+                            <i class="fas fa-chevron-down text-gray-400 transition-transform" id="icon6"></i>
+                        </div>
+                    </div>
+                    <div class="detail-panel mt-3 pl-8" id="detail6">
+                        <div class="bg-gray-50 rounded p-4 text-sm">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <div class="text-gray-500 mb-1">验证步骤</div>
+                                    <ol class="list-decimal list-inside text-gray-700 space-y-1">
+                                        <li>流程到达【评审确认环节】（步骤ID 4）</li>
+                                        <li>点击明细列表导出按钮</li>
+                                        <li>在Excel中填写【结论】字段</li>
+                                        <li>点击导入按钮导入数据</li>
+                                        <li>检查【结论】字段是否成功导入</li>
+                                    </ol>
+                                </div>
+                                <div>
+                                    <div class="text-gray-500 mb-1">预期结果</div>
+                                    <div class="text-green-600">评审确认环节可编辑【结论】字段，支持导出导入</div>
+                                    <div class="mt-2 text-gray-500">环节：评审确认（步骤ID 4）</div>
+                                    <div class="text-gray-500">字段：【结论】</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 子流程检查项 -->
+        <div class="bg-white rounded-lg shadow-sm mb-6">
+            <div class="px-6 py-4 border-b bg-green-50 rounded-t-lg">
+                <h2 class="text-lg font-semibold text-green-800">
+                    <i class="fas fa-sitemap mr-2"></i>子流程检查项（智能品类二开(资料收集)）
+                </h2>
+            </div>
+            <div class="p-4 space-y-3">
+                
+                <!-- 检查项7 -->
+                <div class="check-item border rounded-lg p-4 cursor-pointer" onclick="toggleDetail('detail7')">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-green-600 mr-3">
+                            <span class="font-medium text-gray-800">明细表导出功能验证</span>
+                            <span class="ml-2 text-xs text-gray-500">变更项1</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="status-badge bg-yellow-100 text-yellow-700 mr-2">待验证</span>
+                            <i class="fas fa-chevron-down text-gray-400 transition-transform" id="icon7"></i>
+                        </div>
+                    </div>
+                    <div class="detail-panel mt-3 pl-8" id="detail7">
+                        <div class="bg-gray-50 rounded p-4 text-sm">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <div class="text-gray-500 mb-1">验证步骤</div>
+                                    <ol class="list-decimal list-inside text-gray-700 space-y-1">
+                                        <li>进入子流程任意审批环节</li>
+                                        <li>点击明细列表导出按钮</li>
+                                        <li>检查导出的Excel文件内容</li>
+                                    </ol>
+                                </div>
+                                <div>
+                                    <div class="text-gray-500 mb-1">预期结果</div>
+                                    <div class="text-green-600">明细表默认支持导出功能，导出Excel包含所有字段</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 检查项8 -->
+                <div class="check-item border rounded-lg p-4 cursor-pointer" onclick="toggleDetail('detail8')">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-green-600 mr-3">
+                            <span class="font-medium text-gray-800">南安陶瓷环节导入验证</span>
+                            <span class="ml-2 text-xs text-gray-500">变更项1</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="status-badge bg-yellow-100 text-yellow-700 mr-2">待验证</span>
+                            <i class="fas fa-chevron-down text-gray-400 transition-transform" id="icon8"></i>
+                        </div>
+                    </div>
+                    <div class="detail-panel mt-3 pl-8" id="detail8">
+                        <div class="bg-gray-50 rounded p-4 text-sm">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <div class="text-gray-500 mb-1">验证步骤</div>
+                                    <ol class="list-decimal list-inside text-gray-700 space-y-1">
+                                        <li>流程到达【南安陶瓷环节】（步骤ID 3）</li>
+                                        <li>导出明细表</li>
+                                        <li>填写可编辑字段</li>
+                                        <li>导入数据</li>
+                                        <li>检查字段是否成功导入</li>
+                                    </ol>
+                                </div>
+                                <div>
+                                    <div class="text-gray-500 mb-1">可编辑字段</div>
+                                    <ul class="list-disc list-inside text-green-600 space-y-1">
+                                        <li>【南安陶瓷：二开完成时间】</li>
+                                        <li>【南安陶瓷：瓷体量产时间（区分多工艺）】</li>
+                                    </ul>
+                                    <div class="mt-2 text-red-500">注意：【瓷体】字段不可编辑</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 检查项9 -->
+                <div class="check-item border rounded-lg p-4 cursor-pointer" onclick="toggleDetail('detail9')">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-green-600 mr-3">
+                            <span class="font-medium text-gray-800">良瓷科技环节导入验证</span>
+                            <span class="ml-2 text-xs text-gray-500">变更项1</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="status-badge bg-yellow-100 text-yellow-700 mr-2">待验证</span>
+                            <i class="fas fa-chevron-down text-gray-400 transition-transform" id="icon9"></i>
+                        </div>
+                    </div>
+                    <div class="detail-panel mt-3 pl-8" id="detail9">
+                        <div class="bg-gray-50 rounded p-4 text-sm">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <div class="text-gray-500 mb-1">验证步骤</div>
+                                    <ol class="list-decimal list-inside text-gray-700 space-y-1">
+                                        <li>流程到达【良瓷科技环节】（步骤ID 4）</li>
+                                        <li>导出明细表</li>
+                                        <li>填写可编辑字段</li>
+                                        <li>导入数据</li>
+                                        <li>检查字段是否成功导入</li>
+                                    </ol>
+                                </div>
+                                <div>
+                                    <div class="text-gray-500 mb-1">可编辑字段</div>
+                                    <ul class="list-disc list-inside text-green-600 space-y-1">
+                                        <li>【永春良瓷：二开完成时间】</li>
+                                        <li>【永春良瓷：瓷体量产时间（区分多工艺）】</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 检查项10 -->
+                <div class="check-item border rounded-lg p-4 cursor-pointer" onclick="toggleDetail('detail10')">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-green-600 mr-3">
+                            <span class="font-medium text-gray-800">导入提示红字验证</span>
+                            <span class="ml-2 text-xs text-gray-500">变更项1</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="status-badge bg-yellow-100 text-yellow-700 mr-2">待验证</span>
+                            <i class="fas fa-chevron-down text-gray-400 transition-transform" id="icon10"></i>
+                        </div>
+                    </div>
+                    <div class="detail-panel mt-3 pl-8" id="detail10">
+                        <div class="bg-gray-50 rounded p-4 text-sm">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <div class="text-gray-500 mb-1">验证步骤</div>
+                                    <ol class="list-decimal list-inside text-gray-700 space-y-1">
+                                        <li>进入支持导入的环节（南安陶瓷/良瓷科技）</li>
+                                        <li>检查明细列表上方是否有红字提示</li>
+                                    </ol>
+                                </div>
+                                <div>
+                                    <div class="text-gray-500 mb-1">预期提示内容</div>
+                                    <div class="text-red-600 font-medium">
+                                        导入操作：导出表格→编辑补充字段→导入。如编辑其他只读字段，会影响整体数据，请仔细检查！
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 验证统计 -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">验证进度</h3>
+                    <p class="text-gray-500 text-sm mt-1">共10项检查项</p>
+                </div>
+                <div class="flex space-x-4">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-yellow-600" id="pendingCount">10</div>
+                        <div class="text-sm text-gray-500">待验证</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-green-600" id="passedCount">0</div>
+                        <div class="text-sm text-gray-500">已通过</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-red-600" id="failedCount">0</div>
+                        <div class="text-sm text-gray-500">未通过</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 变更记录链接 -->
+        <div class="mt-6 text-center">
+            <a href="智能品类二开流程变更记录_V2.1_2026-05-13（主子流程）.md" class="text-blue-600 hover:underline">
+                <i class="fas fa-file-alt mr-1"></i>查看完整变更记录文档
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function toggleDetail(id) {
+            const detail = document.getElementById(id);
+            const iconNum = id.replace('detail', '');
+            const icon = document.getElementById('icon' + iconNum);
+            
+            detail.classList.toggle('open');
+            icon.style.transform = detail.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const item = this.closest('.check-item');
+                const statusBadge = item.querySelector('.status-badge');
+                
+                if (this.checked) {
+                    statusBadge.className = 'status-badge bg-green-100 text-green-700 mr-2';
+                    statusBadge.textContent = '已通过';
+                } else {
+                    statusBadge.className = 'status-badge bg-yellow-100 text-yellow-700 mr-2';
+                    statusBadge.textContent = '待验证';
+                }
+                
+                updateCounts();
+            });
+        });
+
+        function updateCounts() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const total = checkboxes.length;
+            
+            document.getElementById('passedCount').textContent = checked;
+            document.getElementById('pendingCount').textContent = total - checked;
+        }
+    </script>
+</body>
+</html>
