@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>应用中心 - 工作台</title>
+  <style>
+    /* ========== Reset & Variables ========== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-page: #F2F4F6;
+      --bg-card: #FFFFFF;
+      --blue: #0069FF;
+      --blue-light: #E9F1FF;
+      --text-dark: #141B24;
+      --text-gray: #7C8493;
+      --text-light: #8697AE;
+      --red: #FF4D5D;
+      --orange: #FF813B;
+      --green: #04D999;
+      --border: #D2D7E1;
+      --shadow: 0px 0px 5px 0px rgba(185, 191, 203, 0.3);
+      --radius: 6px;
+      --font: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg-page);
+      color: var(--text-dark);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== 原型文档布局 ===== */
+    .proto-wrapper { display: flex; min-height: 100vh; }
+    .proto-main { flex: 1; min-width: 0; }
+
+    /* 右侧标注面板 */
+    .proto-notes {
+      width: 320px; flex-shrink: 0;
+      background: #FFFDF5; border-left: 1px solid #F0E68C;
+      padding: 20px 16px; font-size: 13px; color: #555;
+      overflow-y: auto; max-height: 100vh; position: sticky; top: 0;
+    }
+    .proto-notes h3 {
+      font-size: 16px; font-weight: 600; color: var(--text-dark);
+      margin-bottom: 6px; padding-bottom: 8px; border-bottom: 2px solid #F0E68C;
+    }
+    .note-section { margin-bottom: 24px; }
+    .note-section h4 {
+      font-size: 13px; font-weight: 700; color: #FF6B6B;
+      margin-bottom: 6px; display: flex; align-items: center; gap: 4px;
+    }
+    .note-section h4::before { content: '●'; font-size: 8px; }
+    .note-item {
+      padding: 6px 0 6px 12px; border-left: 2px solid #F0E68C; margin-bottom: 12px;
+      line-height: 1.6;
+    }
+
+    /* 响应式：小屏隐藏标注面板 */
+    @media (max-width: 1200px) { .proto-notes { display: none; } }
+
+    /* ========== Layout ========== */
+    .app-layout {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ========== Top Bar ========== */
+    .top-bar {
+      background: var(--blue-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 20px 8px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .top-bar .logo { height: 24px; }
+    .top-bar .user-info { display: flex; align-items: center; gap: 8px; }
+    .top-bar .user-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; }
+    .top-bar .org-switch { font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px; color: var(--text-dark); }
+    .top-bar .org-switch::after { content: '▾'; font-size: 10px; }
+
+    /* ========== Sidebar ========== */
+    .sidebar {
+      width: 62px;
+      background: #fff;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 0;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .sidebar .nav-item {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 11px;
+      color: var(--text-gray);
+      gap: 2px;
+      transition: all 0.15s;
+    }
+    .sidebar .nav-item:hover { background: #F5F6F8; color: var(--text-dark); }
+    .sidebar .nav-item.active { color: var(--blue); background: var(--blue-light); }
+    .sidebar .nav-item .nav-icon { width: 22px; height: 22px; border-radius: 4px; background: var(--text-light); }
+    .sidebar .nav-item.active .nav-icon { background: var(--blue); }
+    .sidebar .divider { width: 32px; height: 1px; background: var(--border); margin: 4px 0; }
+    .sidebar .avatar-section { margin-top: auto; }
+    .sidebar .avatar-section .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: #E8F0FE; display: flex; align-items: center; justify-content: center; color: var(--blue); font-size: 13px; font-weight: 600; }
+
+    /* ========== Main Content ========== */
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* ========== Top Tabs ========== */
+    .top-tabs {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 0 12px;
+    }
+    .tab-item {
+      padding: 14px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--text-dark);
+      position: relative;
+      white-space: nowrap;
+      transition: color 0.15s;
+    }
+    .tab-item:hover { color: var(--blue); }
+    .tab-item.active {
+      color: #fff;
+      background: var(--blue);
+      border-radius: 4px;
+      margin: 4px 0;
+      padding: 10px 16px;
+    }
+    .tab-more {
+      margin-left: auto;
+      color: var(--text-dark);
+      cursor: pointer;
+      padding: 14px 12px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .tab-more::after { content: '▾'; font-size: 10px; }
+    .old-link {
+      background: var(--blue);
+      border-radius: 4px;
+      color: #fff;
+      padding: 6px 12px;
+      font-size: 12px;
+      margin-left: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+    .badge-red {
+      background: var(--red);
+      color: #fff;
+      border-radius: 50%;
+      min-width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      padding: 0 4px;
+      margin-left: 8px;
+    }
+
+    /* ========== Cards ========== */
+    .card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 12px;
+    }
+
+    /* ========== Section Header ========== */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .section-title .sub-tabs { display: flex; gap: 12px; }
+    .section-title .sub-tab {
+      color: var(--text-light);
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .section-title .sub-tab.active {
+      color: var(--text-dark);
+    }
+    .section-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-link {
+      color: var(--blue);
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      border: none;
+      background: none;
+      font-family: inherit;
+    }
+    .btn-link:hover { opacity: 0.8; }
+
+    /* Active indicator bar */
+    .active-bar {
+      width: 36px;
+      height: 2px;
+      background: var(--blue);
+      border-radius: 1px;
+      margin-left: 0;
+      margin-bottom: 4px;
+    }
+
+    /* ========== App Cards Grid ========== */
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      overflow: visible;
+    }
+    .app-card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-width: 0;
+      position: relative;
+      border: 1px solid transparent;
+      overflow: visible;
+    }
+    .app-card:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      border-color: var(--blue);
+      transform: translateY(-2px);
+    }
+    .app-card .app-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      border: 1px solid var(--border);
+      background: #F5F7FA;
+    }
+    .app-card .app-info { flex: 1; min-width: 0; }
+    .app-card .app-name {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.3;
+    }
+    .app-card .app-tags { display: flex; gap: 4px; margin-top: 2px; }
+    .app-card     .app-tag { font-size: 10px; padding: 1px 4px; border-radius: 3px; font-weight: 400; line-height: 1.3; }
+    .tag-type-platform { background: #E9F1FF; color: var(--blue); }
+    .tag-type-func { background: #E6F7EC; color: #07B365; }
+    .tag-type-flow { background: #FFF3E6; color: #E87B00; }
+    .tag-biz { background: #F0F0F0; color: #666; }
+
+    /* App card hover menu */
+    .app-card .card-more-btn {
+      position: absolute; top: 6px; right: 8px;
+      width: 22px; height: 22px; border-radius: 4px;
+      display: none; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 14px; font-weight: 700;
+      color: var(--text-light); background: #fff; border: 1px solid var(--border);
+      transition: all 0.15s; line-height: 1;
+    }
+    .app-card:hover .card-more-btn { display: flex; }
+    .app-card .card-more-btn:hover { background: #F5F6F8; color: var(--text-dark); border-color: var(--text-gray); }
+
+    /* Favorites card header */
+    .fav-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .fav-title {
+      font-size: 15px; font-weight: 600; color: var(--text-dark);
+      display: flex; align-items: center; gap: 4px;
+    }
+    .btn-outline-sm {
+      display: flex; align-items: center; gap: 4px;
+      padding: 5px 12px; border: 1px solid var(--border); border-radius: 4px;
+      background: #fff; font-size: 12px; color: var(--text-gray); cursor: pointer;
+      font-family: inherit; transition: all 0.15s;
+    }
+    .btn-outline-sm:hover { border-color: var(--blue); color: var(--blue); }
+    .btn-primary-sm {
+      display: flex; align-items: center; gap: 4px;
+      padding: 5px 12px; border: 1px solid var(--blue); border-radius: 4px;
+      background: var(--blue); color: #fff; font-size: 12px; cursor: pointer;
+      font-family: inherit; transition: all 0.15s;
+    }
+    .btn-primary-sm:hover { opacity: 0.9; }
+
+    /* Modal for manage */
+    .display-option { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .display-option:last-child { border: none; }
+    .display-option .label { font-size: 14px; font-weight: 500; color: var(--text-dark); min-width: 80px; }
+    .radio-group { display: flex; gap: 16px; }
+    .radio-opt { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; color: var(--text-gray); }
+    .radio-opt input[type="radio"] { accent-color: var(--blue); }
+    .radio-opt:has(input:checked) { color: var(--text-dark); font-weight: 500; }
+
+    .manage-list { display: flex; flex-direction: column; gap: 4px; }
+    .manage-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; }
+    .manage-item:hover { background: #F5F6F8; }
+    .manage-item .drag-handle { cursor: grab; color: var(--text-light); font-size: 16px; padding: 2px; }
+    .manage-item.dragging { opacity: 0.5; background: var(--blue-light); }
+    .manage-item .app-icon { width: 36px; height: 36px; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; border: 1px solid var(--border); }
+    .manage-item .item-info { flex: 1; min-width: 0; }
+    .manage-item .item-name { font-size: 13px; font-weight: 500; color: var(--text-dark); }
+    .manage-item .item-desc { font-size: 11px; color: var(--text-light); margin-top: 1px; }
+    .btn-star { width: 28px; height: 28px; border-radius: 6px; border: none; background: transparent; cursor: pointer; color: #F5A623; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+    .btn-star:hover { background: #FFF8E6; }
+
+    /* Card detail pop */
+    .app-card .card-detail-pop {
+      display: none; position: absolute; top: 100%; left: 0; right: 0;
+      margin-top: 4px; background: #fff; border: 1px solid var(--blue); border-radius: 8px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12); z-index: 99999; padding: 12px; font-size: 12px;
+    }
+    .app-card.expanded .card-detail-pop { display: block; }
+    .app-card.expanded { border-color: var(--blue); box-shadow: 0 4px 16px rgba(0,105,255,0.15); z-index: 90; }
+    .card-detail-pop .detail-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border); }
+    .card-detail-pop .detail-row:last-child { border: none; }
+    .card-detail-pop .detail-label { color: var(--text-light); }
+    .card-detail-pop .detail-value { color: var(--text-dark); font-weight: 500; }
+    .card-detail-pop .detail-actions { display: flex; gap: 8px; margin-top: 8px; }
+    .card-detail-pop .btn-sm { padding: 4px 12px; border-radius: 4px; border: 1px solid var(--border); background: #fff; font-size: 12px; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .card-detail-pop .btn-sm:hover { border-color: var(--blue); color: var(--blue); }
+    .card-detail-pop .btn-sm.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+    /* Card more menu dropdown */
+    .card-more-menu {
+      display: none; position: absolute; top: 28px; right: 0;
+      background: #fff; border: 1px solid var(--border); border-radius: 6px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12); z-index: 99999; min-width: 100px; overflow: hidden;
+    }
+    .card-more-menu.show { display: block; }
+    .card-more-menu .menu-item {
+      padding: 8px 14px; font-size: 13px; color: var(--text-dark); cursor: pointer;
+      white-space: nowrap; transition: background 0.1s; display: flex; align-items: center; gap: 6px;
+    }
+    .card-more-menu .menu-item:hover { background: #F5F6F8; }
+    .card-more-menu .menu-item.danger { color: var(--red); }
+
+    /* Type tags */
+    .type-tag {
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+    .type-tag.app { background: #E8F0FE; color: var(--blue); }
+    .type-tag.func { background: #E6F7EC; color: #07B365; }
+    .type-tag.flow { background: #FFF3E6; color: #E87B00; }
+
+    /* ========== My Favorites Section ========== */
+    .favorites-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      overflow-x: hidden;
+      overflow-y: auto;
+      scrollbar-gutter: stable;
+    }
+
+    /* ========== Business Category Section ========== */
+    .biz-section { margin-bottom: 4px; }
+    .biz-section .category-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      padding: 0 2px;
+    }
+    .biz-section .category-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+    .biz-section .category-count {
+      font-size: 11px;
+      color: var(--text-light);
+    }
+
+    /* ========== Expand / Collapse ========== */
+    .expand-row {
+      display: flex;
+      justify-content: center;
+      padding: 8px 0 0;
+    }
+    .expand-btn {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 6px 16px;
+      font-size: 12px;
+      color: var(--text-dark);
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+    .expand-btn:hover { border-color: var(--blue); color: var(--blue); }
+
+    /* ========== Modal / Dialog ========== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .modal {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+      width: 640px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #E5E7EB;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-title { font-size: 16px; font-weight: 600; }
+    .modal-close { cursor: pointer; color: var(--text-gray); font-size: 20px; border: none; background: none; }
+    .modal-search {
+      padding: 12px 20px;
+      border-bottom: 1px solid #E5E7EB;
+    }
+    .modal-search input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+    }
+    .modal-search input:focus { border-color: var(--blue); }
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px;
+    }
+    .modal-footer {
+      padding: 12px 20px;
+      border-top: 1px solid #E5E7EB;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    .btn {
+      padding: 8px 20px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-secondary { background: #F5F6F8; color: var(--text-dark); }
+    .btn-secondary:hover { background: #E5E7EB; }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ========== Favorite Card Special ========== */
+    .fav-card {
+      position: relative;
+    }
+    .fav-card .fav-delete {
+      position: absolute;
+      top: 2px;
+      right: 4px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--red);
+      color: #fff;
+      font-size: 10px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+      line-height: 1;
+    }
+    .fav-card:hover .fav-delete { display: flex; }
+
+    /* ========== Selector List ========== */
+    .selector-list { display: flex; flex-direction: column; gap: 6px; }
+    .selector-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .selector-item:hover { background: #F5F6F8; }
+    .selector-item.selected { background: var(--blue-light); }
+    .selector-item input[type="checkbox"] {
+      accent-color: var(--blue);
+      width: 16px; height: 16px;
+    }
+    .selector-item .app-icon { width: 28px; height: 28px; border-radius: 5px; }
+    .selector-item .app-info { flex: 1; display: flex; flex-direction: column; }
+    .selector-item .app-info .name { font-size: 13px; font-weight: 500; }
+    .selector-item .app-info .desc { font-size: 11px; color: var(--text-light); }
+    .selector-item.disabled { opacity: 0.4; cursor: not-allowed; }
+    .selector-item.disabled:hover { background: transparent; }
+    .already-added { font-size: 11px; color: var(--text-light); padding: 2px 8px; background: #F5F6F8; border-radius: 3px; }
+
+    /* ========== Grid Add Modal ========== */
+    .add-filter-tabs { display: flex; gap: 16px; margin-bottom: 16px; font-size: 13px; }
+    .add-filter-tab { color: var(--text-light); cursor: pointer; padding-bottom: 4px; border-bottom: 2px solid transparent; transition: all 0.15s; }
+    .add-filter-tab.active { color: var(--text-dark); font-weight: 500; border-bottom-color: var(--blue); }
+    .add-app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; min-height: 0; }
+    /* 添加弹窗固定高度，切换类别时不变 */
+    #addAppModal .modal-body { max-height: 420px; overflow-y: auto; }
+    .add-app-card { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 8px; border: 2px solid var(--border); border-radius: 10px; cursor: pointer; transition: all 0.2s; position: relative; }
+    .add-app-card:hover { border-color: var(--blue); }
+    .add-app-card.selected { border-color: var(--blue); background: var(--blue-light); }
+    .add-app-card .check-badge { position: absolute; top: 6px; right: 6px; width: 18px; height: 18px; border-radius: 50%; background: var(--blue); color: #fff; font-size: 10px; display: none; align-items: center; justify-content: center; }
+    .add-app-card.selected .check-badge { display: flex; }
+    .add-app-card .app-icon { width: 44px; height: 44px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 1px solid var(--border); }
+    .add-app-card .app-name { font-size: 12px; font-weight: 500; color: var(--text-dark); text-align: center; line-height: 1.3; }
+    .add-app-card .tag-row { display: flex; gap: 3px; }
+    .add-modal-bar { display: flex; align-items: center; padding: 8px 0; border-top: 1px solid #E5E7EB; }
+    .add-modal-bar .selected-count { flex: 1; font-size: 12px; color: var(--text-light); }
+
+    /* ========== Misc ========== */
+    .text-blue { color: var(--blue); }
+    .text-gray { color: var(--text-gray); }
+
+    /* ===== 管理弹窗补充样式（与门户页对齐） ===== */
+    .manage-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+    .manage-section-title { font-size: 14px; font-weight: 600; color: var(--text-dark); }
+    .btn-link-sm { color: var(--blue); font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; background: none; border: none; font-family: inherit; transition: opacity 0.15s; }
+    .btn-link-sm:hover { opacity: 0.8; text-decoration: underline; }
+    /* 置顶按钮 */
+    .pin-btn { width: 28px; height: 28px; border-radius: 6px; border: none; background: transparent; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; color: #ccc; flex-shrink: 0; }
+    .pin-btn:hover { background: #FFF3E6; color: var(--orange); }
+    .pin-btn.pinned { color: var(--orange); }
+    .manage-item.is-pinned { background: #FFF8F0; border: 1px solid #FFE0B2; }
+    /* 分类分组 */
+    .manage-category-group { margin-bottom: 16px; }
+    .manage-category-title { font-size: 12px; font-weight: 600; color: var(--text-light); padding: 6px 0; border-bottom: 1px dashed var(--border); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+
+    /* 类型页签 */
+    .type-tabs .type-tab { padding: 8px 16px; font-size: 13px; color: var(--text-gray); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; }
+    .type-tabs .type-tab:hover { color: var(--text-dark); }
+    .type-tabs .type-tab.active { color: var(--blue); font-weight: 500; border-bottom-color: var(--blue); }
+
+    /* ===== 全局浮层（body 级，不受父级层叠上下文限制） ===== */
+    #globalPop {
+      display: none; position: fixed; z-index: 99999;
+      width: 320px; background: #fff; border: 1px solid var(--blue); border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15); padding: 16px; font-size: 13px;
+    }
+    #globalPop.show { display: block; }
+
+    /* 浮层内部样式 */
+    .detail-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+    .detail-header .left { display: flex; align-items: center; gap: 12px; }
+    .detail-header .big-icon { width: 48px; height: 48px; border-radius: 10px; background: #F5F7FA; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 24px; }
+    .detail-header .info { flex: 1; }
+    .detail-header .name { font-size: 16px; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; }
+    .detail-header .tags { display: flex; gap: 4px; }
+    .detail-section { margin-bottom: 12px; }
+    .detail-section .label { font-size: 12px; color: var(--text-light); margin-bottom: 4px; }
+    .detail-section .content { color: var(--text-dark); line-height: 1.6; }
+    .detail-contacts { display: flex; flex-wrap: wrap; gap: 8px; }
+    .detail-contact { display: flex; align-items: center; gap: 4px; padding: 4px 10px; background: var(--blue-light); border-radius: 12px; font-size: 12px; color: var(--blue); cursor: pointer; transition: all 0.15s; }
+    .detail-contact:hover { background: var(--blue); color: #fff; }
+    .detail-actions { display: flex; gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .detail-btn { flex: 1; padding: 8px 16px; border-radius: 6px; border: 1px solid var(--border); background: #fff; font-size: 13px; cursor: pointer; font-family: inherit; transition: all 0.15s; text-align: center; }
+    .detail-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .detail-btn.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .detail-btn.primary:hover { opacity: 0.9; }
+    .detail-pin-btn { display: flex; align-items: center; justify-content: center; gap: 4px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: #fff; font-size: 13px; cursor: pointer; font-family: inherit; transition: all 0.15s; color: var(--text-gray); }
+    .detail-pin-btn:hover { border-color: var(--orange); color: var(--orange); }
+    .detail-pin-btn.pinned { background: #FFF3E6; border-color: var(--orange); color: var(--orange); }
+
+    .hidden { display: none !important; }
+
+    /* Fav-star toggle on all-app cards */
+    .fav-star {
+      position: absolute; bottom: 8px; right: 8px;
+      font-size: 16px; cursor: pointer; color: #ddd;
+      transition: all 0.2s; z-index: 5; line-height: 1;
+      user-select: none;
+    }
+    .fav-star:hover { color: #FFB800; transform: scale(1.2); }
+    .fav-star.starred { color: #FFB800; }
+
+    /* Icon placeholders */
+    .icon-color-1 { background: #E8F0FE; color: #0069FF; }
+    .icon-color-2 { background: #FFF3E0; color: #E87B00; }
+    .icon-color-3 { background: #E6F7EC; color: #07B365; }
+    .icon-color-4 { background: #FFEAEA; color: #D93A3A; }
+    .icon-color-5 { background: #F0E6FF; color: #7B3FCF; }
+    .icon-color-6 { background: #E6F7FF; color: #0088CC; }
+
+    /* ===== Toast 提示 ===== */
+    .toast {
+      position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+      background: #2C2C2A; color: #fff; padding: 12px 28px; border-radius: 8px;
+      font-size: 13px; z-index: 999999; opacity: 0; transition: opacity 0.35s;
+      pointer-events: none; box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+<div id="toast" class="toast"></div>
+<div class="proto-wrapper">
+<div class="proto-main">
+  <div class="app-layout">
+
+    <!-- ==================== Sidebar ==================== -->
+    <aside class="sidebar">
+      <div class="nav-item active">
+        <div class="nav-icon"></div>
+        <span>工作台</span>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon"></div>
+        <span>消息</span>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon"></div>
+        <span>通讯录</span>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon"></div>
+        <span>文档</span>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon"></div>
+        <span>日历</span>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon"></div>
+        <span>会议</span>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon"></div>
+        <span>邮件</span>
+      </div>
+      <div class="divider"></div>
+      <div class="nav-item">
+        <div class="nav-icon"></div>
+        <span>更多</span>
+      </div>
+      <div class="avatar-section">
+        <div class="user-avatar">怀</div>
+      </div>
+    </aside>
+
+    <!-- ==================== Main ==================== -->
+    <div style="flex:1; display:flex; flex-direction:column;">
+
+      <!-- Top Bar -->
+      <div class="top-bar">
+        <span class="org-switch">全员</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:13px;color:var(--text-gray);">获取应用</span>
+          <span style="font-size:13px;color:var(--text-gray);">创建应用</span>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="main-content">
+
+        <!-- Top Navigation Tabs -->
+        <div class="top-tabs">
+          <div class="tab-item">门户首页</div>
+          <div class="tab-item">流程中心</div>
+          <div class="tab-item">待办中心</div>
+          <div class="tab-item">知识中心</div>
+          <div class="tab-item active" style="font-weight:600;">应用中心</div>
+          <div class="tab-item">人力平台</div>
+          <div class="tab-item">研发平台</div>
+          <div class="tab-more">更多</div>
+          <span class="badge-red">99+</span>
+          <div class="old-link">
+            <span style="font-size:14px;">⤤</span> 旧版
+          </div>
+        </div>
+
+        <!-- ==================== 我的应用 ==================== -->
+        <div class="card" id="favoritesSection" style="padding:12px 16px;">
+          <div class="fav-header">
+            <div class="fav-title">我的应用</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <button class="btn-outline-sm" onclick="openManageModal()">⚙ 管理</button>
+            </div>
+          </div>
+          <!-- 类型页签（显示分类模式下展示） -->
+          <div class="type-tabs hidden" id="typeTabs" style="display:flex;gap:0;margin-bottom:12px;border-bottom:1px solid var(--border);">
+            <span class="type-tab active" data-type="全部" onclick="filterByType('全部', this)" style="padding:8px 16px;font-size:13px;cursor:pointer;color:var(--blue);border-bottom:2px solid var(--blue);font-weight:500;">全部</span>
+            <span class="type-tab" data-type="平台" onclick="filterByType('平台', this)" style="padding:8px 16px;font-size:13px;cursor:pointer;color:var(--text-gray);border-bottom:2px solid transparent;">平台</span>
+            <span class="type-tab" data-type="工具" onclick="filterByType('工具', this)" style="padding:8px 16px;font-size:13px;cursor:pointer;color:var(--text-gray);border-bottom:2px solid transparent;">工具</span>
+            <span class="type-tab" data-type="流程" onclick="filterByType('流程', this)" style="padding:8px 16px;font-size:13px;cursor:pointer;color:var(--text-gray);border-bottom:2px solid transparent;">流程</span>
+          </div>
+          <div class="favorites-grid" id="favoritesGrid"></div>
+          <div style="text-align:center;padding:16px;color:var(--text-light);font-size:13px;" id="favEmpty">
+            暂无收藏应用，点击「+ 添加」
+          </div>
+        </div>
+
+        <!-- ==================== 全部应用 ==================== -->
+        <div class="card" id="appListSection" style="padding:12px 16px;">
+          <div class="section-header">
+            <div class="section-title">
+              全部应用
+              <div class="sub-tabs" id="allAppTabs">
+                <span class="sub-tab active" onclick="switchAllAppTab('全部', this)">全部</span>
+                <span class="sub-tab" onclick="switchAllAppTab('平台', this)">平台类</span>
+                <span class="sub-tab" onclick="switchAllAppTab('工具', this)">工具类</span>
+                <span class="sub-tab" onclick="switchAllAppTab('流程', this)">流程类</span>
+              </div>
+            </div>
+            <div class="section-actions">
+              <button class="btn-link" onclick="toggleExpand()" id="expandBtn">展开/收起</button>
+            </div>
+          </div>
+
+          <!-- App list grouped by type → business waterfall -->
+          <div id="appListContent" class="app-list-scroll" style="overflow-x:hidden;overflow-y:auto;max-height:420px;scrollbar-gutter:stable;"></div>
+
+          <div class="expand-row" id="expandRow">
+            <button class="expand-btn" onclick="toggleExpand()">
+              <span>▼</span> 展开更多
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /main-content -->
+    </div>
+  </div>
+
+  <!-- ==================== Manage Modal ==================== -->
+  <div class="modal-overlay hidden" id="manageModal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">管理我的应用</span>
+        <button class="modal-close" onclick="closeManageModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #E5E7EB;">
+          <div style="font-size:14px;font-weight:600;color:var(--text-dark);margin-bottom:12px;">📐 显示设置</div>
+          <div class="display-option" style="padding:0;border:none;">
+            <span class="label">展示行数</span>
+            <div class="radio-group">
+              <label class="radio-opt"><input type="radio" name="rowCount" value="1" onchange="setFavRows(1)"> 1 行</label>
+              <label class="radio-opt"><input type="radio" name="rowCount" value="2" onchange="setFavRows(2)"> 2 行</label>
+              <label class="radio-opt"><input type="radio" name="rowCount" value="3" onchange="setFavRows(3)"> 3 行</label>
+            </div>
+          </div>
+          <div class="display-option" style="border-top:1px solid #E5E7EB;padding-top:12px;margin-top:12px;">
+            <span class="label">展示模式</span>
+            <div class="radio-group">
+              <label class="radio-opt"><input type="radio" name="displayMode" value="hidden" checked onchange="switchDisplayMode('hidden')"> 隐藏分类</label>
+              <label class="radio-opt"><input type="radio" name="displayMode" value="show" onchange="switchDisplayMode('show')"> 显示分类</label>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="manage-section-header">
+            <div class="manage-section-title">⚙ 管理我的应用</div>
+            <button class="btn-link-sm" onclick="closeManageModal();openAddAppModal()">+ 添加</button>
+          </div>
+          <div style="font-size:12px;color:var(--text-light);margin-bottom:12px;">三区：置顶区(可拖拽) → 频率区(收藏+默认模板,频率降序) → 补齐区(其余,频率降序)</div>
+          <div class="manage-list" id="manageList"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="applyManageAndClose()">完成</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== Add App Modal (Grid) ==================== -->
+  <div class="modal-overlay hidden" id="addAppModal">
+    <div class="modal" style="width:780px;">
+      <div class="modal-header">
+        <span class="modal-title">添加应用</span>
+        <button class="modal-close" onclick="closeAddAppModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="add-filter-tabs">
+          <span class="add-filter-tab active" data-mode="平台" onclick="switchAddFilter('平台', this)">平台</span>
+          <span class="add-filter-tab" data-mode="功能" onclick="switchAddFilter('工具', this)">工具</span>
+          <span class="add-filter-tab" data-mode="流程" onclick="switchAddFilter('流程', this)">流程</span>
+        </div>
+        <div class="add-app-grid" id="addAppGrid"></div>
+      </div>
+      <div style="padding:0 20px;">
+        <div class="add-modal-bar">
+          <span class="selected-count" id="addSelectCount">已选择 0 项</span>
+          <button class="btn btn-primary" id="addConfirmBtn" disabled onclick="confirmAddApps()">确认添加</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- end proto-main -->
+
+  <!-- ==================== 原型标注面板 ==================== -->
+  <aside class="proto-notes">
+    <div class="note-section">
+      <h3>应用中心 · 原型标注</h3>
+      <p style="margin-bottom:12px;line-height:1.8;font-size:13px;">版本: 2026-07-10 · 已对齐 v0.5 需求文档</p>
+    </div>
+
+    <div class="note-section">
+      <h4>数据模型</h4>
+      <div class="note-item">
+        <b>personalFavorites + pinnedApps</b> 与门户页面共享，两边的收藏/置顶状态完全一致。<br>
+        <span style="color:var(--blue);font-size:11px;">📄 详见需求文档 1.4、4.3</span>
+      </div>
+    </div>
+
+    <div class="note-section">
+      <h4>我的应用</h4>
+      <div class="note-item">与门户卡片完全一致：排序、hover浮层、显示模式、管理弹窗。<br>
+        <span style="color:var(--blue);font-size:11px;">📄 详见需求文档 3.5.1、3.1</span></div>
+      <div class="note-item">管理弹窗：三区（置顶可拖拽 + 频率 + 补齐）+ 搜索，搜索中不可拖拽。<br>
+        <span style="color:var(--blue);font-size:11px;">📄 详见需求文档 3.4</span></div>
+    </div>
+
+    <div class="note-section">
+      <h4>全部应用</h4>
+      <div class="note-item">tab 切换（全部/平台/工具/流程）→ 直接平铺网格。卡片右下角 ☆/★。<br>
+        hover 浮层<b>不显示📌</b>（收藏进入频率区后才可置顶）。内容区固定 6 行高度。</div>
+    </div>
+
+    <div class="note-section">
+      <h4>技术要点</h4>
+      <div class="note-item">浮层 z-index ≥ 9999，body 级固定定位<br>
+        <span style="color:var(--blue);font-size:11px;">📄 详见技能包 第十条</span></div>
+    </div>
+
+    <div class="note-section">
+      <h4>v0.5 待实现</h4>
+      <div class="note-item">
+        <b>1. 管理弹窗三区UI：</b>置顶区/频率区/补齐区加分割线 + 分区标题<br>
+        <b>2. 恢复默认按钮：</b>弹窗底部「恢复默认」链接，二次确认弹窗<br>
+        <b>3. 空状态提示：</b>置顶区/频率区为空时显示引导文案<br>
+        <b>4. 置顶超行自动调整：</b>置顶数超行数时自动升档 + toast 提示<br>
+        <b>5. 搜索框：</b>管理弹窗顶部加搜索，搜索中禁用拖拽
+      </div>
+    </div>
+  </aside>
+
+</div><!-- close proto-wrapper -->
+
+  <script>
+    // ===== Toast 提示 =====
+    function showToast(msg, dur = 3500) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      clearTimeout(t._tid);
+      t._tid = setTimeout(() => t.classList.remove('show'), dur);
+    }
+
+    function checkRowCapacity() {
+      const maxPerRow = 6, maxRows = 3;
+      const cap = favRows * maxPerRow;
+      if (pinnedApps.length > cap) {
+        const need = Math.min(maxRows, Math.ceil(pinnedApps.length / maxPerRow));
+        const old = favRows;
+        if (need === old) return;
+        favRows = need;
+        const radio = document.querySelector(`input[name="favRowCount"][value="${need}"]`);
+        if (radio) radio.checked = true;
+        showToast(`您的置顶应用较多（${pinnedApps.length} 个），展示行数已自动调整为 ${need} 行。可在管理弹窗中手动调整。`);
+      }
+    }
+
+    // ==================== Data ====================
+    const allApps = [
+      // 人资类
+      { id: 'hr1', name: 'OA', biz: 'hr', type: '平台', icon: '📋', iconClass: 'icon-color-1', url: '#', visits: 1280 },
+      { id: 'hr2', name: '人资平台', biz: 'hr', type: '平台', icon: '👥', iconClass: 'icon-color-1', url: '#', visits: 960 },
+      { id: 'hr3', name: 'ACS 2.0', biz: 'hr', type: '平台', icon: '🔄', iconClass: 'icon-color-2', url: '#', visits: 840 },
+      { id: 'hr4', name: 'MOO学堂', biz: 'hr', type: '平台', icon: '🎓', iconClass: 'icon-color-3', url: '#', visits: 620 },
+      { id: 'hr5', name: '九牧大学', biz: 'hr', type: '平台', icon: '🏫', iconClass: 'icon-color-4', url: '#', visits: 510 },
+      { id: 'hr6', name: '入职办理', biz: 'hr', type: '工具', icon: '📝', iconClass: 'icon-color-3', url: '#', visits: 320 },
+      { id: 'hr7', name: '转正审批', biz: 'hr', type: '流程', icon: '✅', iconClass: 'icon-color-2', url: '#', visits: 280 },
+      { id: 'hr8', name: '调薪流程', biz: 'hr', type: '流程', icon: '💰', iconClass: 'icon-color-2', url: '#', visits: 180 },
+      // 产研类
+      { id: 'rd1', name: '项目管理', biz: 'rd', type: '平台', icon: '📊', iconClass: 'icon-color-5', url: '#', visits: 630 },
+      { id: 'rd2', name: '代码仓库', biz: 'rd', type: '平台', icon: '💻', iconClass: 'icon-color-5', url: '#', visits: 980 },
+      { id: 'rd3', name: '需求提交', biz: 'rd', type: '工具', icon: '📌', iconClass: 'icon-color-3', url: '#', visits: 390 },
+      { id: 'rd4', name: 'Bug反馈', biz: 'rd', type: '工具', icon: '🐛', iconClass: 'icon-color-3', url: '#', visits: 620 },
+      { id: 'rd5', name: '发布审批', biz: 'rd', type: '流程', icon: '🚀', iconClass: 'icon-color-2', url: '#', visits: 240 },
+      { id: 'rd6', name: '需求评审', biz: 'rd', type: '流程', icon: '📋', iconClass: 'icon-color-2', url: '#', visits: 310 },
+      { id: 'rd7', name: '文档云', biz: 'rd', type: '平台', icon: '☁️', iconClass: 'icon-color-6', url: '#', visits: 720 },
+      { id: 'rd8', name: 'CI/CD', biz: 'rd', type: '平台', icon: '⚙️', iconClass: 'icon-color-1', url: '#', visits: 490 },
+      { id: 'rd9', name: '测试平台', biz: 'rd', type: '平台', icon: '🧪', iconClass: 'icon-color-5', url: '#', visits: 350 },
+      { id: 'rd10', name: 'API网关', biz: 'rd', type: '平台', icon: '🔌', iconClass: 'icon-color-1', url: '#', visits: 420 },
+      { id: 'rd11', name: '日志平台', biz: 'rd', type: '工具', icon: '📜', iconClass: 'icon-color-4', url: '#', visits: 410 },
+      { id: 'rd12', name: '配置中心', biz: 'rd', type: '平台', icon: '🔧', iconClass: 'icon-color-6', url: '#', visits: 310 },
+      // 研发类
+      { id: 'dev1', name: '设计平台', biz: 'dev', type: '平台', icon: '🎨', iconClass: 'icon-color-5', url: '#', visits: 550 },
+      { id: 'dev2', name: 'PRD管理', biz: 'dev', type: '工具', icon: '📄', iconClass: 'icon-color-3', url: '#', visits: 380 },
+      { id: 'dev3', name: '交互评审', biz: 'dev', type: '流程', icon: '👆', iconClass: 'icon-color-2', url: '#', visits: 260 },
+      { id: 'dev4', name: '设计规范', biz: 'dev', type: '平台', icon: '📐', iconClass: 'icon-color-1', url: '#', visits: 440 },
+      { id: 'dev5', name: '组件库', biz: 'dev', type: '平台', icon: '🧩', iconClass: 'icon-color-6', url: '#', visits: 500 },
+      { id: 'dev6', name: '图标库', biz: 'dev', type: '工具', icon: '🔣', iconClass: 'icon-color-4', url: '#', visits: 290 },
+    ];
+
+    // ========== 个人收藏（全局统一） ==========
+    // 应用中心「我的应用」= personalFavorites（全部，按访问频率排序）
+    // 各门户「我的应用」= pagePicks[pageId]（⊆ personalFavorites，用户自定义排序）
+    // 全部应用 = allApps（用户权限可见范围）
+    const personalFavorites = ['hr1','hr2','hr3','hr4','rd1','rd2','rd7','rd8','dev1','dev4'];
+
+    // 当前操作上下文（用于门户页内添加，应用中心自身为 null）
+    let currentPageId = null;
+
+    let isExpanded = false;
+    let favRows = 2;
+    let displayMode = 'hidden'; // hidden=隐藏分类, show=显示分类
+    let currentAllAppTab = '全部'; // 全部应用 tab 过滤
+    let currentTypeFilter = '全部'; // 我的应用类型页签过滤
+    let dragId = null;
+
+    // pinnedApps: 置顶应用ID列表（toggle行为，不限制数量）
+    let pinnedApps = [];
+    let popTimer = null;
+
+    // ==================== Render Functions ====================
+    function getTypeTag(type) {
+      if (type === '平台') return '<span class="type-tag app">平台</span>';
+      if (type === '功能') return '<span class="type-tag func">功能</span>';
+      if (type === '流程') return '<span class="type-tag flow">流程</span>';
+      return '';
+    }
+
+    function getBizLabel(biz) { const map = { hr: '人资', rd: '产研', dev: '研发' }; return map[biz] || biz; }
+
+    function createAppCard(app) {
+      return `
+        <div class="app-card" data-id="${app.id}" style="position:relative;" title="${app.name}"
+             onclick="event.stopPropagation(); window.open('${app.url || 'https://www.baidu.com'}', '_blank')">
+          <div class="app-icon ${app.iconClass}">${app.icon}</div>
+          <div class="app-info">
+            <div class="app-name">${app.name}</div>
+            <div class="app-tags">
+              <span class="app-tag tag-type-${app.type==='平台'?'platform':app.type==='工具'?'func':'flow'}">${getTypeLabel(app.type)}</span>
+              <span class="app-tag tag-biz">${getBizLabel(app.biz)}</span>
+            </div>
+          </div>
+          <div class="card-more-btn" onclick="event.stopPropagation();" onmouseenter="showCardPop('${app.id}', this)" onmouseleave="schedulePopHide(event)">⋯</div>
+          <div class="card-more-menu" id="fmenu-${app.id}">
+            <div class="menu-item" onclick="event.stopPropagation();expandCardDetail(event, '${app.id}')">📋 查看详情</div>
+            <div class="menu-item danger" onclick="event.stopPropagation();removeFavoriteFromCard(event, '${app.id}')">⭐ 取消收藏</div>
+          </div>
+          <div class="card-detail-pop">
+            <div class="detail-row"><span class="detail-label">应用名称</span><span class="detail-value">${app.name}</span></div>
+            <div class="detail-row"><span class="detail-label">类型</span><span class="detail-value">${getTypeLabel(app.type)} · ${getBizLabel(app.biz)}</span></div>
+            <div class="detail-actions">
+              <button class="btn-sm primary" onclick="event.stopPropagation();window.open('${app.url || '#'}','_blank')">打开应用</button>
+              <button class="btn-sm" onclick="removeFavoriteFromCard(event, '${app.id}')">取消收藏</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderFavorites() {
+      const grid = document.getElementById('favoritesGrid');
+      const empty = document.getElementById('favEmpty');
+      const tabs = document.getElementById('typeTabs');
+      let favApps = personalFavorites.map(id => allApps.find(a => a.id === id)).filter(Boolean);
+
+      // 排序：📌置顶优先 → 访问频率降序（与门店页一致）
+      favApps.sort((a, b) => {
+        const aPin = pinnedApps.indexOf(a.id);
+        const bPin = pinnedApps.indexOf(b.id);
+        const aPinOrder = aPin >= 0 ? aPin : 9999;
+        const bPinOrder = bPin >= 0 ? bPin : 9999;
+        if (aPinOrder !== bPinOrder) return aPinOrder - bPinOrder;
+        return (b.visits || 0) - (a.visits || 0);
+      });
+
+      // 类型页签显示/隐藏 + 过滤
+      if (displayMode === 'show') {
+        tabs.classList.remove('hidden');
+        const favTypes = [...new Set(favApps.map(a => a.type))];
+        tabs.querySelectorAll('.type-tab').forEach(tab => {
+          const t = tab.dataset.type;
+          tab.style.display = (t === '全部' || favTypes.includes(t)) ? '' : 'none';
+        });
+      } else {
+        tabs.classList.add('hidden');
+        currentTypeFilter = '全部';
+      }
+      if (currentTypeFilter !== '全部') {
+        favApps = favApps.filter(a => a.type === currentTypeFilter);
+      }
+
+      const maxItems = favRows * 6;
+      if (favApps.length === 0) {
+        grid.innerHTML = '';
+        grid.style.maxHeight = 'none';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+
+      const needScroll = favApps.length > maxItems;
+      grid.style.maxHeight = needScroll ? (favRows * 70 - 8) + 'px' : 'none';
+      grid.innerHTML = favApps.map(app => createAppCard(app)).join('');
+    }
+
+    function filterByType(type, el) {
+      currentTypeFilter = type;
+      document.querySelectorAll('#typeTabs .type-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      if (type === '全部') {
+        el.style.color = 'var(--blue)';
+        el.style.borderBottomColor = 'var(--blue)';
+        el.style.fontWeight = '500';
+      }
+      renderFavorites();
+    }
+
+    function createAllAppCard(app) {
+      const isFaved = personalFavorites.includes(app.id);
+      return `
+        <div class="app-card all-app-card" data-id="${app.id}" style="position:relative;" title="${app.name}"
+             onclick="event.stopPropagation(); window.open('${app.url || 'https://www.baidu.com'}', '_blank')">
+          <div class="app-icon ${app.iconClass}">${app.icon}</div>
+          <div class="app-info">
+            <div class="app-name">${app.name}</div>
+            <div class="app-tags">
+              <span class="app-tag tag-type-${app.type==='平台'?'platform':app.type==='工具'?'func':'flow'}">${getTypeLabel(app.type)}</span>
+              <span class="app-tag tag-biz">${getBizLabel(app.biz)}</span>
+            </div>
+          </div>
+          <div class="card-more-btn" onclick="event.stopPropagation();" onmouseenter="showCardPop('${app.id}', this)" onmouseleave="schedulePopHide(event)">⋯</div>
+          <div class="fav-star ${isFaved ? 'starred' : ''}" onclick="event.stopPropagation();toggleFavorite('${app.id}')" title="${isFaved ? '取消收藏' : '添加收藏'}">
+            ${isFaved ? '★' : '☆'}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAppList() {
+      const container = document.getElementById('appListContent');
+      const types = currentAllAppTab === '全部' ? ['平台', '工具', '流程'] : [currentAllAppTab];
+      const typeIcons = { '平台': '🖥️', '工具': '🔧', '流程': '📋' };
+      let html = '';
+      const maxPerType = isExpanded ? 999 : 12;
+
+      types.forEach(type => {
+        let typeApps = allApps.filter(a => a.type === type);
+        if (typeApps.length === 0) return;
+        typeApps = typeApps.slice(0, maxPerType);
+        html += `<div class="biz-section" style="margin-bottom:16px;">`;
+        html += `<div class="category-header"><span class="category-name">${typeIcons[type]||''} ${type}类</span><span class="category-count">${typeApps.length}个应用</span></div>`;
+        html += '<div class="app-grid">';
+        html += typeApps.map(app => createAllAppCard(app)).join('');
+        html += '</div></div>';
+      });
+
+      container.innerHTML = html;
+
+      const btn = document.getElementById('expandBtn');
+      const row = document.getElementById('expandRow');
+      if (isExpanded) {
+        btn.textContent = '收起';
+        row.querySelector('button').innerHTML = '<span>▲</span> 收起';
+      } else {
+        btn.textContent = '展开/收起';
+        row.querySelector('button').innerHTML = '<span>▼</span> 展开更多';
+      }
+    }
+
+    function switchAllAppTab(tab, el) {
+      currentAllAppTab = tab;
+      document.querySelectorAll('#allAppTabs .sub-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      renderAppList();
+    }
+
+    // ==================== 收藏操作 ====================
+    function toggleFavorite(appId) {
+      const idx = personalFavorites.indexOf(appId);
+      if (idx >= 0) {
+        personalFavorites.splice(idx, 1);
+      } else {
+        personalFavorites.push(appId);
+      }
+      renderFavorites();
+      renderAppList();
+    }
+
+    function toggleFavoriteFromCard(e, appId) {
+      e.stopPropagation();
+      document.querySelectorAll('.card-more-menu').forEach(m => m.classList.remove('show'));
+      toggleFavorite(appId);
+    }
+
+    function removeFavorite(appId) {
+      const idx = personalFavorites.indexOf(appId);
+      if (idx >= 0) personalFavorites.splice(idx, 1);
+      renderFavorites();
+      renderAppList();
+    }
+
+    function removeFavoriteFromCard(e, appId) {
+      e.stopPropagation();
+      document.querySelectorAll('.card-more-menu').forEach(m => m.classList.remove('show'));
+      removeFavorite(appId);
+    }
+
+    function toggleCardMenu(e, id) {
+      e.stopPropagation();
+      const menu = document.getElementById('fmenu-' + id);
+      document.querySelectorAll('.card-more-menu').forEach(m => { if (m !== menu) m.classList.remove('show'); });
+      menu.classList.toggle('show');
+    }
+
+    function expandCardDetail(e, id) {
+      e.stopPropagation();
+      document.querySelectorAll('.card-more-menu').forEach(m => m.classList.remove('show'));
+      document.querySelectorAll('.app-card').forEach(c => c.classList.remove('expanded'));
+      const card = document.querySelector(`.app-card[data-id="${id}"]`);
+      if (card) card.classList.add('expanded');
+    }
+
+    // Close popups on outside click
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.card-more-btn') && !e.target.closest('.card-more-menu')) {
+        document.querySelectorAll('.card-more-menu').forEach(m => m.classList.remove('show'));
+      }
+      if (!e.target.closest('.app-card')) {
+        document.querySelectorAll('.app-card.expanded').forEach(c => c.classList.remove('expanded'));
+      }
+    });
+
+    function toggleExpand() {
+      isExpanded = !isExpanded;
+      renderFavorites();
+      renderAppList();
+    }
+
+    // ==================== Category Tab Switch ====================
+    function switchCategoryTab(cat, el) {
+      document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      // Scroll to the corresponding biz section
+      const bizMap = { employee: 'hr', ai: 'rd', hr: 'hr', lark: 'dev', strategy: 'rd', finance: 'dev' };
+      const targetBiz = bizMap[cat];
+      const section = document.querySelector(`.biz-section[data-biz="${targetBiz}"]`);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    // ==================== Grid Add App Modal (统一门户框架设计) ====================
+    let addFilterMode = '平台';
+    let addSelection = [];
+
+    function openAddAppModal(pageId) {
+      currentPageId = pageId || null;
+      addSelection = [...personalFavorites];
+      document.getElementById('addAppModal').classList.remove('hidden');
+      addFilterMode = '平台';
+      document.querySelectorAll('.add-filter-tab').forEach(t => t.classList.remove('active'));
+      const firstTab = document.querySelector('.add-filter-tab[data-mode="平台"]');
+      if (firstTab) firstTab.classList.add('active');
+      renderAddAppGrid();
+    }
+
+    function closeAddAppModal() {
+      document.getElementById('addAppModal').classList.add('hidden');
+      addSelection = [];
+    }
+
+    function switchAddFilter(mode, el) {
+      addFilterMode = mode;
+      document.querySelectorAll('.add-filter-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      renderAddAppGrid();
+    }
+
+    function groupAppsForAdd() {
+      // Map type for filtering: the static page uses 'app'/'func'/'flow'
+      const filtered = allApps.filter(a => a.type === addFilterMode);
+      const groups = {};
+      filtered.forEach(a => {
+        const bizLabel = getBizLabel(a.biz);
+        if (!groups[bizLabel]) groups[bizLabel] = [];
+        groups[bizLabel].push(a);
+      });
+      return groups;
+    }
+
+    function renderAddAppGrid() {
+      const grid = document.getElementById('addAppGrid');
+      const groups = groupAppsForAdd();
+      let html = '';
+      for (const [groupName, apps] of Object.entries(groups)) {
+        html += `<div style="grid-column:1/-1;font-size:13px;font-weight:600;color:var(--text-gray);margin-top:8px;">${groupName}</div>`;
+        html += apps.map(app => {
+          const selected = addSelection.includes(app.id);
+          return `<div class="add-app-card ${selected ? 'selected' : ''}" onclick="toggleAddSelect('${app.id}')">
+            <div class="check-badge">✓</div>
+            <div class="app-icon ${app.iconClass}">${app.icon}</div>
+            <span class="app-name">${app.name}</span>
+            <div class="tag-row">
+              <span class="app-tag tag-type-${app.type==='平台'?'platform':app.type==='工具'?'func':'flow'}">${getTypeLabel(app.type)}</span>
+              <span class="app-tag tag-biz">${getBizLabel(app.biz)}</span>
+            </div>
+          </div>`;
+        }).join('');
+      }
+      grid.innerHTML = html;
+      updateAddSelectCount();
+    }
+
+    function toggleAddSelect(id) {
+      if (addSelection.includes(id)) addSelection = addSelection.filter(x => x !== id);
+      else addSelection.push(id);
+      updateAddSelectCount();
+    }
+
+    function updateAddSelectCount() {
+      const count = addSelection.length;
+      document.getElementById('addSelectCount').textContent = '已选择 ' + count + ' 项';
+      document.getElementById('addConfirmBtn').disabled = count === 0;
+      document.querySelectorAll('#addAppGrid .add-app-card').forEach(card => {
+        const oc = card.getAttribute('onclick') || '';
+        const m = oc.match(/'([^']+)'/);
+        if (m) {
+          if (addSelection.includes(m[1])) card.classList.add('selected');
+          else card.classList.remove('selected');
+        }
+      });
+    }
+
+    function confirmAddApps() {
+      // 应用中心：直接写入 personalFavorites（门户页添加时由门户自身处理 pagePicks）
+      personalFavorites.length = 0;
+      addSelection.forEach(id => personalFavorites.push(id));
+      closeAddAppModal();
+      renderFavorites();
+      renderAppList();
+    }
+
+    function getTypeLabel(type) {
+      const map = { '平台': '平台', '功能': '功能', '流程': '流程' };
+      return map[type] || type;
+    }
+
+    // ==================== Manage Modal (个人收藏管理) ====================
+    function openManageModal(pageId) {
+      currentPageId = pageId || null;
+      document.getElementById('manageModal').classList.remove('hidden');
+      document.querySelector(`input[name="rowCount"][value="${favRows}"]`).checked = true;
+      document.querySelector(`input[name="displayMode"][value="${displayMode}"]`).checked = true;
+      renderManageList();
+    }
+    function closeManageModal() { document.getElementById('manageModal').classList.add('hidden'); renderFavorites(); }
+
+    function applyManageAndClose() {
+      const val = document.querySelector('input[name="rowCount"]:checked').value;
+      favRows = parseInt(val);
+      const modeVal = document.querySelector('input[name="displayMode"]:checked').value;
+      displayMode = modeVal;
+      closeManageModal();
+      renderFavorites();
+    }
+
+    // 切换显示模式（隐藏分类 / 显示分类）
+    function switchDisplayMode(mode) {
+      displayMode = mode;
+      if (mode === 'hidden') { currentTypeFilter = '全部'; }
+      renderFavorites();
+      if (!document.getElementById('manageModal').classList.contains('hidden')) {
+        renderManageList();
+      }
+    }
+
+    function renderManageList() {
+      const list = document.getElementById('manageList');
+      const favApps = personalFavorites.map(id => allApps.find(a => a.id === id)).filter(Boolean);
+      favApps.sort((a, b) => (b.visits || 0) - (a.visits || 0));
+      if (favApps.length === 0) {
+        list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text-light);">暂无收藏应用</div>';
+        return;
+      }
+
+      if (displayMode === 'show') {
+        // === 显示分类模式：瀑布流分类排布 ===
+        const types = ['平台', '工具', '流程'];
+        const typeIcons = { '平台': '🖥️', '工具': '🔧', '流程': '📋' };
+        let html = '';
+        types.forEach(type => {
+          const typeApps = favApps.filter(a => a.type === type);
+          if (typeApps.length === 0) return;
+          html += `<div class="manage-category-group">`;
+          html += `<div class="manage-category-title">${typeIcons[type]||''} ${type}类</div>`;
+          typeApps.forEach(app => {
+            const isPinned = pinnedApps.includes(app.id);
+            html += `
+            <div class="manage-item ${isPinned?'is-pinned':''}" data-id="${app.id}">
+              <div class="app-icon ${app.iconClass}">${app.icon}</div>
+              <div class="item-info">
+                <div class="item-name">${app.name}${isPinned?' <span style="font-size:11px;color:var(--orange);">📌 置顶</span>':''}</div>
+                <div class="item-desc">${getTypeLabel(app.type)} · ${getBizLabel(app.biz)} · 访问 ${app.visits||0} 次</div>
+              </div>
+              <button class="pin-btn ${isPinned?'pinned':''}" onclick="togglePin('${app.id}')" title="${isPinned?'取消置顶':'置顶'}">📌</button>
+              <button class="btn-star" onclick="unfavoriteFromManage('${app.id}')" title="取消收藏">⭐</button>
+            </div>`;
+          });
+          html += `</div>`;
+        });
+        list.innerHTML = html;
+      } else {
+        // === 隐藏分类模式：统一列表 ===
+        list.innerHTML = favApps.map(app => {
+          const isPinned = pinnedApps.includes(app.id);
+          return `
+          <div class="manage-item ${isPinned?'is-pinned':''}" data-id="${app.id}">
+            <div class="app-icon ${app.iconClass}">${app.icon}</div>
+            <div class="item-info">
+              <div class="item-name">${app.name}${isPinned?' <span style="font-size:11px;color:var(--orange);">📌 置顶</span>':''}</div>
+              <div class="item-desc">${getTypeLabel(app.type)} · ${getBizLabel(app.biz)} · 访问 ${app.visits||0} 次</div>
+            </div>
+            <button class="pin-btn ${isPinned?'pinned':''}" onclick="togglePin('${app.id}')" title="${isPinned?'取消置顶':'置顶'}">📌</button>
+            <button class="btn-star" onclick="unfavoriteFromManage('${app.id}')" title="取消收藏">⭐</button>
+          </div>`;
+        }).join('');
+      }
+    }
+
+    function unfavoriteFromManage(id) {
+      const idx = personalFavorites.indexOf(id);
+      if (idx >= 0) { personalFavorites.splice(idx, 1); const pi = pinnedApps.indexOf(id); if(pi>=0) pinnedApps.splice(pi,1); }
+      renderManageList();
+      renderFavorites();
+      renderAppList();
+    }
+
+    // 拖拽排序：操作 personalFavorites 数组顺序
+    function getSortTargetList() {
+      return personalFavorites;
+    }
+
+    function handleDragStart(e) { dragId = e.target.closest('.manage-item').dataset.id; e.target.closest('.manage-item').classList.add('dragging'); }
+    function handleDragOver(e) { e.preventDefault(); }
+    function handleDrop(e) {
+      e.preventDefault();
+      const target = e.target.closest('.manage-item');
+      if (!target || !dragId) return;
+      const targetId = target.dataset.id;
+      if (dragId === targetId) return;
+      const list = getSortTargetList();
+      const fromIdx = list.indexOf(dragId);
+      const toIdx = list.indexOf(targetId);
+      if (fromIdx !== -1 && toIdx !== -1) { list.splice(fromIdx, 1); list.splice(toIdx, 0, dragId); }
+      dragId = null;
+      renderManageList();
+      renderFavorites();
+    }
+    function handleDragEnd(e) { document.querySelectorAll('.manage-item').forEach(el => el.classList.remove('dragging')); dragId = null; }
+
+    // ===== 全局浮层（body 级，hover 触发） =====
+    function showCardPop(appId, btnEl) {
+      clearTimeout(popTimer);
+      const app = allApps.find(a => a.id === appId);
+      if (!app) return;
+      const isFav = personalFavorites.includes(appId);
+      const isPinned = pinnedApps.includes(appId);
+      const isFlow = app.type === '流程';
+      // 全部应用卡片不显示📌（需先收藏再置顶）
+      const showPin = !btnEl.closest('.all-app-card');
+
+      const pop = document.getElementById('globalPop');
+      pop.innerHTML = `
+        <div class="detail-header">
+          <div class="left">
+            <div class="big-icon">${app.icon}</div>
+            <div class="info">
+              <div class="name">${app.name}</div>
+              <div class="tags">
+                <span class="app-tag tag-type-${app.type==='平台'?'platform':app.type==='工具'?'func':'flow'}">${app.type}</span>
+                <span class="app-tag tag-biz">${getBizLabel(app.biz)}</span>
+              </div>
+            </div>
+          </div>
+          <div class="fav-star" onclick="toggleFavFromPop(event, '${app.id}')" title="${isFav?'取消收藏':'收藏'}" style="color:${isFav?'#F5A623':'#ccc'};cursor:pointer;font-size:22px;">${isFav?'★':'☆'}</div>
+        </div>
+        <div class="detail-section">
+          <div class="label">📝 简介</div>
+          <div class="content">${app.desc || '暂无简介'}</div>
+        </div>
+        <div class="detail-section">
+          <div class="label">👤 联系人</div>
+          <div class="detail-contacts">
+            <span class="detail-contact" onclick="alert('唤起聊天功能待实现')">张三</span>
+            <span class="detail-contact" onclick="alert('唤起聊天功能待实现')">李四</span>
+          </div>
+        </div>
+        <div class="detail-actions">
+          ${showPin ? `<button class="detail-pin-btn ${isPinned?'pinned':''}" onclick="event.stopPropagation();togglePin('${app.id}')">${isPinned?'📌 已置顶':'📌 置顶'}</button>` : ''}
+          ${isFlow?`
+          <button class="detail-btn" onclick="event.stopPropagation();window.open('https://example.com/create/${app.id}','_blank')">创建</button>
+          <button class="detail-btn primary" onclick="event.stopPropagation();window.open('${app.url || '#'}','_blank')">查看</button>
+          `:''}
+        </div>`;
+
+      const btnRect = btnEl.getBoundingClientRect();
+      const popW = 320, gap = 8;
+      let left = btnRect.right + gap;
+      let top = btnRect.top - 8;
+      if (left + popW > window.innerWidth - 16) left = btnRect.left - popW - gap;
+      if (top < 0) top = 8;
+      if (top + 300 > window.innerHeight) top = window.innerHeight - 316;
+      pop.style.left = left + 'px';
+      pop.style.top = top + 'px';
+      pop.classList.add('show');
+    }
+
+    function schedulePopHide(e) {
+      const pop = document.getElementById('globalPop');
+      if (pop && pop.matches(':hover')) return;
+      clearTimeout(popTimer);
+      popTimer = setTimeout(() => { pop.classList.remove('show'); }, 200);
+    }
+    function cancelPopHide() { clearTimeout(popTimer); }
+
+    // ★收藏切换（浮层内） + 取消收藏同时取消置顶
+    function toggleFavFromPop(e, id) {
+      e.stopPropagation();
+      const idx = personalFavorites.indexOf(id);
+      if (idx >= 0) { personalFavorites.splice(idx, 1); const pi = pinnedApps.indexOf(id); if(pi>=0) pinnedApps.splice(pi,1); }
+      else personalFavorites.push(id);
+      renderFavorites(); renderAppList();
+    }
+
+    // 📌 置顶切换
+    function togglePin(id) {
+      const idx = pinnedApps.indexOf(id);
+      if (idx >= 0) pinnedApps.splice(idx, 1);
+      else { pinnedApps.push(id); checkRowCapacity(); }
+      renderFavorites(); renderAppList();
+      // 管理弹窗开着也刷新
+      if (!document.getElementById('manageModal').classList.contains('hidden')) {
+        renderManageList();
+      }
+    }
+
+    // 点击外部关闭浮层
+    document.addEventListener('click', function(e2) {
+      if (!e2.target.closest('#globalPop') && !e2.target.closest('.card-more-btn')) {
+        document.getElementById('globalPop').classList.remove('show');
+      }
+    });
+
+    // ==================== Init ====================
+    renderFavorites();
+    renderAppList();
+  </script>
+<div id="globalPop"></div>
+</body>
+</html>
