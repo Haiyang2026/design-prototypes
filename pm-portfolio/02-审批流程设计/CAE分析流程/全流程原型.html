@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAE分析申请流程 - 交互原型</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{brand:'#0C328C',primary:'#3685F2',success:'#04D999',warn:'#FF813B',danger:'#FF4D5D'},fontFamily:{sans:['-apple-system','BlinkMacSystemFont','PingFang SC','Microsoft YaHei','sans-serif']}}}}</script>
+<style>
+/* 自定义滚动条 */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:#f1f1f1}
+::-webkit-scrollbar-thumb{background:#ccc;border-radius:3px}
+/* 步骤时间线 */
+.step-line{position:absolute;top:18px;left:50%;width:100%;height:2px;background:#E4E7F0;z-index:0}
+.step:last-child .step-line{display:none}
+/* 字段网格动画 */
+.field-card{transition:all .15s}
+.field-card:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+/* 标签系统 */
+.tag-editable{background:#E6FBF5;color:#00a870;border:1px solid #04D99950}
+.tag-readonly{background:#F4F7F9;color:#7C8493;border:1px solid #D2D7E150}
+.tag-hidden{background:#FAFAFA;color:#B9BFCB;border:1px solid #E4E7F050}
+.tag-required{background:#FFEDEF;color:#FF4D5D;border:1px solid #FF4D5D50}
+.tag-upload{background:#F3F8FE;color:#3685F2;border:1px solid #3685F250}
+/* 步骤导航高亮 */
+.step-btn{transition:all .2s}
+.step-btn.active{border-color:#3685F2 !important;box-shadow:0 0 0 3px rgba(54,133,242,.12)}
+</style>
+</head>
+<body class="bg-gray-50 font-sans text-sm text-gray-800">
+
+<!-- ====== HEADER ====== -->
+<header class="bg-brand text-white sticky top-0 z-50 shadow-md">
+<div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+<div>
+<h1 class="text-base font-semibold">CAE分析申请流程</h1>
+<div class="text-xs opacity-70 mt-0.5">流程ID：RD02004 | 业务对象：WO_RD02004 | 分类：研发管理 > 研发设计 | V1.6</div>
+</div>
+<div class="flex gap-3 text-xs">
+<span class="bg-white/15 px-2.5 py-1 rounded">产品：徐海洋</span>
+<span class="bg-white/15 px-2.5 py-1 rounded">全员适用</span>
+<span class="bg-white/15 px-2.5 py-1 rounded">无外围系统</span>
+</div>
+</div>
+</header>
+
+<!-- ====== FLOW STEPS NAVIGATION ====== -->
+<div class="max-w-7xl mx-auto px-6 pt-5 pb-3">
+<div class="bg-white rounded-lg shadow-sm p-5 border border-gray-100">
+<div class="flex items-stretch gap-0 relative" id="stepTabs">
+<!-- Step 0: 起草 -->
+<div class="step flex-1 text-center relative cursor-pointer" onclick="selectStep(0)">
+<div class="step-line"></div>
+<div class="w-9 h-9 rounded-full mx-auto mb-2 flex items-center justify-center text-xs font-bold relative z-10 border-2 border-dashed border-primary text-primary bg-blue-50 step-dot">✏️</div>
+<div class="text-xs leading-tight"><strong class="block text-sm">起草</strong>提交人</div>
+</div>
+<!-- Step 1 -->
+<div class="step flex-1 text-center relative cursor-pointer" onclick="selectStep(1)">
+<div class="step-line"></div>
+<div class="w-9 h-9 rounded-full mx-auto mb-2 flex items-center justify-center text-xs font-bold relative z-10 border-2 border-success text-success bg-green-50 step-dot">1</div>
+<div class="text-xs leading-tight"><strong class="block text-sm">三级组织负责人</strong>审批·单审</div>
+</div>
+<!-- Step 2 -->
+<div class="step flex-1 text-center relative cursor-pointer" onclick="selectStep(2)">
+<div class="step-line"></div>
+<div class="w-9 h-9 rounded-full mx-auto mb-2 flex items-center justify-center text-xs font-bold relative z-10 border-2 border-primary text-primary bg-blue-50 step-dot">2</div>
+<div class="text-xs leading-tight"><strong class="block text-sm">分配工单</strong>执行·单审</div>
+</div>
+<!-- Step 3 -->
+<div class="step flex-1 text-center relative cursor-pointer" onclick="selectStep(3)">
+<div class="step-line"></div>
+<div class="w-9 h-9 rounded-full mx-auto mb-2 flex items-center justify-center text-xs font-bold relative z-10 border-2 border-primary text-primary bg-blue-50 step-dot step-dot-parallel">3</div>
+<div class="text-xs leading-tight"><strong class="block text-sm">分析工程师提交报告</strong>执行·并审</div>
+</div>
+<!-- Step 4 -->
+<div class="step flex-1 text-center relative cursor-pointer" onclick="selectStep(4)">
+<div class="step-line"></div>
+<div class="w-9 h-9 rounded-full mx-auto mb-2 flex items-center justify-center text-xs font-bold relative z-10 border-2 border-success text-success bg-green-50 step-dot">4</div>
+<div class="text-xs leading-tight"><strong class="block text-sm">三级组织负责人</strong>审批·单审</div>
+</div>
+<!-- Step 5 -->
+<div class="step flex-1 text-center relative cursor-pointer" onclick="selectStep(5)">
+<div class="step-line"></div>
+<div class="w-9 h-9 rounded-full mx-auto mb-2 flex items-center justify-center text-xs font-bold relative z-10 border-2 border-primary text-primary bg-blue-50 step-dot">5</div>
+<div class="text-xs leading-tight"><strong class="block text-sm">申请人确认</strong>执行·单审</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ====== MAIN CONTENT ====== -->
+<div class="max-w-7xl mx-auto px-6 pb-8 space-y-4">
+
+<!-- === 环节详情面板 === -->
+<div id="stepDetailPanel" class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden"></div>
+
+<!-- === 环节通知配置 === -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+<div class="px-5 py-3.5 border-b border-gray-100 bg-gray-50 font-semibold text-base flex items-center gap-2">📧 环节通知配置</div>
+<div class="p-5">
+<p class="text-gray-500 mb-3 text-sm">本流程各环节均<strong class="text-gray-800">无</strong>邮件/传阅/短信通知配置。</p>
+<table class="w-full text-sm border-collapse">
+<thead><tr class="bg-gray-50 text-gray-500 text-xs"><th class="p-2.5 border border-gray-100 text-left">步骤</th><th class="p-2.5 border border-gray-100">通知类型</th><th class="p-2.5 border border-gray-100">触发时机</th><th class="p-2.5 border border-gray-100">通知对象</th><th class="p-2.5 border border-gray-100">通知内容</th></tr></thead>
+<tbody>
+<tr><td class="p-2.5 border border-gray-100">① 三级组织负责人</td><td class="p-2.5 border border-gray-100 text-center text-gray-300">—</td><td class="p-2.5 border border-gray-100 text-center text-gray-300">—</td><td class="p-2.5 border border-gray-100 text-center text-gray-300">—</td><td class="p-2.5 border border-gray-100 text-center text-gray-300">—</td></tr>
+<tr><td class="p-2.5 border border-gray-100">② 分配工单</td><td class="p-2.5 border border-gray-100 text-center text-gray-300">—</td><td class="p-2.5 border border-gray-100 text-center text-gray-300">—</td><td class="p-2.5 border border-gray-100 text-center text-gray-300">—</td><td class="p-2.5 border border-gray-100 text-center text-gray-300">—</td></tr>
+<tr><td class="p-2.5 border border-gray-100">③ 分析工程师提交报告</td><td class="p-2.5 border border-gray-100 text-center text-gray-300">—</td><td class="p-2.5 border border-gray-100 text-center text-gray-300">—</td><td class="p-2.5 border border-gray-100 text-center text-gray-300">—</td><td class="p-2.5 border border-gray-100 text-center text-gray-300">—</td></tr>
+<tr><td class="p-2.5 border border-gray-100">④ 三级组织负责人审核</td><td class="p-2.5 border border-gray-100 text-center text-gray-300">—</td><td class="p-2.5 border border-gray-100 text-center text-gray-300">—</td><td class="p-2.5 border border-gray-100 text-center text-gray-300">—</td><td class="p-2.5 border border-gray-100 text-center text-gray-300">—</td></tr>
+<tr><td class="p-2.5 border border-gray-100">⑤ 申请人确认</td><td class="p-2.5 border border-gray-100 text-center text-gray-300">—</td><td class="p-2.5 border border-gray-100 text-center text-gray-300">—</td><td class="p-2.5 border border-gray-100 text-center text-gray-300">—</td><td class="p-2.5 border border-gray-100 text-center text-gray-300">—</td></tr>
+</tbody></table>
+</div></div>
+
+</div>
+
+<script>
+// ====== DATA ======
+const steps = [
+{ // 起草
+  name:'起草', type:'execute', approver:'提交人', skip:{empty:'—',same:'—'}, fields:[], editable:[], readonly:[], hidden:[], note:'申请人填写表单基础信息，提交后流转至三级组织负责人审批。' },
+{ // ① 三级组织负责人
+  name:'三级组织负责人', type:'approval', approver:'汇报关系-S3', method:'单审',
+  skip:{empty:'是',same:'是'}, skipReason:'纯审批，无填写内容，可正常跳过',
+  note:'表单填写完成后，首先流转至三级组织负责人进行初次审批。本环节为纯审批环节，无需填写任何字段。',
+  fields:[], editable:[], readonly:[], hidden:[] },
+{ // ② 分配工单
+  name:'分配工单', type:'execute', approver:'工艺工程师/PRD10014', method:'单审',
+  skip:{empty:'否',same:'否'}, skipReason:'需填写CAE分析工程师、预估完成日期，不可跳过',
+  note:'工艺工程师收到任务后，指定CAE分析工程师（支持多选）并设置预估完成日期。初始化默认人员：胡瑞清/00060470。',
+  editable:[
+    {name:'CAE分析工程师',type:'人员选择器(多选)',required:true,note:'默认人员：胡瑞清/00060470'},
+    {name:'预估完成日期',type:'时间日期选择框',required:true,note:'预估CAE分析完成日期'}
+  ] },
+{ // ③ 分析工程师提交报告
+  name:'分析工程师提交报告', type:'execute', approver:'CAE分析工程师（取自步骤②）', method:'并审',
+  skip:{empty:'否',same:'否'}, skipReason:'需填写5个字段+上传CAE分析报告，多人并审，不可跳过',
+  note:'CAE分析工程师（多人并审）完成仿真分析后，填写分析结果并上传CAE分析报告。',
+  editable:[
+    {name:'实际分析问题类型',type:'下拉多选',required:true,note:'力学分析/流体分析/热分析/其他'},
+    {name:'模拟依据',type:'多选',required:true,note:'申请人要求/实际工作状态/等效简化'},
+    {name:'模拟条件及状态说明',type:'单行文本',required:true,note:'模拟条件的详细说明'},
+    {name:'分析结论',type:'单行文本',required:true,note:'CAE分析的最终结论'},
+    {name:'CAE分析报告',type:'附件上传(单文件)',required:true,note:'未上传时提示「请上传CAE分析报告附件！」'}
+  ] },
+{ // ④ 三级组织负责人审核
+  name:'三级组织负责人审核', type:'approval', approver:'汇报关系-S3（分析工程师）', method:'单审',
+  skip:{empty:'是',same:'是'}, skipReason:'纯审批，无填写内容，可正常跳过',
+  note:'分析工程师提交报告后，流转至分析工程师的三级组织负责人进行审核。本环节为纯审批环节。',
+  fields:[], editable:[], readonly:[], hidden:[] },
+{ // ⑤ 申请人确认
+  name:'申请人确认', type:'execute', approver:'申请人', method:'单审',
+  skip:{empty:'否',same:'否'}, skipReason:'需填写用户评价、实施状态，不可跳过',
+  note:'申请人确认分析结果，填写用户评价和实施状态，确认完成后流程结束。',
+  editable:[
+    {name:'用户评价',type:'单选',required:true,note:'非常满意(优秀)/满意(良)/一般/不满意(差)'},
+    {name:'实施状态',type:'单行文本',required:true,note:'流程实施状态描述'}
+  ] }
+];
+
+// ====== 基础字段（起草可见，其余只读） ======
+const baseFields = {
+  groups:[
+    {name:'申请人信息（系统自动获取）', fields:[
+      {name:'申请人',type:'文本',required:true},{name:'手机',type:'文本',required:true},
+      {name:'电话',type:'文本',required:true},{name:'邮箱',type:'文本',required:true},
+      {name:'工号',type:'文本',required:true},{name:'岗位',type:'文本',required:true},
+      {name:'部门',type:'文本',required:true}]},
+    {name:'申请信息', fields:[
+      {name:'分析项目名称',type:'单行文本',required:true},{name:'所属单位',type:'下拉选择',required:true},
+      {name:'需要完成日期',type:'时间日期',required:true},{name:'分析问题类型',type:'下拉选择',required:true,note:'力学/流体/热/其他'},
+      {name:'分析目的说明',type:'多行文本',required:true},{name:'备选方案说明',type:'多行文本',required:false,note:'非必填'}]},
+    {name:'结构材料（尽量提供材料物性表）', fields:[
+      {name:'零件名称',type:'单行文本',required:false},{name:'材料牌号',type:'单行文本',required:false},
+      {name:'屈服强度(MPa)',type:'单行文本',required:false},{name:'密度(kg/m³)',type:'单行文本',required:false},
+      {name:'杨氏模量(GPa)',type:'单行文本',required:false}
+    ], note:'非必填，尽量提供材料物性表'},
+    {name:'流体属性', fields:[
+      {name:'零件名称',type:'单行文本',required:true},{name:'材料牌号',type:'单行文本',required:true},
+      {name:'屈服强度(MPa)',type:'单行文本',required:true},{name:'密度(kg/m³)',type:'单行文本',required:true}
+    ], note:'均为必填，不含杨氏模量'},
+    {name:'仿真要求·起草环节字段', fields:[
+      {name:'需模拟条件说明',type:'多行文本',required:false},{name:'示意图',type:'附件(图片)',required:false}
+    ], note:'非必填'},
+    {name:'附件信息', fields:[
+      {name:'附件列表',type:'附件上传(多文件)',required:true,note:'未上传提示「请上传附件！」'}
+    ]}
+  ]
+};
+
+// ====== RENDER ======
+function getTag(s){return s==='编辑'||s==='可编辑'?'editable':s==='只读'?'readonly':s==='隐藏'||s==='不可见'?'hidden':s==='上传'||s==='可上传'?'upload':s==='必填'||s==='可编辑（必填）'?'required':'';}
+function tagHTML(tag,text){return`<span class="inline-flex items-center text-[11px] px-1.5 py-0.5 rounded-full border font-medium tag-${tag}">${text}</span>`;}
+
+function renderFieldGrid(fields, stateFn, isBase){
+  if(!fields||!fields.length) return'';
+  let html='<div class="grid grid-cols-4 gap-3">';
+  fields.forEach(f=>{
+    let st=stateFn?stateFn(f):(f.state||'只读');
+    let tag=getTag(st);
+    html+=`<div class="field-card bg-white border border-gray-100 rounded-lg p-3 ${tag==='hidden'?'opacity-40':''}">
+      <div class="flex items-center justify-between mb-1.5">
+        <span class="font-semibold text-xs ${tag==='hidden'?'text-gray-400':'text-gray-800'}">${f.name}</span>
+        ${f.required?tagHTML('required','必填'):tagHTML('readonly','非必填')}
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] text-gray-400">${f.type}</span>
+        ${tag?tagHTML(tag,st):''}
+      </div>
+      ${f.note?`<div class="mt-1.5 text-[11px] text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">${f.note}</div>`:''}
+    </div>`;
+  });
+  html+='</div>';
+  return html;
+}
+
+function selectStep(idx){
+  document.querySelectorAll('.step-dot').forEach((d,i)=>{
+    d.classList.toggle('ring-4',i===idx);
+    d.classList.toggle('ring-blue-100',i===idx);
+    d.style.transform=i===idx?'scale(1.2)':'scale(1)';
+  });
+  renderStepDetail(idx);
+}
+
+function renderStepDetail(idx){
+  let s=steps[idx],panel=document.getElementById('stepDetailPanel');
+  let typeColor=s.type==='approval'?'text-green-600':'text-blue-600';
+  let typeBg=s.type==='approval'?'bg-green-50 border-green-200':'bg-blue-50 border-blue-200';
+  let tag=s.type==='approval'?'审批':'执行';
+
+  let fieldsHTML='';
+  if(idx===0){ // 起草 - show all base fields
+    baseFields.groups.forEach(g=>{
+      fieldsHTML+=`<div class="mb-4"><div class="text-xs font-semibold text-gray-500 mb-2 pl-1">${g.name}${g.note?`<span class="text-gray-400 font-normal ml-2">— ${g.note}</span>`:''}</div>`;
+      fieldsHTML+=renderFieldGrid(g.fields,null,true);
+      fieldsHTML+='</div>';
+    });
+  } else if(s.editable&&s.editable.length){ // 有可编辑字段的步骤
+    fieldsHTML+=`<div class="mb-4"><div class="text-xs font-semibold text-red-500 mb-2 pl-1">🔴 本环节可编辑字段</div>`;
+    fieldsHTML+=renderFieldGrid(s.editable.map(f=>({...f,state:'编辑（必填）'})));
+    fieldsHTML+='</div>';
+    // 显示只读的基础字段简化版
+    let rofields=[];
+    baseFields.groups.forEach(g=>g.fields.forEach(f=>rofields.push({...f,state:'只读'})));
+    // 仿真要求的不可见字段
+    let hiddenFields=[
+      {name:'实际分析问题类型',type:'下拉多选',required:false,state:'隐藏'},
+      {name:'模拟依据',type:'多选',required:false,state:'隐藏'},
+      {name:'模拟条件及状态说明',type:'单行文本',required:false,state:'隐藏'},
+      {name:'分析结论',type:'单行文本',required:false,state:'隐藏'},
+      {name:'CAE分析报告',type:'附件',required:false,state:'隐藏'},
+      {name:'用户评价',type:'单选',required:false,state:'隐藏'},
+      {name:'实施状态',type:'单行文本',required:false,state:'隐藏'},
+    ];
+    fieldsHTML+=`<div class="mb-4"><div class="text-xs font-semibold text-gray-500 mb-2 pl-1">📋 本环节只读/不可见字段</div>`;
+    fieldsHTML+=renderFieldGrid([...rofields.slice(0,4),...hiddenFields.slice(0,4)]); // sample
+    fieldsHTML+='<div class="text-[11px] text-gray-400 mt-2 text-center">（完整字段清单见基础信息区）</div></div>';
+  } else { // 纯审批步骤
+    let allro=[];
+    baseFields.groups.forEach(g=>g.fields.forEach(f=>allro.push({...f,state:'只读'})));
+    // add hidden simulation fields
+    let simHidden=[
+      {name:'CAE分析工程师',type:'人员选择器(多选)',required:false,state:'隐藏'},
+      {name:'预估完成日期',type:'时间日期',required:false,state:'隐藏'},
+      {name:'实际分析问题类型',type:'下拉多选',required:false,state:'隐藏'},
+      {name:'模拟依据',type:'多选',required:false,state:'隐藏'},
+      {name:'模拟条件及状态说明',type:'单行文本',required:false,state:'隐藏'},
+      {name:'分析结论',type:'单行文本',required:false,state:'隐藏'},
+      {name:'用户评价',type:'单选',required:false,state:'隐藏'},
+      {name:'实施状态',type:'单行文本',required:false,state:'隐藏'},
+      {name:'CAE分析报告',type:'附件',required:false,state:'隐藏'},
+    ];
+    fieldsHTML+=`<div class="mb-4"><div class="text-xs font-semibold text-gray-500 mb-2 pl-1">📋 本环节只读字段（部分）</div>`;
+    fieldsHTML+=renderFieldGrid(allro.slice(0,8));
+    fieldsHTML+='<div class="text-[11px] text-gray-400 mt-2">（本环节为纯审批环节，全部字段只读，无编辑权限）</div></div>';
+    fieldsHTML+=`<div class="mb-4"><div class="text-xs font-semibold text-gray-400 mb-2 pl-1">🔒 以下字段本环节不可见</div>`;
+    fieldsHTML+=renderFieldGrid(simHidden.slice(0,8));
+    fieldsHTML+='</div>';
+  }
+
+  panel.innerHTML=`
+    <div class="p-5 border-b border-gray-100 flex items-start justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs ${typeBg} ${typeColor}">${idx===0?'✏️':idx}</div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-semibold text-base">${s.name}</span>
+            <span class="text-xs px-2 py-0.5 rounded-full border ${typeBg} ${typeColor}">${tag}${s.method?' · '+s.method:''}</span>
+            ${s.skip&&s.skip.empty==='否'?`<span class="text-xs px-2 py-0.5 rounded-full border border-red-200 bg-red-50 text-red-500">⚠ 不可跳过</span>`:s.type!=='execute'&&idx!==0?`<span class="text-xs px-2 py-0.5 rounded-full border border-gray-200 text-gray-400">可跳过</span>`:''}
+          </div>
+          <div class="text-xs text-gray-500 mt-1">审批人：${s.approver}</div>
+        </div>
+      </div>
+      <div class="text-right text-xs text-gray-500 space-y-0.5">
+        <div>为空跳过：<b class="${s.skip.empty==='否'?'text-red-500':''}">${s.skip.empty||'—'}</b></div>
+        <div>相同审批人自动跳过：<b class="${s.skip.same==='否'?'text-red-500':''}">${s.skip.same||'—'}</b></div>
+        ${s.skipReason?`<div class="text-gray-400 max-w-[200px] mt-1">${s.skipReason}</div>`:''}
+      </div>
+    </div>
+    <div class="p-5 bg-yellow-50 border-b border-yellow-100">
+      <div class="flex items-start gap-2">
+        <span class="text-xs font-semibold text-yellow-600 whitespace-nowrap mt-0.5">📌 环节要求：</span>
+        <span class="text-xs text-yellow-700">${s.note}</span>
+      </div>
+    </div>
+    <div class="p-5">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="font-semibold text-sm">📝 字段说明</span>
+        <span class="text-[11px] text-gray-400">（一行四字段规范布局）</span>
+      </div>
+      ${fieldsHTML}
+    </div>`;
+}
+
+// ====== INIT ======
+selectStep(0);
+</script>
+</body>
+</html>
