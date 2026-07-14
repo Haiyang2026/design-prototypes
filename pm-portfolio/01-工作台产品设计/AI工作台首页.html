@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI工作台</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+  <!-- Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3b82f6',
+            secondary: '#64748b',
+            success: '#10b981',
+            warning: '#f59e0b',
+            danger: '#ef4444',
+            dark: '#1e293b',
+            light: '#f8fafc'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .card-shadow {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+      .transition-all-300 {
+        transition: all 300ms ease-in-out;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <!-- 顶部导航栏 -->
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <div class="text-primary text-2xl">
+          <i class="fa fa-robot"></i>
+        </div>
+        <h1 class="text-xl font-bold text-gray-800">AI工作台</h1>
+      </div>
+      <div class="flex items-center space-x-4">
+        <button class="text-gray-600 hover:text-primary transition-all-300">
+          <i class="fa fa-bell-o text-lg"></i>
+        </button>
+        <button class="text-gray-600 hover:text-primary transition-all-300">
+          <i class="fa fa-cog text-lg"></i>
+        </button>
+        <div class="flex items-center space-x-2">
+          <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
+            <span class="font-medium">U</span>
+          </div>
+          <span class="text-gray-700 font-medium">用户</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <main class="container mx-auto px-4 py-6">
+    <!-- 页面标题 -->
+    <div class="mb-6">
+      <h2 class="text-2xl font-bold text-gray-800">欢迎回来，用户</h2>
+      <p class="text-gray-600">今天是 <span id="current-date"></span>，这是您的工作台</p>
+    </div>
+
+    <!-- 快速操作栏 -->
+    <div class="mb-6 flex flex-wrap gap-4">
+      <button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-all-300">
+        <i class="fa fa-plus"></i>
+        <span>新建对话</span>
+      </button>
+      <button class="bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 px-4 py-2 rounded-lg flex items-center space-x-2 transition-all-300">
+        <i class="fa fa-th-large"></i>
+        <span>卡片视图市场</span>
+      </button>
+      <button class="bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 px-4 py-2 rounded-lg flex items-center space-x-2 transition-all-300">
+        <i class="fa fa-star-o"></i>
+        <span>我的收藏</span>
+      </button>
+    </div>
+
+    <!-- 主要内容网格 -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- 左侧：最近提问 -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">最近提问</h3>
+            <button class="text-primary hover:text-primary/80 text-sm font-medium">查看全部</button>
+          </div>
+          <div class="space-y-3">
+            <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all-300 cursor-pointer">
+              <p class="text-gray-700 text-sm">销售数据的月度趋势是什么样的？</p>
+              <p class="text-gray-500 text-xs mt-1">今天 10:30</p>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all-300 cursor-pointer">
+              <p class="text-gray-700 text-sm">各部门的费用支出情况如何？</p>
+              <p class="text-gray-500 text-xs mt-1">昨天 16:45</p>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all-300 cursor-pointer">
+              <p class="text-gray-700 text-sm">项目进度的实时状态</p>
+              <p class="text-gray-500 text-xs mt-1">昨天 09:15</p>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all-300 cursor-pointer">
+              <p class="text-gray-700 text-sm">员工绩效的统计数据</p>
+              <p class="text-gray-500 text-xs mt-1">2026-04-22</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 卡片视图市场 -->
+        <div class="bg-white rounded-xl shadow-sm p-4">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">卡片视图市场</h3>
+            <button class="text-primary hover:text-primary/80 text-sm font-medium">浏览全部</button>
+          </div>
+          <div class="space-y-4">
+            <div class="border border-gray-200 rounded-lg p-3 hover:shadow-md transition-all-300 cursor-pointer">
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="font-medium text-gray-800">销售趋势分析</h4>
+                <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">热门</span>
+              </div>
+              <p class="text-gray-600 text-sm mb-2">展示销售数据的月度和季度趋势</p>
+              <div class="flex items-center justify-between">
+                <span class="text-gray-500 text-xs">由 市场部 共享</span>
+                <button class="text-primary hover:text-primary/80 text-sm font-medium">使用</button>
+              </div>
+            </div>
+            <div class="border border-gray-200 rounded-lg p-3 hover:shadow-md transition-all-300 cursor-pointer">
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="font-medium text-gray-800">项目进度追踪</h4>
+                <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">新</span>
+              </div>
+              <p class="text-gray-600 text-sm mb-2">实时监控项目进度和里程碑</p>
+              <div class="flex items-center justify-between">
+                <span class="text-gray-500 text-xs">由 项目管理部 共享</span>
+                <button class="text-primary hover:text-primary/80 text-sm font-medium">使用</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 中间和右侧：近期卡片视图 -->
+      <div class="lg:col-span-2">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-800">近期卡片视图</h3>
+          <button class="text-primary hover:text-primary/80 text-sm font-medium">管理视图</button>
+        </div>
+
+        <!-- 卡片视图网格 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- 销售数据卡片 -->
+          <div class="bg-white rounded-xl shadow-sm overflow-hidden card-shadow hover:shadow-md transition-all-300">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+              <h4 class="font-medium text-gray-800">销售数据趋势</h4>
+              <div class="flex space-x-2">
+                <button class="text-gray-400 hover:text-gray-600 transition-all-300">
+                  <i class="fa fa-star-o"></i>
+                </button>
+                <button class="text-gray-400 hover:text-gray-600 transition-all-300">
+                  <i class="fa fa-ellipsis-v"></i>
+                </button>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="h-48">
+                <canvas id="salesChart"></canvas>
+              </div>
+              <div class="mt-4 grid grid-cols-2 gap-2">
+                <div class="bg-gray-50 p-2 rounded">
+                  <p class="text-gray-500 text-xs">本月销售额</p>
+                  <p class="text-lg font-semibold text-gray-800">¥125,000</p>
+                </div>
+                <div class="bg-gray-50 p-2 rounded">
+                  <p class="text-gray-500 text-xs">同比增长</p>
+                  <p class="text-lg font-semibold text-success">+12.5%</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 部门费用卡片 -->
+          <div class="bg-white rounded-xl shadow-sm overflow-hidden card-shadow hover:shadow-md transition-all-300">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+              <h4 class="font-medium text-gray-800">部门费用支出</h4>
+              <div class="flex space-x-2">
+                <button class="text-gray-400 hover:text-gray-600 transition-all-300">
+                  <i class="fa fa-star-o"></i>
+                </button>
+                <button class="text-gray-400 hover:text-gray-600 transition-all-300">
+                  <i class="fa fa-ellipsis-v"></i>
+                </button>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="h-48">
+                <canvas id="expenseChart"></canvas>
+              </div>
+              <div class="mt-4">
+                <p class="text-gray-500 text-xs">总费用</p>
+                <p class="text-lg font-semibold text-gray-800">¥85,600</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 项目进度卡片 -->
+          <div class="bg-white rounded-xl shadow-sm overflow-hidden card-shadow hover:shadow-md transition-all-300">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+              <h4 class="font-medium text-gray-800">项目进度追踪</h4>
+              <div class="flex space-x-2">
+                <button class="text-gray-400 hover:text-gray-600 transition-all-300">
+                  <i class="fa fa-star-o"></i>
+                </button>
+                <button class="text-gray-400 hover:text-gray-600 transition-all-300">
+                  <i class="fa fa-ellipsis-v"></i>
+                </button>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="space-y-3">
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-sm text-gray-700">项目 A</span>
+                    <span class="text-sm font-medium text-gray-800">75%</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-primary h-2 rounded-full" style="width: 75%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-sm text-gray-700">项目 B</span>
+                    <span class="text-sm font-medium text-gray-800">45%</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-warning h-2 rounded-full" style="width: 45%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-sm text-gray-700">项目 C</span>
+                    <span class="text-sm font-medium text-gray-800">90%</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-success h-2 rounded-full" style="width: 90%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 员工绩效卡片 -->
+          <div class="bg-white rounded-xl shadow-sm overflow-hidden card-shadow hover:shadow-md transition-all-300">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+              <h4 class="font-medium text-gray-800">员工绩效统计</h4>
+              <div class="flex space-x-2">
+                <button class="text-gray-400 hover:text-gray-600 transition-all-300">
+                  <i class="fa fa-star-o"></i>
+                </button>
+                <button class="text-gray-400 hover:text-gray-600 transition-all-300">
+                  <i class="fa fa-ellipsis-v"></i>
+                </button>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="h-48">
+                <canvas id="performanceChart"></canvas>
+              </div>
+              <div class="mt-4">
+                <p class="text-gray-500 text-xs">平均绩效评分</p>
+                <p class="text-lg font-semibold text-gray-800">4.2/5.0</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI对话区域 -->
+    <div class="mt-8 bg-white rounded-xl shadow-sm p-4">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-800">AI对话</h3>
+        <button class="text-primary hover:text-primary/80 text-sm font-medium">历史记录</button>
+      </div>
+      <div class="border border-gray-200 rounded-lg p-4 mb-4 min-h-[300px] max-h-[400px] overflow-y-auto" id="chat-container">
+        <!-- AI欢迎消息 -->
+        <div class="flex mb-4">
+          <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center mr-3 flex-shrink-0">
+            <i class="fa fa-robot"></i>
+          </div>
+          <div class="bg-gray-100 rounded-lg p-3 max-w-[80%]">
+            <p class="text-gray-800">你好！我是AI助手，有什么可以帮助你的吗？</p>
+            <p class="text-gray-500 text-xs mt-1">今天 14:30</p>
+          </div>
+        </div>
+      </div>
+      <div class="flex">
+        <input type="text" id="chat-input" placeholder="输入你的问题..." class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50">
+        <button id="send-button" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-r-lg transition-all-300">
+          <i class="fa fa-paper-plane"></i>
+        </button>
+        <button class="bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-2 border border-l-0 border-gray-300 transition-all-300">
+          <i class="fa fa-microphone"></i>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-white border-t border-gray-200 mt-8 py-4">
+    <div class="container mx-auto px-4 text-center text-gray-600 text-sm">
+      <p>© 2026 AI工作台 - 企业智能助手</p>
+    </div>
+  </footer>
+
+  <script>
+    // 设置当前日期
+    document.getElementById('current-date').textContent = new Date().toLocaleDateString('zh-CN');
+
+    // 初始化图表
+    window.addEventListener('DOMContentLoaded', function() {
+      // 销售数据趋势图
+      const salesCtx = document.getElementById('salesChart').getContext('2d');
+      new Chart(salesCtx, {
+        type: 'line',
+        data: {
+          labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+          datasets: [{
+            label: '销售额',
+            data: [80000, 95000, 105000, 110000, 120000, 125000],
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            tension: 0.3,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return '¥' + (value / 1000) + 'k';
+                }
+              }
+            }
+          }
+        }
+      });
+
+      // 部门费用支出图
+      const expenseCtx = document.getElementById('expenseChart').getContext('2d');
+      new Chart(expenseCtx, {
+        type: 'pie',
+        data: {
+          labels: ['市场部', '技术部', '人力资源部', '财务部'],
+          datasets: [{
+            data: [30000, 25000, 15000, 15600],
+            backgroundColor: [
+              '#3b82f6',
+              '#10b981',
+              '#f59e0b',
+              '#ef4444'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
+      });
+
+      // 员工绩效统计图
+      const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+      new Chart(performanceCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+          datasets: [{
+            label: '平均绩效',
+            data: [3.8, 4.0, 4.1, 4.2],
+            backgroundColor: '#3b82f6'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 5
+            }
+          }
+        }
+      });
+    });
+
+    // 聊天功能
+    document.getElementById('send-button').addEventListener('click', sendMessage);
+    document.getElementById('chat-input').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+
+    function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const message = input.value.trim();
+      if (message) {
+        // 添加用户消息
+        addMessage('user', message);
+        input.value = '';
+
+        // 模拟AI响应
+        setTimeout(() => {
+          addMessage('ai', '我正在处理你的请求...');
+          // 模拟延迟后给出完整响应
+          setTimeout(() => {
+            const chatContainer = document.getElementById('chat-container');
+            chatContainer.lastElementChild.remove();
+            addMessage('ai', '根据你的请求，我已经分析了相关数据。你可以要求我生成一个卡片视图来展示这些信息。');
+          }, 1000);
+        }, 500);
+      }
+    }
+
+    function addMessage(type, content) {
+      const chatContainer = document.getElementById('chat-container');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'flex mb-4 ' + (type === 'user' ? 'justify-end' : '');
+
+      if (type === 'user') {
+        messageDiv.innerHTML = `
+          <div class="bg-primary text-white rounded-lg p-3 max-w-[80%]">
+            <p>${content}</p>
+            <p class="text-white/70 text-xs mt-1">${new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}</p>
+          </div>
+          <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-700 flex items-center justify-center ml-3 flex-shrink-0">
+            <i class="fa fa-user"></i>
+          </div>
+        `;
+      } else {
+        messageDiv.innerHTML = `
+          <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center mr-3 flex-shrink-0">
+            <i class="fa fa-robot"></i>
+          </div>
+          <div class="bg-gray-100 rounded-lg p-3 max-w-[80%]">
+            <p class="text-gray-800">${content}</p>
+            <p class="text-gray-500 text-xs mt-1">${new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}</p>
+          </div>
+        `;
+      }
+
+      chatContainer.appendChild(messageDiv);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  </script>
+</body>
+</html>
