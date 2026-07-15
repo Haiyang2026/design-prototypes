@@ -1,0 +1,85 @@
+<div style="background:#f5f6f8;border-radius:12px;padding:24px;font-family:'Microsoft YaHei','PingFang SC','system-ui',sans-serif;max-width:680px;margin:0 auto">
+  <style>
+    .config-card {background:#fff;border-radius:8px;border:0.5px solid #e0e0e0;padding:20px 24px;margin-bottom:12px;}
+    .config-card h3 {font-size:13px;font-weight:500;color:#333;margin:0 0 12px 0;padding-bottom:8px;border-bottom:1px dashed #eee;}
+    .field-row {display:flex;align-items:flex-start;margin-bottom:10px;gap:8px;}
+    .field-row label {width:72px;font-size:12px;color:#555;line-height:28px;flex-shrink:0;text-align:right;}
+    .field-row .input-wrap {flex:1;}
+    .field-row input[type="text"] {width:100%;height:28px;border:0.5px solid #d0d0d0;border-radius:4px;padding:0 8px;font-size:12px;color:#333;box-sizing:border-box;}
+    .field-row input[type="text"]:focus {outline:none;border-color:#1a73e8;}
+    .field-row textarea {width:100%;border:0.5px solid #d0d0d0;border-radius:4px;padding:6px 8px;font-size:12px;color:#333;resize:vertical;min-height:48px;box-sizing:border-box;line-height:1.5;}
+    .field-row textarea:focus {outline:none;border-color:#1a73e8;}
+    .tag-group {display:flex;flex-wrap:wrap;gap:6px;}
+    .tag-item {display:flex;align-items:center;gap:4px;padding:3px 8px 3px 10px;border:0.5px solid #d0d0d0;border-radius:12px;font-size:11px;color:#333;background:#f8f8f8;cursor:pointer;transition:all .15s;}
+    .tag-item.checked {background:#e8f0fe;border-color:#1a73e8;color:#1a73e8;}
+    .tag-item .check {display:inline-block;width:12px;height:12px;border-radius:50%;border:1px solid #bbb;}
+    .tag-item.checked .check {background:#1a73e8;border-color:#1a73e8;}
+    .tag-item.checked .check::after {content:"\u2713";color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;line-height:12px;}
+    .output-options {display:flex;gap:8px;}
+    .output-opt {padding:6px 14px;border:0.5px solid #d0d0d0;border-radius:6px;font-size:11px;color:#555;background:#fafafa;cursor:pointer;transition:all .15s;}
+    .output-opt.checked {background:#e8f0fe;border-color:#1a73e8;color:#1a73e8;font-weight:500;}
+    .schedule-options {display:flex;gap:8px;}
+    .schedule-opt {padding:6px 14px;border:0.5px solid #d0d0d0;border-radius:6px;font-size:11px;color:#555;background:#fafafa;cursor:pointer;transition:all .15s;}
+    .schedule-opt.checked {background:#e8f0fe;border-color:#1a73e8;color:#1a73e8;font-weight:500;}
+    .btn-primary {background:#1a73e8;color:#fff;border:none;padding:8px 28px;border-radius:6px;font-size:12px;cursor:pointer;font-weight:500;}
+    .btn-secondary {background:transparent;color:#555;border:0.5px solid #d0d0d0;padding:8px 20px;border-radius:6px;font-size:12px;cursor:pointer;}
+    .tip {font-size:10.5px;color:#999;margin-top:2px;line-height:1.4;}
+    .info-bar {background:#f0f7ff;border:0.5px solid #b5d4f4;border-radius:6px;padding:8px 12px;margin-bottom:16px;font-size:11px;color:#185fa5;line-height:1.4;}
+    .step-indicator {display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+    .step-dot {width:20px;height:20px;border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:500;}
+    .step-dot.active {background:#1a73e8;color:#fff;}
+    .step-dot.done {background:#e8f0fe;color:#1a73e8;}
+    .step-dot.pending {background:#f0f0f0;color:#aaa;}
+    .step-label {font-size:11px;color:#888;}
+    .step-label.active {color:#1a73e8;font-weight:500;}
+    .step-line {flex:1;height:0.5px;background:#e0e0e0;}
+  </style>
+  <div class="step-indicator">
+    <div class="step-dot active">1</div><div class="step-label active">选数据源</div>
+    <div class="step-line"></div>
+    <div class="step-dot done">2</div><div class="step-label" style="color:#1a73e8;font-weight:500;">写指令</div>
+    <div class="step-line"></div>
+    <div class="step-dot pending">3</div><div class="step-label">定输出</div>
+    <div class="step-line"></div>
+    <div class="step-dot pending">4</div><div class="step-label">定时</div>
+  </div>
+  <div class="info-bar">你正在创建一个「内容提取模板」。配置好后，AI 会按你的设置定期从聊天记录中提取内容。每个模板独立运行，互不影响。</div>
+  <div class="config-card">
+    <h3>1. 基本信息</h3>
+    <div class="field-row"><label>模板名称</label><div class="input-wrap"><input type="text" value="运维知识问答库" placeholder="给你模板起个名字"><div class="tip">你自己能看懂的名字，比如"我的运维知识库""每日客户反馈"</div></div></div>
+  </div>
+  <div class="config-card">
+    <h3>2. 选数据源 — 从哪些群聊提取？</h3>
+    <div class="tag-group">
+      <div class="tag-item checked"><span class="check"></span>运维值班群</div>
+      <div class="tag-item checked"><span class="check"></span>SRE讨论组</div>
+      <div class="tag-item"><span class="check"></span>产品需求群</div>
+      <div class="tag-item"><span class="check"></span>项目进度同步</div>
+      <div class="tag-item"><span class="check"></span>客户反馈群</div>
+      <div class="tag-item"><span class="check"></span>技术架构讨论</div>
+    </div>
+    <div class="tip">点击勾选你关注的群聊，只有这些群的消息会被用来生成内容</div>
+  </div>
+  <div class="config-card">
+    <h3>3. 提取指令 — 告诉AI要提取什么</h3>
+    <div class="field-row"><label>指令</label><div class="input-wrap"><textarea>从聊天记录中提取运维相关的故障信息、解决方案和经验总结。按"问题描述 → 原因分析 → 处理措施 → 处理效果"四要素整理成问答对格式。每条问答对不超过200字。没有运维相关内容的周次，输出"本周无新增运维知识"。</textarea><div class="tip">写得越具体，AI出来的质量越高。</div></div></div>
+  </div>
+  <div class="config-card">
+    <h3>4. 输出设置 — 内容生成后放哪里？</h3>
+    <div class="field-row"><label>格式</label><div class="output-options"><div class="output-opt checked">Markdown 文档</div><div class="output-opt">知识库条目</div><div class="output-opt">飞书文档</div><div class="output-opt">发送到群聊</div></div></div>
+    <div class="field-row"><label>目标位置</label><div class="input-wrap"><input type="text" value="运维团队知识库 → 问答库目录" placeholder="选择保存位置"><div class="tip">选择输出到哪个知识库或文件夹，如果不选则默认发送给你</div></div></div>
+  </div>
+  <div class="config-card">
+    <h3>5. 调度 — 什么时候跑？</h3>
+    <div class="schedule-options" style="margin-bottom:8px;"><div class="schedule-opt checked">定时运行</div><div class="schedule-opt">手动触发</div><div class="schedule-opt">事件触发</div></div>
+    <div class="field-row"><label>时间</label><div class="input-wrap"><input type="text" value="每周一 09:00" placeholder="如：每周一 09:00"><div class="tip">支持：每周一、每天、每月1号、每工作日...</div></div></div>
+  </div>
+  <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:4px;"><div class="btn-secondary">取消</div><div class="btn-primary">保存模板</div></div>
+  <div style="margin-top:16px;padding-top:12px;border-top:0.5px solid #e0e0e0;">
+    <div style="font-size:11px;color:#888;margin-bottom:6px;">我的模板（已有）</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <div style="padding:6px 12px;background:#fff;border:0.5px solid #d0d0d0;border-radius:6px;font-size:11px;color:#333;">周报机器人 <span style="color:#999;font-size:10px;">（默认）</span></div>
+      <div style="padding:6px 12px;background:#e8f0fe;border:0.5px solid #1a73e8;border-radius:6px;font-size:11px;color:#1a73e8;font-weight:500;">运维知识问答库  <span style="font-weight:400;color:#1a73e8;font-size:10px;">← 刚刚创建的</span></div>
+    </div>
+  </div>
+</div>
