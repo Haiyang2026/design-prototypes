@@ -283,6 +283,21 @@
     .detail-pin-btn:hover { border-color: var(--orange); color: var(--orange); }
     .detail-pin-btn.pinned { background: #FFF3E6; border-color: var(--orange); color: var(--orange); }
 
+    /* ===== 管理弹窗 v0.6 两tab结构 ===== */
+    .manage-tab {
+      flex: 1; text-align: center; padding: 8px 16px;
+      border: none; border-bottom: 2px solid transparent;
+      background: transparent; cursor: pointer;
+      font-size: 14px; font-family: inherit; color: var(--text-gray);
+      transition: all 0.15s;
+    }
+    .manage-tab:hover { color: var(--text-dark); }
+    .manage-tab.active {
+      border-bottom-color: var(--primary); color: var(--primary); font-weight: 600;
+    }
+    .manage-zone { margin: 8px 0; }
+    .manage-zone-title { font-size: 13px; font-weight: 600; padding: 4px 0; }
+
     /* ===== 管理弹窗 - 添加应用收藏跳转 ===== */
     .manage-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
     .manage-section-title { font-size: 14px; font-weight: 600; color: var(--text-dark); }
@@ -503,8 +518,9 @@
       <div class="my-apps-header">
         <a class="my-apps-title" href="应用中心.html" target="_blank" title="打开应用中心">我的应用</a>
         <div class="my-apps-actions">
+          <input id="cardSearch" type="text" placeholder="🔍 搜索应用..." oninput="renderMyApps()" style="width:160px;padding:4px 10px;border:1px solid var(--border);border-radius:4px;font-size:12px;outline:none;">
           <button class="btn-outline-sm" onclick="openManageModal()">⚙ 管理</button>
-          <button class="btn-primary-sm" onclick="openAddAppModal()">+ 添加</button>
+          <!-- <button class="btn-primary-sm" onclick="openAddAppModal()">+ 添加</button> -->
         </div>
       </div>
       <!-- 类型页签（显示分类模式下展示） -->
@@ -607,7 +623,7 @@
 <!-- ======== 右侧标注面板 ======== -->
 <aside class="proto-notes" id="protoNotes">
   <h3>门户首页 · 原型标注</h3>
-  <p style="margin-bottom:12px;line-height:1.8;font-size:13px;">已对齐 v0.5 需求文档 · 2026-07-10</p>
+  <p style="margin-bottom:12px;line-height:1.8;font-size:13px;">已对齐 v0.6.1 需求文档 · 2026-07-15</p>
 
   <div class="note-section">
     <h4>数据模型</h4>
@@ -619,7 +635,7 @@
 
   <div class="note-section">
     <h4>我的应用卡片</h4>
-    <div class="note-item">三区排序：📌置顶区(可拖拽) → 📊频率区(收藏+默认模板,频率降序) → 🔲补齐区(其余,频率降序)。取消收藏自动取消置顶。<br>
+    <div class="note-item">两区排序：📌置顶区(可拖拽) → 📊混排区(全量,频率降序,不可拖拽)。收藏⭐=纯标记不参与排序。<br>
       <span style="color:var(--primary);font-size:11px;">📄 详见需求文档 3.1.2、4.3</span></div>
     <div class="note-item">hover ⋯ 出详情浮层（body级），含 ★收藏/📌置顶/创建/查看。<br>
       <span style="color:var(--primary);font-size:11px;">📄 详见需求文档 3.3</span></div>
@@ -628,11 +644,11 @@
   </div>
 
   <div class="note-section">
-    <h4>管理弹窗</h4>
-    <div class="note-item">三区：置顶区(可拖拽) → 频率区(收藏+默认模板,频率降序) → 补齐区。支持搜索，搜索中不可拖拽。<br>
-      <span style="color:var(--primary);font-size:11px;">📄 详见需求文档 3.4</span></div>
-    <div class="note-item">「+ 添加应用收藏」打开统一添加弹窗。<br>
-      <span style="color:var(--primary);font-size:11px;">📄 详见需求文档 3.2</span></div>
+    <h4>管理弹窗 v0.6.1</h4>
+    <div class="note-item"><b>结构：</b>📌置顶区（顶部固定，跨 tab） + +添加置顶（两tab:我的收藏/常用应用）。搜索中置顶区不可拖拽。<br>
+      <span style="color:var(--primary);font-size:11px;">📄 详见需求文档 3.3</span></div>
+    <div class="note-item">「恢复默认」底部文字链接，pinnedApps 重置为管理员预设。<br>
+      <span style="color:var(--primary);font-size:11px;">📄 详见需求文档 3.3</span></div>
   </div>
 
   <div class="note-section">
@@ -643,8 +659,7 @@
       <span style="color:var(--primary);font-size:11px;">📄 详见需求文档 4.1、4.2</span></div>
   </div>
 
-  <div class="note-section">
-    <h4>v0.5 待实现</h4>
+<!-- v0.5 待实现（已废弃，保留作为历史记录）
     <div class="note-item">
       <b>1. 管理弹窗三区UI：</b>置顶区/频率区之间加分割线 + 分区标题<br>
       <b>2. 恢复默认按钮：</b>弹窗底部「恢复默认」链接，二次确认弹窗<br>
@@ -652,13 +667,19 @@
       <b>4. 置顶超行自动调整：</b>置顶数超行数时自动升档 + toast 提示<br>
       <b>5. 搜索框：</b>管理弹窗顶部加搜索，搜索中禁用拖拽
     </div>
+-->
+
+  <div class="note-section">
+    <h4>v0.6 已对齐</h4>
+    <div class="note-item">v0.6 已对齐 · 2026-07-14：两区模型上线，两tab管理弹窗，收藏与置顶解耦。</div>
   </div>
 
 </aside>
 
 </div><!-- .proto-wrapper -->
 
-<!-- ====== 管理弹窗 ====== -->
+<!-- ====== 管理弹窗 v0.6 两tab结构 ====== -->
+<!-- old v0.5 management dialog commented out:
 <div class="modal-overlay hidden" id="manageModal">
   <div class="modal">
     <div class="modal-header">
@@ -666,7 +687,6 @@
       <button class="modal-close" onclick="closeManageModal()">✕</button>
     </div>
     <div class="modal-body">
-      <!-- 显示设置 -->
       <div style="margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border-light);">
         <div style="font-size:14px;font-weight:600;color:var(--text-dark);margin-bottom:12px;">📐 显示设置</div>
         <div class="display-option">
@@ -685,20 +705,65 @@
           </div>
         </div>
       </div>
-
-      <!-- 已收藏应用 -->
       <div>
         <div class="manage-section-header">
           <div class="manage-section-title">⚙ 管理我的应用</div>
           <button class="btn-link-sm" onclick="openAppCenterFromManage()">+ 添加</button>
         </div>
         <div style="font-size:12px;color:var(--text-light);margin-bottom:12px;">拖拽调整顺序，点击星标取消收藏</div>
-        <div class="manage-list" id="manageList">
-          <!-- Rendered by JS -->
-        </div>
+        <div class="manage-list" id="manageList"></div>
       </div>
     </div>
     <div class="modal-footer">
+      <button class="btn btn-primary" onclick="applyManageAndClose()">完成</button>
+    </div>
+  </div>
+</div>
+-->
+
+<!-- v0.6 管理弹窗：两tab + 搜索 + 规则说明 + 两区（置顶/混排） -->
+<div class="modal-overlay hidden" id="manageModal">
+  <div class="modal-box manage-modal" style="background:#fff;border-radius:10px;box-shadow:0 12px 48px rgba(0,0,0,0.15);width:560px;max-height:80vh;display:flex;flex-direction:column;position:relative;">
+    <span class="modal-close" onclick="closeManageModal()" style="position:absolute;top:12px;right:16px;width:28px;height:28px;border-radius:6px;border:none;background:transparent;cursor:pointer;font-size:18px;color:var(--text-light);display:flex;align-items:center;justify-content:center;z-index:1;">✕</span>
+    <span class="modal-title" style="padding:16px 20px;font-size:16px;font-weight:600;border-bottom:1px solid var(--border-light);display:block;">管理我的应用</span>
+    <div style="padding:16px 20px;overflow-y:auto;flex:1;">
+      <!-- 搜索 -->
+      <div style="margin-bottom:8px"><input id="manageSearch" type="text" placeholder="🔍 搜索应用名称..." oninput="renderManageList()" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;"></div>
+      <!-- 规则说明 -->
+      <div style="font-size:12px;color:var(--text-light);margin-bottom:8px;padding:6px 10px;background:#FFFDF5;border-radius:4px;">⚠️ 规则：卡片展示置顶 + 高频；您可以收藏的进行置顶，也可以从常用中直接置顶</div>
+      <!-- 显示设置 -->
+      <div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border-light);">
+        <div style="font-size:13px;font-weight:600;color:var(--text-dark);margin-bottom:8px;">📐 显示设置</div>
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+          <span style="font-size:13px;color:var(--text-gray);">行数：</span>
+          <div class="radio-group" style="display:flex;gap:16px;">
+            <label class="radio-opt"><input type="radio" name="rowCount" value="1" onclick="switchDisplayRows(1)"> 1行</label>
+            <label class="radio-opt"><input type="radio" name="rowCount" value="2" onclick="switchDisplayRows(2)"> 2行</label>
+            <label class="radio-opt"><input type="radio" name="rowCount" value="3" onclick="switchDisplayRows(3)"> 3行</label>
+          </div>
+          <span style="font-size:13px;color:var(--text-gray);margin-left:8px;">展示：</span>
+          <div class="radio-group" style="display:flex;gap:16px;">
+            <label class="radio-opt"><input type="radio" name="displayMode" value="hidden" checked onclick="switchDisplayMode('hidden')"> 隐藏分类</label>
+            <label class="radio-opt"><input type="radio" name="displayMode" value="show" onclick="switchDisplayMode('show')"> 显示分类</label>
+          </div>
+        </div>
+      </div>
+      <!-- v0.6.1 置顶区：始终在顶部，跨 tab 固定 -->
+      <div class="manage-zone pinned" style="margin-bottom:12px;">
+        <div class="manage-zone-title">📌 置顶区（拖拽调整顺序）</div>
+        <div class="manage-list" id="managePinnedList"></div>
+      </div>
+      <!-- v0.6.1 添加置顶：两tab，只控制下方候选列表 -->
+      <div style="border-top:1px dashed var(--border-light);padding-top:8px;">
+        <div style="display:flex;gap:0;margin-bottom:8px;border-bottom:2px solid var(--border);">
+          <button class="manage-tab active" id="tabFav" onclick="switchManageTab('fav')">⭐ 我的收藏</button>
+          <button class="manage-tab" id="tabAll" onclick="switchManageTab('all')">📊 常用应用</button>
+        </div>
+        <div class="manage-list" id="manageAddList"></div>
+      </div>
+    </div>
+    <div style="padding:12px 20px;border-top:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center;">
+      <a href="javascript:;" onclick="resetToDefaultConfig()" style="color:var(--text-light);font-size:12px;text-decoration:underline;">恢复默认</a>
       <button class="btn btn-primary" onclick="applyManageAndClose()">完成</button>
     </div>
   </div>
@@ -790,40 +855,52 @@ let personalFavorites = ['a1','a2','a3','a4','a5','a6','a8','a10','a14','a17'];
 
 // pinnedApps: 置顶应用ID列表（按用户指定顺序），置顶应用浮到前面且支持拖拽排序
 let pinnedApps = ['a1', 'a2'];
+// v0.6.1 defaultPinnedApps: 管理员预设的默认置顶配置（"恢复默认"按钮用）
+const defaultPinnedApps = ['a1', 'a2'];
 
 // portalScope: 本门户的接口范围定义
 // 'all'=全量, 'hr'=人资, 'rd'=产研, 'dev'=研发（实际由后端接口入参决定）
 const portalScope = 'all';
 
-// getMyApps: 根据portalScope范围 + 用户权限(allApps) + 收藏优先排序
-// 排序规则：置顶(📌)优先 → 收藏(⭐)优先 → 访问频率降序
+// v0.6 getMyApps: 两区排序：置顶(📌)优先(按pinnedApps顺序) → 其余按访问频率降序
+// v0.5 old: 三区排序（置顶区→频率区→补齐区），已废弃保留
+// function getMyApps() {
+//   const scoped = portalScope === 'all' ? [...allApps] : allApps.filter(a => a.biz === portalScope || a.type === portalScope);
+//   scoped.sort((a, b) => {
+//     const aPin = pinnedApps.indexOf(a.id);
+//     const bPin = pinnedApps.indexOf(b.id);
+//     const aPinOrder = aPin >= 0 ? aPin : 9999;
+//     const bPinOrder = bPin >= 0 ? bPin : 9999;
+//     if (aPinOrder !== bPinOrder) return aPinOrder - bPinOrder;
+//     const aFav = personalFavorites.includes(a.id);
+//     const bFav = personalFavorites.includes(b.id);
+//     if (aFav && !bFav) return -1;
+//     if (!aFav && bFav) return 1;
+//     return (b.visits || 0) - (a.visits || 0);
+//   });
+//   return scoped;
+// }
 function getMyApps() {
-  // 1. 限缩范围：全量scope取全部，否则按biz过滤
-  const scoped = portalScope === 'all'
-    ? [...allApps]
-    : allApps.filter(a => a.biz === portalScope || a.type === portalScope);
-  // 2. 排序：置顶优先（按pinnedApps顺序）→ 收藏优先 → 频率降序
-  scoped.sort((a, b) => {
-    const aPin = pinnedApps.indexOf(a.id);
-    const bPin = pinnedApps.indexOf(b.id);
-    // 置顶优先：在pinnedApps中的排前面，按pinnedApps中的顺序
-    const aPinOrder = aPin >= 0 ? aPin : 9999;
-    const bPinOrder = bPin >= 0 ? bPin : 9999;
-    if (aPinOrder !== bPinOrder) return aPinOrder - bPinOrder;
-    // 非置顶的按收藏优先
-    const aFav = personalFavorites.includes(a.id);
-    const bFav = personalFavorites.includes(b.id);
-    if (aFav && !bFav) return -1;
-    if (!aFav && bFav) return 1;
-    return (b.visits || 0) - (a.visits || 0);
+  // All apps the user has permission to see (scope-filtered)
+  const scoped = portalScope === 'all' ? [...allApps] : allApps.filter(a => a.biz === portalScope || a.type === portalScope);
+  // Split: pinned first (in pinnedApps order), then rest by frequency
+  const pinned = [];
+  const rest = [];
+  scoped.forEach(a => {
+    const idx = pinnedApps.indexOf(a.id);
+    if (idx >= 0) pinned.push({app: a, order: idx});
+    else rest.push(a);
   });
-  return scoped;
+  pinned.sort((a, b) => a.order - b.order);
+  rest.sort((a, b) => (b.visits || 0) - (a.visits || 0));
+  return [...pinned.map(p => p.app), ...rest];
 }
 
 // myApps: [已废弃 - pagePicks模型，2026-06-16 替换为 portalScope 模型]
 // let myApps = ['a1','a2','a3','a4','a5','a6','a8','a10'];
 let displayRows = 1;
 let displayMode = 'hidden'; // hidden=隐藏分类, show=显示分类
+let manageTabMode = 'fav'; // v0.6: 管理弹窗当前tab（'fav'我的收藏 / 'all'常用应用）
 let currentTypeFilter = '全部'; // 类型页签过滤
 let expandedCard = null;
 let openMoreMenu = null;
@@ -865,6 +942,10 @@ function renderMyApps() {
 
   // 1. 使用 portalScope 范围模型获取范围内全量应用
   let apps = getMyApps();
+
+  // v0.6.1 搜索过滤
+  const searchQuery = (document.getElementById('cardSearch')?.value || '').trim().toLowerCase();
+  if (searchQuery) apps = apps.filter(a => a.name.toLowerCase().includes(searchQuery));
 
   // 2. 显示分类模式下，更新类型页签显示（有收藏的类型才显示）
   if (displayMode === 'show') {
@@ -923,18 +1004,18 @@ function renderMyApps() {
   }).join('');
 }
 
-// 收藏/取消收藏切换
+// 收藏/取消收藏切换 (v0.6: 收藏与置顶解耦，取消收藏不再自动取消置顶)
 function toggleFavFromCard(e, id) {
   e.stopPropagation();
   document.querySelectorAll('.card-more-menu').forEach(m => m.classList.remove('show'));
   const idx = personalFavorites.indexOf(id);
   if (idx >= 0) personalFavorites.splice(idx, 1);
   else personalFavorites.push(id);
-  // 取消收藏时同步取消置顶
-  if (idx >= 0) {
-    const pinIdx = pinnedApps.indexOf(id);
-    if (pinIdx >= 0) pinnedApps.splice(pinIdx, 1);
-  }
+  // v0.5: 取消收藏时同步取消置顶 (已废弃)
+  // if (idx >= 0) {
+  //   const pinIdx = pinnedApps.indexOf(id);
+  //   if (pinIdx >= 0) pinnedApps.splice(pinIdx, 1);
+  // }
   renderMyApps(); // 同步刷新卡片列表
 }
 
@@ -1026,8 +1107,9 @@ function togglePin(id) {
     // 取消置顶
     pinnedApps.splice(idx, 1);
   } else {
-    // 置顶：加到末尾（最新置顶的排最后，可拖拽调整）
-    pinnedApps.push(id);
+    // v0.6: 置顶时加到开头（unshift），最新置顶排最前
+    // v0.5: 置顶加到末尾 pushedApps.push(id)（已废弃）
+    pinnedApps.unshift(id);
     checkRowCapacity();
   }
   renderMyApps();
@@ -1080,11 +1162,44 @@ function expandCardDetail(e, id) {
 // ===== 显示设置弹窗 (已合并到管理弹窗) =====
 // openDisplayModal/closeDisplayModal/applyDisplay 已移除
 
-// ===== 管理弹窗 =====
+// ===== v0.6 管理弹窗 =====
+// v0.5 old management functions (kept as comments):
+// function renderManageListFlat(list, apps) { ... }
+// function renderManageListByCategory(list, apps) { ... }
+
+// 切换管理弹窗tab
+function switchManageTab(mode) {
+  manageTabMode = mode;
+  // 更新tab按钮active状态
+  const tabFav = document.getElementById('tabFav');
+  const tabAll = document.getElementById('tabAll');
+  if (tabFav) tabFav.classList.toggle('active', mode === 'fav');
+  if (tabAll) tabAll.classList.toggle('active', mode === 'all');
+  renderManageList();
+}
+
+// 切换展示行数
+function switchDisplayRows(n) {
+  displayRows = n;
+  renderMyApps();
+  // 如果管理弹窗开着，也刷新
+  if (!document.getElementById('manageModal').classList.contains('hidden')) {
+    renderManageList();
+  }
+}
+
 function openManageModal() {
   document.getElementById('manageModal').classList.remove('hidden');
   document.querySelector(`input[name="rowCount"][value="${displayRows}"]`).checked = true;
   document.querySelector(`input[name="displayMode"][value="${displayMode}"]`).checked = true;
+  // 重置搜索和tab
+  const searchInput = document.getElementById('manageSearch');
+  if (searchInput) searchInput.value = '';
+  manageTabMode = 'fav';
+  const tabFav = document.getElementById('tabFav');
+  const tabAll = document.getElementById('tabAll');
+  if (tabFav) tabFav.classList.add('active');
+  if (tabAll) tabAll.classList.remove('active');
   renderManageList();
 }
 function closeManageModal() { document.getElementById('manageModal').classList.add('hidden'); renderMyApps(); }
@@ -1125,6 +1240,93 @@ function filterByType(type, el) {
   renderMyApps();
 }
 
+// v0.6.1 renderManageList: 置顶区固定在上，tabs 只控制"添加置顶"候选区
+function renderManageList() {
+  const searchQuery = (document.getElementById('manageSearch')?.value || '').trim().toLowerCase();
+  const searchMode = searchQuery.length > 0;
+
+  // === 置顶区：始终显示所有置顶应用（跨 tab 固定） ===
+  const pinnedContainer = document.getElementById('managePinnedList');
+  if (pinnedContainer) {
+    const allPinned = allApps
+      .filter(a => pinnedApps.includes(a.id))
+      .map(a => ({app: a, order: pinnedApps.indexOf(a.id)}))
+      .sort((a, b) => a.order - b.order)
+      .map(p => p.app);
+
+    if (allPinned.length === 0) {
+      pinnedContainer.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text-light);font-size:12px;">点击下方列表的 📌 即可置顶应用</div>';
+    } else {
+      pinnedContainer.innerHTML = allPinned.map(app => {
+        const isFav = personalFavorites.includes(app.id);
+        const canDrag = !searchMode;
+        return `
+        <div class="manage-item is-pinned" data-id="${app.id}" ${canDrag ? 'draggable="true" ondragstart="manageDragStart(event)" ondragover="manageDragOver(event)" ondrop="manageDrop(event)" ondragend="manageDragEnd(event)"' : ''}>
+          <span class="drag-handle" style="visibility:${canDrag ? 'visible' : 'hidden'};">⋮⋮</span>
+          <div class="app-icon-box">${app.icon}</div>
+          <div class="item-info">
+            <div class="item-name">${app.name} <span style="font-size:11px;color:var(--orange);">📌 置顶</span></div>
+            <div class="item-desc">${app.type} · ${app.biz}${isFav ? ' · ⭐ 已收藏' : ''} · 访问 ${app.visits || 0} 次</div>
+          </div>
+          <button class="pin-btn pinned" onclick="togglePinManage('${app.id}')" title="取消置顶">📌</button>
+          <button class="btn-delete" onclick="toggleFavManage('${app.id}')" title="${isFav ? '取消收藏' : '收藏'}" style="color:${isFav ? '#F5A623' : '#ccc'};">${isFav ? '★' : '☆'}</button>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // === 添加置顶：按 tab 选择数据源，已置顶的不显示 ===
+  const addContainer = document.getElementById('manageAddList');
+  if (addContainer) {
+    let candidates;
+    if (manageTabMode === 'fav') {
+      // 我的收藏 tab：未置顶的收藏应用
+      candidates = allApps.filter(a => personalFavorites.includes(a.id) && !pinnedApps.includes(a.id));
+    } else {
+      // 常用应用 tab：未置顶的全部应用
+      candidates = allApps.filter(a => !pinnedApps.includes(a.id));
+    }
+
+    // 搜索过滤
+    if (searchMode) {
+      candidates = candidates.filter(a => a.name.toLowerCase().includes(searchQuery));
+    }
+
+    // 按频率降序
+    candidates.sort((a, b) => (b.visits || 0) - (a.visits || 0));
+
+    if (candidates.length === 0) {
+      const emptyMsg = searchMode ? '未搜索到匹配应用' : (manageTabMode === 'fav' ? '暂无可置顶的收藏应用' : '暂无可置顶的应用');
+      addContainer.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text-light);font-size:12px;">' + emptyMsg + '</div>';
+    } else {
+      addContainer.innerHTML = candidates.map(app => {
+        const isFav = personalFavorites.includes(app.id);
+        return `
+        <div class="manage-item" data-id="${app.id}">
+          <span class="drag-handle" style="visibility:hidden;">⋮⋮</span>
+          <div class="app-icon-box">${app.icon}</div>
+          <div class="item-info">
+            <div class="item-name">${app.name}</div>
+            <div class="item-desc">${app.type} · ${app.biz}${isFav ? ' · ⭐ 已收藏' : ''} · 访问 ${app.visits || 0} 次</div>
+          </div>
+          <button class="pin-btn" onclick="togglePinManage('${app.id}')" title="置顶">📌</button>
+          <button class="btn-delete" onclick="toggleFavManage('${app.id}')" title="${isFav ? '取消收藏' : '收藏'}" style="color:${isFav ? '#F5A623' : '#ccc'};">${isFav ? '★' : '☆'}</button>
+        </div>`;
+      }).join('');
+    }
+  }
+}
+
+// v0.6.1 恢复默认配置
+function resetToDefaultConfig() {
+  if (!confirm('将恢复为管理员预设的默认配置，您的个人置顶将被覆盖。确定恢复？')) return;
+  pinnedApps = [...defaultPinnedApps];
+  renderManageList();
+  renderMyApps();
+}
+
+// ==== v0.5 管理弹窗旧渲染函数（已废弃，保留作为历史记录） ====
+/*
 function renderManageList() {
   const list = document.getElementById('manageList');
   const apps = getMyApps();
@@ -1132,26 +1334,20 @@ function renderManageList() {
     list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text-light);">暂无应用</div>';
     return;
   }
-
-  // 读取当前显示模式
   const modeRadio = document.querySelector('input[name="displayMode"]:checked');
   const currentMode = modeRadio ? modeRadio.value : displayMode;
-
   if (currentMode === 'show') {
-    // === 显示分类模式：瀑布流分类排布 ===
     renderManageListByCategory(list, apps);
   } else {
-    // === 隐藏分类模式：统一列表 ===
     renderManageListFlat(list, apps);
   }
 }
 
-// 隐藏分类模式 - 统一列表
 function renderManageListFlat(list, apps) {
   list.innerHTML = apps.map(app => {
     const isFav = personalFavorites.includes(app.id);
     const isPinned = pinnedApps.includes(app.id);
-    const canDrag = isPinned; // 只有置顶的可拖拽
+    const canDrag = isPinned;
     return `
     <div class="manage-item ${isPinned ? 'is-pinned' : ''}" data-id="${app.id}" ${canDrag ? 'draggable="true" ondragstart="manageDragStart(event)" ondragover="manageDragOver(event)" ondrop="manageDrop(event)" ondragend="manageDragEnd(event)"' : ''}>
       <span class="drag-handle" style="visibility:${canDrag ? 'visible' : 'hidden'};">⋮⋮</span>
@@ -1167,68 +1363,63 @@ function renderManageListFlat(list, apps) {
   }).join('');
 }
 
-// 显示分类模式 - 瀑布流分类排布
 function renderManageListByCategory(list, apps) {
-  // 按类型分组，每个类型内：置顶优先 → 频率降序
   const types = ['平台', '工具', '流程'];
   const typeIcons = { '平台': '🖥️', '工具': '🔧', '流程': '📋' };
   let html = '';
-
   types.forEach(type => {
     const typeApps = apps.filter(a => a.type === type);
     if (typeApps.length === 0) return;
-
-    html += `<div class="manage-category-group">`;
-    html += `<div class="manage-category-title"><span class="cat-icon">${typeIcons[type] || ''}</span>${type}类</div>`;
-
+    html += '<div class="manage-category-group">';
+    html += '<div class="manage-category-title"><span class="cat-icon">' + (typeIcons[type] || '') + '</span>' + type + '类</div>';
     typeApps.forEach(app => {
       const isFav = personalFavorites.includes(app.id);
       const isPinned = pinnedApps.includes(app.id);
       const canDrag = isPinned;
-      // 引号嵌套：用 if 分支建拖拽 attributes，避免 '${type}' 嵌入单引号 JS 字符串导致语法错误
       let dragAttrs = '';
       if (canDrag) {
         dragAttrs = ' draggable="true" ondragstart="manageDragStart(event)" ondragover="manageDragOver(event)" ondrop="manageDrop(event, \'' + type + '\')" ondragend="manageDragEnd(event)"';
       }
-      html += `
-      <div class="manage-item ${isPinned ? 'is-pinned' : ''}" data-id="${app.id}" data-type="${type}"${dragAttrs}>
-        <span class="drag-handle" style="visibility:${canDrag ? 'visible' : 'hidden'};">⋮⋮</span>
-        <div class="app-icon-box">${app.icon}</div>
-        <div class="item-info">
-          <div class="item-name">${app.name}${isPinned ? ' <span style="font-size:11px;color:var(--orange);">📌 置顶</span>' : ''}</div>
-          <div class="item-desc">${app.biz}${isFav ? ' · ⭐ 已收藏' : ''} · 访问 ${app.visits || 0} 次</div>
-        </div>
-        <button class="pin-btn ${isPinned ? 'pinned' : ''}" onclick="togglePinManage('${app.id}')" title="${isPinned ? '取消置顶' : '置顶'}">📌</button>
-        <button class="btn-delete" onclick="toggleFavManage('${app.id}')" title="${isFav ? '取消收藏' : '收藏'}" style="color:${isFav ? '#F5A623' : '#ccc'};">${isFav ? '★' : '☆'}</button>
-      </div>`;
+      html += '<div class="manage-item ' + (isPinned ? 'is-pinned' : '') + '" data-id="' + app.id + '" data-type="' + type + '"' + dragAttrs + '>' +
+        '<span class="drag-handle" style="visibility:' + (canDrag ? 'visible' : 'hidden') + ';">⋮⋮</span>' +
+        '<div class="app-icon-box">' + app.icon + '</div>' +
+        '<div class="item-info">' +
+        '<div class="item-name">' + app.name + (isPinned ? ' <span style="font-size:11px;color:var(--orange);">📌 置顶</span>' : '') + '</div>' +
+        '<div class="item-desc">' + app.biz + (isFav ? ' · ⭐ 已收藏' : '') + ' · 访问 ' + (app.visits || 0) + ' 次</div>' +
+        '</div>' +
+        '<button class="pin-btn ' + (isPinned ? 'pinned' : '') + '" onclick="togglePinManage(\'' + app.id + '\')" title="' + (isPinned ? '取消置顶' : '置顶') + '">📌</button>' +
+        '<button class="btn-delete" onclick="toggleFavManage(\'' + app.id + '\')" title="' + (isFav ? '取消收藏' : '收藏') + '" style="color:' + (isFav ? '#F5A623' : '#ccc') + ';">' + (isFav ? '★' : '☆') + '</button>' +
+        '</div>';
     });
-
-    html += `</div>`;
+    html += '</div>';
   });
-
   list.innerHTML = html || '<div style="text-align:center;padding:32px;color:var(--text-light);">暂无应用</div>';
 }
+*/
 
+// v0.6: 收藏与置顶解耦，取消收藏不再自动取消置顶
 function toggleFavManage(id) {
   const idx = personalFavorites.indexOf(id);
   if (idx >= 0) personalFavorites.splice(idx, 1);
   else personalFavorites.push(id);
-  // 取消收藏时，同时取消置顶
-  if (!personalFavorites.includes(id)) {
-    const pinIdx = pinnedApps.indexOf(id);
-    if (pinIdx >= 0) pinnedApps.splice(pinIdx, 1);
-  }
+  // v0.5: 取消收藏时，同时取消置顶 (已废弃)
+  // if (!personalFavorites.includes(id)) {
+  //   const pinIdx = pinnedApps.indexOf(id);
+  //   if (pinIdx >= 0) pinnedApps.splice(pinIdx, 1);
+  // }
   renderManageList();
   renderMyApps();
 }
 
-// 📌 管理弹窗中的置顶/取消置顶
+// 📌 管理弹窗中的置顶/取消置顶 (v0.6: unshift 到开头)
 function togglePinManage(id) {
   const idx = pinnedApps.indexOf(id);
   if (idx >= 0) {
     pinnedApps.splice(idx, 1);
   } else {
-    pinnedApps.push(id);
+    // v0.6: 置顶加到开头
+    // v0.5: pinnedApps.push(id); (已废弃)
+    pinnedApps.unshift(id);
     checkRowCapacity();
   }
   renderManageList();
