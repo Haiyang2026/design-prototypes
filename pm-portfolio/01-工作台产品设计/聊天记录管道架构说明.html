@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>聊天记录内容管道架构 — 一页纸说明</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
+  }
+
+  .slide {
+    width: 720px;  /* 4:3 比例 — 720:540 */
+    height: 540px;
+    background: #ffffff;
+    padding: 28px 32px 24px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* 顶部标题区 */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+  }
+
+  .title-group {
+    flex: 1;
+  }
+
+  .title-group .main-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a1a2e;
+    letter-spacing: 1px;
+    line-height: 1.3;
+  }
+
+  .title-group .sub-title {
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+  }
+
+  .badge {
+    background: #e8f4fd;
+    color: #1a73e8;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    white-space: nowrap;
+    margin-left: 12px;
+  }
+
+  /* 分隔线 */
+  .divider {
+    height: 2px;
+    background: linear-gradient(90deg, #1a73e8 0%, #e0e0e0 100%);
+    margin-bottom: 12px;
+    border: none;
+  }
+
+  /* 三栏核心 */
+  .core-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .core-card {
+    flex: 1;
+    background: #f8faff;
+    border: 1px solid #e0e8f0;
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+
+  .core-card .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a73e8;
+    margin-bottom: 5px;
+    padding-bottom: 4px;
+    border-bottom: 1px dashed #d0d8e4;
+  }
+
+  .core-card ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .core-card li {
+    font-size: 11px;
+    color: #444;
+    line-height: 1.55;
+    padding-left: 10px;
+    position: relative;
+    margin-bottom: 1px;
+  }
+
+  .core-card li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 6px;
+    width: 4px;
+    height: 4px;
+    background: #1a73e8;
+    border-radius: 50%;
+  }
+
+  /* 箭头连接 */
+  .arrow-row {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    margin-bottom: 10px;
+  }
+
+  .arrow-row span {
+    font-size: 18px;
+    color: #1a73e8;
+    font-weight: 300;
+  }
+
+  /* 核心概念 */
+  .concept-box {
+    background: #fff8e6;
+    border: 1px solid #f0d88a;
+    border-radius: 6px;
+    padding: 8px 14px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .concept-box .big {
+    font-size: 14px;
+    font-weight: 600;
+    color: #b8860b;
+  }
+
+  .concept-box .small {
+    font-size: 11px;
+    color: #8a7a4a;
+    margin-top: 2px;
+  }
+
+  /* 三个关键问题 */
+  .qa-grid {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .qa-item {
+    flex: 1;
+    background: #fafafa;
+    border: 1px solid #e8e8e8;
+    border-radius: 6px;
+    padding: 8px 10px;
+  }
+
+  .qa-item .q {
+    font-size: 11px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 3px;
+  }
+
+  .qa-item .a {
+    font-size: 10.5px;
+    color: #555;
+    line-height: 1.5;
+  }
+
+  .qa-item .a em {
+    color: #1a73e8;
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  /* 底部 */
+  .footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #e8e8e8;
+    padding-top: 8px;
+  }
+
+  .footer .summary {
+    font-size: 12px;
+    color: #333;
+    font-weight: 500;
+  }
+
+  .footer .summary .highlight {
+    color: #1a73e8;
+    font-weight: 600;
+  }
+
+  .footer .page-num {
+    font-size: 10px;
+    color: #aaa;
+  }
+
+  /* 小标签 */
+  .tag {
+    display: inline-block;
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 8px;
+    margin-right: 3px;
+  }
+  .tag-blue { background: #e8f0fe; color: #1a73e8; }
+  .tag-green { background: #e6f4ea; color: #137333; }
+  .tag-orange { background: #fef7e0; color: #b8860b; }
+  .tag-red { background: #fce8e6; color: #c5221f; }
+</style>
+</head>
+<body>
+
+<div class="slide">
+
+  <!-- 标题 -->
+  <div class="header">
+    <div class="title-group">
+      <div class="main-title">聊天记录内容管道架构</div>
+      <div class="sub-title">一份标准化数据 + 可插拔模板 = N 种自动化输出</div>
+    </div>
+    <span class="badge">Agent 驱动 · 配置化 · 可扩展</span>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 三栏核心 -->
+  <div class="core-row">
+    <div class="core-card">
+      <div class="card-title">1. 数据标准化层</div>
+      <ul>
+        <li>IM 聊天记录 → 结构化事件</li>
+        <li>每条含：时间 / 发送人 / 群组 / 内容 / 标签</li>
+        <li>IM 团队一次接入，后续复用</li>
+        <li>写入标准化数据接口或 Dify 知识库</li>
+      </ul>
+    </div>
+    <div class="core-card">
+      <div class="card-title">2. 模板插槽层</div>
+      <ul>
+        <li>每个模板 = 1 个 Agent Skill</li>
+        <li>三要素：筛选条件 + 提取指令 + 输出格式</li>
+        <li>按人 / 按角色 / 按场景配置</li>
+        <li>模板可随时新增，互不影响</li>
+      </ul>
+    </div>
+    <div class="core-card">
+      <div class="card-title">3. 调度执行层</div>
+      <ul>
+        <li>定时运行 / 手动触发 / 事件触发</li>
+        <li>用 Dify 定时任务 / 自动化工具均可</li>
+        <li>Dify 保留内容生成能力</li>
+        <li>外部调度补充模板管理和执行编排</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 核心公式 -->
+  <div class="concept-box">
+    <div class="big">公式：标准化数据 + (筛选 + 指令 + 格式) × N 个模板 = N 种自动输出</div>
+    <div class="small">同一份聊天记录，挂不同模板 → 周报 / 知识库 / 日报 / FAQ / 项目日志 ... 各取所需</div>
+  </div>
+
+  <!-- 三个关键问题 -->
+  <div class="qa-grid">
+    <div class="qa-item">
+      <div class="q">Q1：模板是每个人固定下来的？</div>
+      <div class="a">
+        可以<em>按人固定</em>（你配自己的运维知识库），也可以<em>按角色公共</em>（运维团队共用）。本质上就是<em>配了一个定时 Skill</em>。
+      </div>
+    </div>
+    <div class="qa-item">
+      <div class="q">Q2：这是让 Agent 学会一个 Skill？</div>
+      <div class="a">
+        对。每个模板 = 一个虚拟助理学会了<em>「从聊天记录里挖某类内容，按固定格式输出」</em>。不同模板就是不同助理。
+      </div>
+    </div>
+    <div class="qa-item">
+      <div class="q">Q3：还需要继续用 Dify？</div>
+      <div class="a">
+        Dify 保留<em>内容生成引擎</em>角色不变。在它外面套一层<em>模板管理 + 调度编排</em>，Dify 专注干活，调度专心排班，各司其职。
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部总结 -->
+  <div class="footer">
+    <div class="summary">
+      <span class="highlight">一句话</span> &nbsp; 数据管道统一接入 + 模板插槽按需配置 = 每个人都能得到自己想要的
+    </div>
+    <span class="page-num">Chat Record Pipeline · 一页纸说明</span>
+  </div>
+
+</div>
+
+</body>
+</html>
